@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="李仁杰">
+    
+    <title>
+        
+            C++ |
+        
+        仁杰的杂记
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"cn","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"欢迎来到仁杰的杂记事本"},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":true},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="pjax-progress-icon">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                仁杰的杂记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                ABOUT
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">ABOUT</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">C++</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">李仁杰</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-08-09 14:31:07</span>
+        <span class="mobile">2022-08-09 14:31</span>
+    </span>
+    
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>6.1k Words</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>21 Mins</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="C-基础"><a href="#C-基础" class="headerlink" title="C++ 基础"></a>C++ 基础</h1><h2 id="右值引用"><a href="#右值引用" class="headerlink" title="右值引用"></a>右值引用</h2><p> <strong>左右值的定义：</strong></p>
+<p><strong>左值：</strong> 可以出现在赋值符号左边或右边的值。<br><strong>右值：</strong> 只能出现在赋值符号右边的值。</p>
+<p>顺便说了下邪道定义：能被取引用的就是左值，反之为右值，这一定义的纰漏在于，C++中无法对一个bit取引用，比如位域中的某一位，vector<bool>中的某一元素。</p>
+<p> <strong>移动语义</strong></p>
+<p>解决了各种情形下对象的资源所有权的转移问题。</p>
+<p>需要知道的是，多数情况下，右值所包含的对象都是可以安全的被移动的。这一特性是的右值被用来表达移动语义。移动语义具体实现是进行浅拷贝然后打断原指针。另：<code>std::move()</code>实际上是<code>static_cast&lt;T&amp;&amp;&gt;()</code>的简单封装。</p>
+<p> <strong>完美转发</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">PrintT</span><span class="params">(T &amp;&amp;t)</span> </span>&#123;</span><br><span class="line">	cout &lt;&lt;<span class="string">&quot;rvalue&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">PrintT</span><span class="params">(T&amp;t)</span> </span>&#123;</span><br><span class="line">	cout &lt;&lt;<span class="string">&quot;lvaue&quot;</span>&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Test</span><span class="params">(T &amp;&amp;v)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">PrintT</span>(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于上述代码，很容易让人误以为调用Test函数将会打印出”rvalue”，但实际上结果为打印出”lvalue”，因为在Test函数中，将变量v传递为PrintT函数时，已经为变量v开辟了空间，则此时v为左值，故打印出”lvalue”，要打印”rvalue”则需要调用forward()。</p>
+<h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><p><strong>shared_ptr</strong><br>shared_ptr多个指针指向相同的对象。shared_ptr使用引用计数，每一个shared_ptr的拷贝都指向相同的内存。每使用他一次，内部的引用计数加1，每析构一次，内部的引用计数减1，减为0时，自动删除所指向的堆内存。<br>shared_ptr内部的引用计数是线程安全的，但是对象的读取需要加锁。<br>注意不要用一个原始指针初始化多个shared_ptr，否则会造成二次释放同一内存。<br>注意避免循环引用，shared_ptr的一个最大的陷阱是循环引用，循环，循环引用会导致堆内存无法正确释放，导致内存泄漏。</p>
+<p>shared_ptr的框架和析构函数的具体实现</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;classT&gt;</span><br><span class="line">~<span class="built_in">my_shared_ptr</span>(<span class="type">void</span>) &#123;</span><br><span class="line">	--use_count;</span><br><span class="line">	<span class="keyword">if</span>(<span class="number">0</span>==use_count)&#123;</span><br><span class="line">		deleteptr;</span><br><span class="line">		ptr =<span class="literal">nullptr</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>unique_ptr</strong><br>“唯一”拥有其所指对象，同一时刻只能有一个unique_ptr指向给定对象。<br><strong>unique_ptr指针本身的生命周期</strong>：从unique_ptr指针创建时开始，直到离开作用域。离开作用域时，若其指向对象，则将其所指对象销毁(默认使用delete操作符，用户可指定其他操作)。<br><strong>unique_ptr指针与其所指对象的关系：</strong>在智能指针生命周期内，可以改变智能指针所指对象，如创建智能指针时通过构造函数指定、通过reset方法重新指定、通过release方法释放所有权、通过移动语义转移所有权。</p>
+<p><strong>weak_ptr</strong> 解决shared_ptr的环形引用问题<br>weak_ptr可以从一个shared_ptr或者另一个weak_ptr对象构造，获得资源的观测权。但weak_ptr没有共享资源，它的构造不会引起指针引用计数的增加。<br>成员函数use_count()可以观测资源的引用计数。</p>
+<p><strong>Shared_ptr允许多个指针指向同一个对象，unique_ptr则“独占”所指向的对象, weak_ptr是一种弱引用，指向shared_ptr所管理的对象</strong></p>
+<h2 id="C-与C语言内存分配的区别"><a href="#C-与C语言内存分配的区别" class="headerlink" title="C++ 与C语言内存分配的区别"></a>C++ 与C语言内存分配的区别</h2><p>C++使用new和delete操作符来完成内存的分配和释放<br>new操作符在申请适合对象大小的空间同时完成对象的初始化，delete操作符能正确调用对象的析构函数。<br>变量申请</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> Type*pointer =newType;</span><br><span class="line"><span class="number">2</span> <span class="comment">// .....</span></span><br><span class="line"><span class="number">3</span> <span class="keyword">delete</span> pointer;</span><br></pre></td></tr></table></figure>
+<p>数组申请</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> Type*pointer =newType[N];</span><br><span class="line"><span class="number">2</span> <span class="comment">// .....</span></span><br><span class="line"><span class="number">3</span> <span class="keyword">delete</span>[] pointer;</span><br></pre></td></tr></table></figure>
+<p>C语言使用malloc和free两个函数申请空间与释放。<br>malloc只是向操作系统申请指定大小的堆空间，free函数只是向操作系统归还指定空间，并不完成对象的析构。</p>
+<p>new以类型为单位进行动态内存的分配<br>malloc函数以字节为单位进行动态内存的分配</p>
+<p>new在动态申请单个类型变量时，可以对其进行初始化<br>malloc不具备内存初始化的能力</p>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>new&#x2F;delete</th>
+<th>malloc&#x2F;free</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>分配内存的位置</td>
+<td>自由存储区</td>
+<td>堆</td>
+</tr>
+<tr>
+<td>内存分配失败返回值</td>
+<td>完整类型指针</td>
+<td>void*</td>
+</tr>
+<tr>
+<td>分配内存的大小</td>
+<td>由编译器根据类型计算得出</td>
+<td>必须显式指定字节数</td>
+</tr>
+<tr>
+<td>函数重载</td>
+<td>允许</td>
+<td>不允许</td>
+</tr>
+<tr>
+<td>构造函数与析构函数</td>
+<td>调用</td>
+<td>不调用</td>
+</tr>
+</tbody></table>
+<h2 id="new和malloc的区别，各自底层实现原理"><a href="#new和malloc的区别，各自底层实现原理" class="headerlink" title="new和malloc的区别，各自底层实现原理"></a>new和malloc的区别，各自底层实现原理</h2><ol>
+<li>new是操作符，而malloc是函数。</li>
+<li>new在调用的时候先分配内存，在调用构造函数，释放的时候调用析构函数；而malloc没有构造函数和析构函数。</li>
+<li>malloc需要给定申请内存的大小，返回的指针需要强转；new会调用构造函数，不用指定内存的大小，返回指针不用强转。</li>
+<li>new可以被重载；malloc不行</li>
+<li>new分配内存更直接和安全。</li>
+<li>new发生错误抛出异常，malloc返回null</li>
+</ol>
+<p><strong>malloc底层实现</strong>：当开辟的空间小于 128K 时，调用 brk（）函数；当开辟的空间大于 128K 时，调用mmap（）。malloc采用的是内存池的管理方式，以减少内存碎片。先申请大块内存作为堆区，然后将堆区分为多个内存块。当用户申请内存时，直接从堆区分配一块合适的空闲快。采用隐式链表将所有空闲块，每一个空闲块记录了一个未分配的、连续的内存地址。</p>
+<p><strong>new底层实现</strong>：关键字new在调用构造函数的时候实际上进行了如下的几个步骤：<br>    • 创建一个新的对象<br>    • 将构造函数的作用域赋值给这个新的对象（因此this指向了这个新的对象）<br>    • 执行构造函数中的代码（为这个新对象添加属性）<br>    • 返回新对象</p>
+<h2 id="C-中-struct-和-class-的区别"><a href="#C-中-struct-和-class-的区别" class="headerlink" title="C++中 struct 和 class 的区别"></a>C++中 struct 和 class 的区别</h2><pre><code>• struct 一般用于描述一个数据结构集合，而 class 是对一个对象数据的封装；
+• struct 中默认的访问控制权限是 public 的，而 class 中默认的访问控制权限是 private 的
+• 在继承关系中，struct 默认是公有继承，而 class 是私有继承；
+• class 关键字可以用于定义模板参数，就像 typename，而 struct 不能用于定义模板参数
+</code></pre>
+<h2 id="static关键字的用法有哪些？"><a href="#static关键字的用法有哪些？" class="headerlink" title="static关键字的用法有哪些？"></a>static关键字的用法有哪些？</h2><p>（1）<strong>修饰局部变量</strong>。局部变量的生存期为声明之后，直至当前代码块结束。若使用static声明，该变量将变为静态持续性，存放在静态存储区，存在于整个程序运行周期。同时保证每个进入该代码块，变量保持上一次退出时的值。</p>
+<p>（2）<strong>修饰全局变量</strong>。会改变全局变量的链接性，使用static修饰后，全局变量由外部链接性变为内存链接性，这样其他源文件不能使用extern变量使用该变量，该变量只能在当前文件内共享访问。</p>
+<p>（3）<strong>修饰函数</strong>。函数默认具有外部链接性，同普通全局变量一样。使用static修饰后，其他源文件不能使用extern来使用该函数。该函数为内部链接性，当前文件可访问。</p>
+<p>（4）<strong>修饰成员变量</strong>。修饰成员变量后，该变量将不在类对象的内存布局当中，存在于静态存储区。该变量存在于类对象声明之前，即使没有任何一个类对象声明，该变量依然存在。所有的类对象共享一份实例。</p>
+<p>（5）<strong>修饰成员函数</strong>。静态成员函数不能访问普通成员变量，只能访问静态成员变量。同时不需要通过类实例进行调用。</p>
+<h2 id="C-中override和overload的区别"><a href="#C-中override和overload的区别" class="headerlink" title="C++中override和overload的区别"></a>C++中override和overload的区别</h2><p>overload 完全新的方法，参数和原方法不同。<br>override 覆盖继承到的那个方法，那个方法仍然没有放弃。<br>overwrite 重写继承到的那个方法的代码，原方法被放弃。</p>
+<p><strong>override（重写，覆盖）</strong><br>1、方法名、参数、返回值相同。<br>2、子类方法不能缩小父类方法的访问权限。<br>3、子类方法不能抛出比父类方法更多的异常(但子类方法可以不抛出异常)。<br>4、存在于父类和子类之间。<br>5、方法被定义为final不能被重写。 </p>
+<p><strong>overload（重载，过载）</strong><br>1、参数类型、个数、顺序至少有一个不相同。<br>2、不能重载只有返回值不同的方法名。<br>3、存在于父类和子类、同类中。 </p>
+<h2 id="const和-define的区别。"><a href="#const和-define的区别。" class="headerlink" title="const和#define的区别。"></a>const和#define的区别。</h2><p>const用于定义常量；而#define用于定义宏，而宏也可以用于定义常量。都用于常量定义时，它们的区别有：</p>
+<ol>
+<li>const生效于编译的阶段；#define生效于预处理阶段。</li>
+<li>const定义的常量，在C语言中是存储在内存中、需要额外的内存空间的；define定义的常量，运行时是直接的操作数，并不会存放在内存中。</li>
+<li>const定义的常量是带类型的；define定义的常量不带类型。因此define定义的常量不利于类型检查。</li>
+</ol>
+<h2 id="const-int-a-int-const-a-const-int-a-int-const-a-const-int-const-a分别是什么，有什么特点。"><a href="#const-int-a-int-const-a-const-int-a-int-const-a-const-int-const-a分别是什么，有什么特点。" class="headerlink" title="const int *a, int const *a, const int a, int *const a, const int *const a分别是什么，有什么特点。"></a>const int *a, int const *a, const int a, int *const a, const int *const a分别是什么，有什么特点。</h2><ol>
+<li>const int a;     &#x2F;&#x2F;指的是a是一个常量，不允许修改。</li>
+<li>const int <em>a;    &#x2F;&#x2F;a指针所指向的内存里的值不变，即（</em>a）不变</li>
+<li>int const *a;    &#x2F;&#x2F;同const int *a;</li>
+<li>int *const a;    &#x2F;&#x2F;a指针所指向的内存地址不变，即a不变</li>
+<li>const int <em>const a;   &#x2F;&#x2F;都不变，即（</em>a）不变，a也不变</li>
+</ol>
+<h2 id="异常处理机制"><a href="#异常处理机制" class="headerlink" title="异常处理机制"></a>异常处理机制</h2><p>标准库提供了abort()和exit()两个函数，它们可以强行终止程序的运行。这两个函数本身不能检测异常，但在C程序发生异常后经常使用这两个函数使程序终止。<br>异常的抛出方式为使用throw(type e)，try、catch和throw都是C++为处理异常而添加的关键字。</p>
+<h2 id="深拷贝和浅拷贝的区别。"><a href="#深拷贝和浅拷贝的区别。" class="headerlink" title="深拷贝和浅拷贝的区别。"></a>深拷贝和浅拷贝的区别。</h2><p>浅拷贝：位拷贝，拷贝构造函数，赋值重载，多个对象共用同一块资源，同一块资源释放多次，崩溃或者内存泄漏</p>
+<p>深拷贝：每个对象共同拥有自己的资源，必须显式提供拷贝构造函数和赋值运算符。</p>
+<p>简而言之：如果一个类拥有资源，当这个类的对象发生复制过程的时候，资源重新分配，这个过程就是深拷贝，反之，没有重新分配资源，就是浅拷贝。</p>
+<h2 id="简述下C-语言的特点"><a href="#简述下C-语言的特点" class="headerlink" title="简述下C++语言的特点"></a>简述下C++语言的特点</h2><p>• C++在C语言基础上引入了面对对象的机制，同时也兼容C语言。<br>• C++有三大特性（1）封装。（2）继承。（3）多态；<br>• C++语言编写出的程序结构清晰、易于扩充，程序可读性好。<br>• C++生成的代码质量高，运行效率高，仅比汇编语言慢10%～20%；<br>• C++更加安全，增加了const常量、引用、四类cast转换（static_cast、dynamic_cast、const_cast、reinterpret_cast）、智能指针、try—catch等等；<br>• C++可复用性高，C++引入了模板的概念，后面在此基础上，实现了方便开发的标准模板库STL（Standard Template Library）。<br>• 同时，C++是不断在发展的语言。C++后续版本更是发展了不少新特性，如C++11中引入了nullptr、auto变量、Lambda匿名函数、右值引用、智能指针。</p>
+<h3 id="1、继承"><a href="#1、继承" class="headerlink" title="1、继承"></a>1、继承</h3><p> 被继承的是父类（基类），继承出来的类是子类（派生类），子类拥有父类的所有的特性。<br> 继承方式有公有继承、私有继承，保护继承。默认是私有继承</p>
+<p>公有继承中父类的公有和保护成员在子类中不变，私有的在子类中不可访问。<br>私有继承中父类的公有和保护成员在子类中变为私有，但私有的在子类中不可访问。<br>保护继承中父类的公有和保护成员在子类中变为保护，但私有的在子类中不可访问。<br> c++语言允许单继承和多继承，<br> <br>优点：继承减少了重复的代码、继承是多态的前提、继承增加了类的耦合性；<br>缺点：继承在编译时刻就定义了，无法在运行时刻改变父类继承的实现；父类通常至少定义了子类的部分行为，父类的改变都可能影响子类的行为；如果继承下来的子类不适合解决新问题，父类必须重写或替换，那么这种依赖关系就限制了灵活性，最终限制了复用性。<br>虚继承：为了解决多重继承中的二义性问题，它维护了一张虚基类表。</p>
+<h3 id="2、多态"><a href="#2、多态" class="headerlink" title="2、多态"></a>2、多态</h3><p> 多态性是指对不同类的对象发出相同的消息将会有不同的实现<br> C++有两种多态，称为动多态（运行期多态）和静多态（编译器多态），静多态主要是通过模板来实现，而动多态是通过虚函数来实现的。即在基类中存在虚函数（一般为纯虚函数）子类通过重载这些接口，使用基类的指针或者引用指向子类的对象，就可以调用子类对应的函数，动多态的函数调用机制是执行器期才能确定的，所以他是动态的。<br> <br>优点：大大提高了代码的可复用性；提高了了代码的可维护性，可扩充性；<br>缺点：易读性比较不好，调试比较困难； 模板只能定义在头文件中，当工程大了之后，编译时间十分的变态；</p>
+<h3 id="3、封装"><a href="#3、封装" class="headerlink" title="3、封装"></a>3、封装</h3><p> 隐藏类的属性和实现细节，仅仅对外提供接口，<br> 封装性实际上是由编译器去识别关键字public、private和protected来实现的，体现在类的成员可以有公有成员(public)，私有成员(private)，保护成员(protected)。私有成员是在封装体内被隐藏的部分，只有类体内说明的函数(类的成员函数)才可以访问私有成员，而在类体外的函数时不能访问的，公有成员是封装体与外界的一个接口，类体外的函数可以访问公有成员，保护成员是只有该类的成员函数和该类的派生类才可以访问的。</p>
+<p> 优点：隔离变化；便于使用；提高重用性；提高安全性<br> 缺点：如果封装太多，影响效率；使用者不能知道代码具体实现。</p>
+<h2 id="C-从代码到可执行二进制文件的过程"><a href="#C-从代码到可执行二进制文件的过程" class="headerlink" title="C++从代码到可执行二进制文件的过程"></a>C++从代码到可执行二进制文件的过程</h2><p><strong>预编译：</strong>这个过程主要的处理操作如下：<br>    <strong>先处理#开头的预处理指令比如常量和头文件</strong></p>
+<p>（1） 将所有的#define删除，并且展开所有的宏定义<br>（2） 处理所有的条件预编译指令，如#if、#ifdef<br>（3） 处理#include预编译指令，将被包含的文件插入到该预编译指令的位置。<br>（4） 过滤所有的注释<br>（5） 添加行号和文件名标识。</p>
+<p><strong>编译：</strong>这个过程主要的处理操作如下：</p>
+<p>（1） 词法分析：将源代码的字符序列分割成一系列的记号。<br>（2） 语法分析：对记号进行语法分析，产生语法树。<br>（3） 语义分析：判断表达式是否有意义。<br>（4） 代码优化：<br>（5） 目标代码生成：生成汇编代码。<br>（6） 目标代码优化：</p>
+<p><strong>汇编：</strong>这个过程主要是将汇编代码转变成机器可以执行的指令。</p>
+<p><strong>链接：</strong>将不同的源文件产生的目标文件进行链接，从而形成一个可以执行的程序。</p>
+<p>链接分为静态链接和动态链接。</p>
+<p><strong>静态链接</strong>，是在链接的时候就已经把要调用的函数或者过程链接到了生成的可执行文件中，就算你在去把静态库删除也不会影响可执行程序的执行；生成的静态链接库，Windows下以.lib为后缀，Linux下以.a为后缀。</p>
+<p><strong>动态链接</strong>，是在链接的时候没有把调用的函数代码链接进去，而是在执行的过程中，再去找要链接的函数，生成的可执行文件中没有函数代码，只包含函数的重定位信息，所以当你删除动态库时，可执行程序就不能运行。生成的动态链接库，Windows下以.dll为后缀，Linux下以.so为后缀。</p>
+<p>C++标准规定：全局或静态对象当且仅当对象首次用到时才进行构造。</p>
+<h2 id="数组和指针的区别"><a href="#数组和指针的区别" class="headerlink" title="数组和指针的区别"></a>数组和指针的区别</h2><p><strong>概念：</strong><br>（1）数组：数组是用于储存多个相同类型数据的集合。数组名是首元素的地址。<br>（2）指针：指针相当于一个变量，但是它和不同变量不一样，它存放的是其它变量在内存中的地址。指针名指向了内存的首地址。</p>
+<p><strong>区别：</strong><br>（1）赋值：同类型指针变量可以相互赋值；数组不行，只能一个一个元素的赋值或拷贝<br>（2）存储方式：<br>数组：数组在内存中是连续存放的，开辟一块连续的内存空间。数组是根据数组的下进行访问的，数组的存储空间，不是在静态区就是在栈上。<br>指针：指针很灵活，它可以指向任意类型的数据。指针的类型说明了它所指向地址空间的内存。由于指针本身就是一个变量，再加上它所存放的也是变量，所以指针的存储空间不能确定。<br>（3）求sizeof：<br>数组所占存储空间的内存大小：sizeof（数组名）&#x2F;sizeof（数据类型）<br>在32位平台下，无论指针的类型是什么，sizeof（指针名）都是4，在64位平台下，无论指针的类型是什么，sizeof（指针名）都是8。</p>
+<h2 id="什么是函数指针，如何定义函数指针，有什么使用场景"><a href="#什么是函数指针，如何定义函数指针，有什么使用场景" class="headerlink" title="什么是函数指针，如何定义函数指针，有什么使用场景"></a>什么是函数指针，如何定义函数指针，有什么使用场景</h2><p>概念：函数指针就是指向函数的指针变量。每一个函数都有一个入口地址，该入口地址就是函数指针所指向的地址。</p>
+<p>定义形式如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">func</span> <span class="params">(<span class="type">int</span> a)</span></span>;</span><br><span class="line"><span class="built_in">int</span>(*f) (<span class="type">int</span> a);</span><br><span class="line">f = &amp;func;</span><br></pre></td></tr></table></figure>
+
+<p>函数指针的应用场景：<strong>回调</strong>（callback）。我们调用别人提供的 API函数，称为Call；如果别人的库里面调用我们的函数，就叫Callback。</p>
+<h2 id="C-中函数指针和指针函数的区别。"><a href="#C-中函数指针和指针函数的区别。" class="headerlink" title="C++中函数指针和指针函数的区别。"></a>C++中函数指针和指针函数的区别。</h2><p>定义不同<br>    • 指针函数本质是一个函数，其返回值为指针。<br>    • 函数指针本质是一个指针，其指向一个函数。</p>
+<p>写法不同<br>    • 指针函数：int *fun(int x,int y);<br>    • 函数指针：int (*fun)(int x,int y);</p>
+<h2 id="什么是野指针，怎么产生的，如何避免？"><a href="#什么是野指针，怎么产生的，如何避免？" class="headerlink" title="什么是野指针，怎么产生的，如何避免？"></a>什么是野指针，怎么产生的，如何避免？</h2><p><strong>概念：</strong> 野指针就是指针指向的位置是不可知的（随机的、不正确的、没有明确限制的）</p>
+<p><strong>产生原因：</strong> 释放内存后指针不及时置空（野指针），依然指向了该内存，那么可能出现非法访问的错误。这些我们都要注意避免。</p>
+<p>避免办法：<br>        （1）初始化置NULL<br>        （2）申请内存后判空<br>        （3）指针释放后置NULL<br>        （4）使用智能指针</p>
+<h2 id="说说使用指针需要注意什么？"><a href="#说说使用指针需要注意什么？" class="headerlink" title="说说使用指针需要注意什么？"></a>说说使用指针需要注意什么？</h2><p>• 定义指针时，先初始化为NULL。<br>• 用malloc或new申请内存之后，应该立即检查指针值是否为NULL。防止使用指针值为NULL的内存。<br>• 不要忘记为数组和动态内存赋初值。防止将未被初始化的内存作为右值使用。<br>• 避免数字或指针的下标越界，特别要当心发生“多1”或者“少1”操作<br>• 动态内存的申请与释放必须配对，防止内存泄漏<br>• 用free或delete释放了内存之后，立即将指针设置为NULL，防止“野指针”</p>
+<h2 id="静态局部变量，全局变量，局部变量的特点"><a href="#静态局部变量，全局变量，局部变量的特点" class="headerlink" title="静态局部变量，全局变量，局部变量的特点"></a>静态局部变量，全局变量，局部变量的特点</h2><p><strong>首先从作用域考虑</strong>：C++里作用域可分为6种：全局，局部，类，语句，命名空间和文件作用域。</p>
+<p>全局变量：全局作用域，可以通过extern作用于其他非定义的源文件。<br>静态全局变量 ：全局作用域+文件作用域，所以无法在其他文件中使用。<br>局部变量：局部作用域，比如函数的参数，函数内的局部变量等等。<br>静态局部变量 ：局部作用域，只被初始化一次，直到程序结束。</p>
+<p><strong>从所在空间考虑</strong>：除了局部变量在栈上外，其他都在静态存储区。因为静态变量都在静态存储区，所以下次调用函数的时候还是能取到原来的值。</p>
+<p><strong>生命周期：</strong> 局部变量在栈上，出了作用域就回收内存；而全局变量、静态全局变量、静态局部变量都在静态存储区，直到程序结束才会回收内存。</p>
+<h2 id="运算符i-和-i的区别"><a href="#运算符i-和-i的区别" class="headerlink" title="运算符i++和++i的区别"></a>运算符i++和++i的区别</h2><p>先看到实现代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="type">int</span> i =<span class="number">2</span>;</span><br><span class="line">	<span class="type">int</span> j =<span class="number">2</span>;</span><br><span class="line">	j +=i++;<span class="comment">//先赋值后加</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;i= %d, j= %d\n&quot;</span>,i,j);<span class="comment">//i= 3, j= 4</span></span><br><span class="line">	i =<span class="number">2</span>;</span><br><span class="line">	j =<span class="number">2</span>;</span><br><span class="line">	j += ++i;<span class="comment">//先加后赋值</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;i= %d, j= %d&quot;</span>,i,j);<span class="comment">//i= 3, j= 5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>赋值顺序不同：++ i 是先加后赋值；i ++ 是先赋值后加；++i和i++都是分两步完成的。</p>
+<p>效率不同：后置++执行速度比前置的慢。</p>
+<p>i++ 不能作为左值，而++i 可以：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> i =<span class="number">0</span>;</span><br><span class="line"><span class="type">int</span>*p1 = &amp;(++i);<span class="comment">//正确</span></span><br><span class="line"><span class="type">int</span>*p2 = &amp;(i++);<span class="comment">//错误</span></span><br><span class="line">++i =<span class="number">1</span>;<span class="comment">//正确</span></span><br><span class="line">i++ =<span class="number">1</span>;<span class="comment">//错误</span></span><br></pre></td></tr></table></figure>
+<p><strong>两者都不是原子操作</strong></p>
+<h2 id="内联函数和宏函数的区别"><a href="#内联函数和宏函数的区别" class="headerlink" title="内联函数和宏函数的区别"></a>内联函数和宏函数的区别</h2><p>• <strong>宏定义不是函数</strong>，但是使用起来像函数。预处理器用复制宏代码的方式代替函数的调用，省去了函数压栈退栈过程，提高了效率；<strong>而内联函数本质上是一个函数</strong>，内联函数一般用于函数体的代码比较简单的函数，不能包含复杂的控制语句，while、switch，并且内联函数本身不能直接调用自身。<br>• 宏函数是在预编译的时候把所有的宏名用宏体来替换，简单的说就是字符串替换 ；而内联函数则是在编译的时候进行代码插入，编译器会在每处调用内联函数的地方直接把内联函数的内容展开，这样可以省去函数的调用的开销，提高效率<br>• <strong>宏定义是没有类型检查的</strong>，无论对还是错都是直接替换；而内联函数在编译的时候会进行类型的检查，内联函数满足函数的性质，比如有返回值、参数列表等</p>
+<h2 id="typedef-和define-有什么区别"><a href="#typedef-和define-有什么区别" class="headerlink" title="typedef 和define 有什么区别"></a>typedef 和define 有什么区别</h2><p>• ⽤法不同：typedef ⽤来定义⼀种数据类型的别名，增强程序的可读性。define 主要⽤来定义 常量，以及书写复杂使⽤频繁的宏。<br>• 执⾏时间不同：typedef 是编译过程的⼀部分，有类型检查的功能。define 是宏定义，是预编译的部分，其发⽣在编译之前，只是简单的进⾏字符串的替换，不进⾏类型的检查。<br>• 作⽤域不同：typedef 有作⽤域限定。define 不受作⽤域约束，只要是在define 声明后的引⽤ 都是正确的。<br>• 对指针的操作不同：typedef 和define 定义的指针时有很⼤的区别。<br><strong>「注意」</strong>：typedef 定义是语句，因为句尾要加上分号。⽽define 不是语句，千万不能在句尾加分号</p>
+<h1 id="C-内存"><a href="#C-内存" class="headerlink" title="C++ 内存"></a>C++ 内存</h1><h1 id="C-面向对象"><a href="#C-面向对象" class="headerlink" title="C++ 面向对象"></a>C++ 面向对象</h1><h1 id="C-STL"><a href="#C-STL" class="headerlink" title="C++ STL"></a>C++ STL</h1><h1 id="C-11-x2F-14-x2F-17-新特性"><a href="#C-11-x2F-14-x2F-17-新特性" class="headerlink" title="C++ 11&#x2F;14&#x2F;17 新特性"></a>C++ 11&#x2F;14&#x2F;17 新特性</h1>
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/08/09/hello-world/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Hexo 基础操作</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">李仁杰</a>
+        </div>
+        
+            <script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E5%9F%BA%E7%A1%80"><span class="nav-number">1.</span> <span class="nav-text">C++ 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%B3%E5%80%BC%E5%BC%95%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">右值引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">1.2.</span> <span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%8EC%E8%AF%AD%E8%A8%80%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.3.</span> <span class="nav-text">C++ 与C语言内存分配的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new%E5%92%8Cmalloc%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%90%84%E8%87%AA%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">new和malloc的区别，各自底层实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD-struct-%E5%92%8C-class-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.5.</span> <span class="nav-text">C++中 struct 和 class 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static%E5%85%B3%E9%94%AE%E5%AD%97%E7%9A%84%E7%94%A8%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">1.6.</span> <span class="nav-text">static关键字的用法有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%ADoverride%E5%92%8Coverload%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.7.</span> <span class="nav-text">C++中override和overload的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const%E5%92%8C-define%E7%9A%84%E5%8C%BA%E5%88%AB%E3%80%82"><span class="nav-number">1.8.</span> <span class="nav-text">const和#define的区别。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const-int-a-int-const-a-const-int-a-int-const-a-const-int-const-a%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E6%9C%89%E4%BB%80%E4%B9%88%E7%89%B9%E7%82%B9%E3%80%82"><span class="nav-number">1.9.</span> <span class="nav-text">const int *a, int const *a, const int a, int *const a, const int *const a分别是什么，有什么特点。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6"><span class="nav-number">1.10.</span> <span class="nav-text">异常处理机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D%E7%9A%84%E5%8C%BA%E5%88%AB%E3%80%82"><span class="nav-number">1.11.</span> <span class="nav-text">深拷贝和浅拷贝的区别。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E4%B8%8BC-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">1.12.</span> <span class="nav-text">简述下C++语言的特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E7%BB%A7%E6%89%BF"><span class="nav-number">1.12.1.</span> <span class="nav-text">1、继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%A4%9A%E6%80%81"><span class="nav-number">1.12.2.</span> <span class="nav-text">2、多态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%B0%81%E8%A3%85"><span class="nav-number">1.12.3.</span> <span class="nav-text">3、封装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%88%B0%E5%8F%AF%E6%89%A7%E8%A1%8C%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.13.</span> <span class="nav-text">C++从代码到可执行二进制文件的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E5%92%8C%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.14.</span> <span class="nav-text">数组和指针的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88%EF%BC%8C%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88%EF%BC%8C%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.15.</span> <span class="nav-text">什么是函数指针，如何定义函数指针，有什么使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E5%87%BD%E6%95%B0%E6%8C%87%E9%92%88%E5%92%8C%E6%8C%87%E9%92%88%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%E3%80%82"><span class="nav-number">1.16.</span> <span class="nav-text">C++中函数指针和指针函数的区别。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%87%8E%E6%8C%87%E9%92%88%EF%BC%8C%E6%80%8E%E4%B9%88%E4%BA%A7%E7%94%9F%E7%9A%84%EF%BC%8C%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%EF%BC%9F"><span class="nav-number">1.17.</span> <span class="nav-text">什么是野指针，怎么产生的，如何避免？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E8%AF%B4%E4%BD%BF%E7%94%A8%E6%8C%87%E9%92%88%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.18.</span> <span class="nav-text">说说使用指针需要注意什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%EF%BC%8C%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F%EF%BC%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-number">1.19.</span> <span class="nav-text">静态局部变量，全局变量，局部变量的特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6i-%E5%92%8C-i%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.20.</span> <span class="nav-text">运算符i++和++i的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E5%92%8C%E5%AE%8F%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.21.</span> <span class="nav-text">内联函数和宏函数的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#typedef-%E5%92%8Cdefine-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-number">1.22.</span> <span class="nav-text">typedef 和define 有什么区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E5%86%85%E5%AD%98"><span class="nav-number">2.</span> <span class="nav-text">C++ 内存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="nav-number">3.</span> <span class="nav-text">C++ 面向对象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-STL"><span class="nav-number">4.</span> <span class="nav-text">C++ STL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-11-x2F-14-x2F-17-%E6%96%B0%E7%89%B9%E6%80%A7"><span class="nav-number">5.</span> <span class="nav-text">C++ 11&#x2F;14&#x2F;17 新特性</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
