@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="李仁杰">
+    
+    <title>
+        
+            C++ 11/14/17 新特性 |
+        
+        仁杰的杂记
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/ava.jpg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"欢迎来到仁杰的杂记事本"},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":true},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="pjax-progress-icon">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                仁杰的杂记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">C++ 11/14/17 新特性</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/ava.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">李仁杰</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-08-11 16:28:32</span>
+        <span class="mobile">2022-08-11 16:28</span>
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/C/">C++</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E9%9D%A2%E7%BB%8F/">面经</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.8k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>14 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="C-11-的新特性有哪些"><a href="#C-11-的新特性有哪些" class="headerlink" title="C++11 的新特性有哪些"></a>C++11 的新特性有哪些</h2><p> C++新特性主要包括包含语法改进和标准库扩充两个方面，主要包括以下11点：</p>
+<ol>
+<li><p>统一的初始化方法<br> C++98&#x2F;03 可以使用初始化列表（initializer list）进行初始化：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> i_arr[<span class="number">3</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> &#125;;</span><br><span class="line"><span class="type">long</span> l_arr[] = &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span> &#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    <span class="type">int</span> y;</span><br><span class="line">&#125; a = &#123; <span class="number">1</span>, <span class="number">2</span> &#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>但是</strong> 这种初始化方式的<strong>适用性非常狭窄</strong>，只有上面提到的这两种数据类型可以使用初始化列表。在 C++11 中，初始化列表的适用性被大大增加了。它现在可以用于任何类型对象的初始化，实例如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Foo</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Foo</span>(<span class="type">int</span>) &#123;&#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="built_in">Foo</span>(<span class="type">const</span> Foo &amp;);</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Foo <span class="title">a1</span><span class="params">(<span class="number">123</span>)</span></span>;</span><br><span class="line">    Foo a2 = <span class="number">123</span>;  <span class="comment">//error: &#x27;Foo::Foo(const Foo &amp;)&#x27; is private</span></span><br><span class="line">    Foo a3 = &#123; <span class="number">123</span> &#125;;</span><br><span class="line">    Foo a4 &#123; <span class="number">123</span> &#125;;</span><br><span class="line">    <span class="type">int</span> a5 = &#123; <span class="number">3</span> &#125;;</span><br><span class="line">    <span class="type">int</span> a6 &#123; <span class="number">3</span> &#125;;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上例中，a3、a4 使用了新的初始化方式来初始化对象，效果如同 a1 的直接初始化。a5、a6 则是基本数据类型的列表初始化方式。可以看到，它们的形式都是统一的。这里需要注意的是，a3 虽然使用了等于号，但它仍然是列表初始化，因此，私有的拷贝构造并不会影响到它。a4 和 a6 的写法，是 C++98&#x2F;03 所不具备的。在 C++11 中，可以直接在变量名后面跟上初始化列表，来进行对象的初始化。</p>
+</li>
+<li><p>成员变量默认初始化<br>   构建一个类的对象不需要用构造函数初始化成员变量。</p>
+</li>
+<li><p>auto关键</p>
+<p> 用于定义变量，编译器可以自动判断的类型（前提：定义一个变量时对其进行初始化）。</p>
+</li>
+<li><p>decltype 求表达式的类型</p>
+<p> decltype 是 <a class="link"   target="_blank" rel="noopener" href="http://c.biancheng.net/cplus/" >C++<i class="fas fa-external-link-alt"></i></a>11 新增的一个关键字，它和 auto 的功能一样，都用来在编译时期进行自动类型推导。</p>
+<p>(1)为什么要有decltype</p>
+<p> 因为 auto 并不适用于所有的自动类型推导场景，在某些特殊情况下 auto 用起来非常不方便，甚至压根无法使用，所以 decltype 关键字也被引入到 C++11 中。</p>
+<p> auto 和 decltype 关键字都可以自动推导出变量的类型，但它们的用法是有区别的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> varname = value;</span><br><span class="line"><span class="keyword">decltype</span>(exp) varname = value;</span><br></pre></td></tr></table></figure>
+<p> 其中，varname 表示变量名，value 表示赋给变量的值，exp 表示一个表达式。</p>
+<p> auto 根据”&#x3D;”右边的初始值 value 推导出变量的类型，而 decltype 根据 exp 表达式推导出变量的类型，跟”&#x3D;”右边的 value 没有关系。</p>
+<p> 另外，auto 要求变量必须初始化，而 decltype 不要求。这很容易理解，auto 是根据变量的初始值来推导出变量类型的，如果不初始化，变量的类型也就无法推导了。</p>
+</li>
+<li><p>智能指针 shared_ptr</p>
+<p> 和 unique_ptr、weak_ptr 不同之处在于，多个 shared_ptr 智能指针可以共同使用同一块堆内存。并且，由于该类型智能指针在实现上采用的是引用计数机制，即便有一个 shared_ptr 指针放弃了堆内存的“使用权”（引用计数减 1），也不会影响其他指向同一堆内存的 shared_ptr 指针（只有引用计数为 0 时，堆内存才会被自动释放）。</p>
+</li>
+<li><p>空指针 nullptr（原来NULL）</p>
+<p> nullptr 是 nullptr_t 类型的右值常量，专用于初始化空类型指针。nullptr_t 是 C++11 新增加的数据类型，可称为“指针空值类型”。也就是说，nullpter 仅是该类型的一个实例对象（已经定义好，可以直接使用），如果需要我们完全定义出多个同 nullptr 完全一样的实例对象。值得一提的是，nullptr 可以被隐式转换成任意的指针类型。</p>
+<p> 显然，不同类型的指针变量都可以使用 nullptr 来初始化，编译器分别将 nullptr 隐式转换成 int_、char_ 以及 double* 指针类型。</p>
+</li>
+<li><p>基于范围的for循环</p>
+</li>
+<li><p>右值引用和move语义</p>
+<ol>
+<li><p>右值引用</p>
+<p> C++98&#x2F;03 标准中就有引用，使用 “&amp;” 表示。但此种引用方式有一个缺陷，即正常情况下只能操作 C++ 中的左值，无法对右值添加引用。举个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> num = <span class="number">10</span>;</span><br><span class="line"><span class="type">int</span> &amp;b = num; <span class="comment">//正确</span></span><br><span class="line"><span class="type">int</span> &amp;c = <span class="number">10</span>; <span class="comment">//错误</span></span><br></pre></td></tr></table></figure>
+
+<p> 如上所示，编译器允许我们为 num 左值建立一个引用，但不可以为 10 这个右值建立引用。因此，C++98&#x2F;03 标准中的引用又称为左值引用。</p>
+<p>注意，虽然 C++98&#x2F;03 标准不支持为右值建立非常量左值引用，但允许使用常量左值引用操作右值。也就是说，常量左值引用既可以操作左值，也可以操作右值，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> num = <span class="number">10</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> &amp;b = num;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> &amp;c = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>move语义</p>
+<p> move 本意为 “移动”，但该函数并不能移动任何数据，它的功能很简单，就是将某个左值强制转化为右值。基于 move() 函数特殊的功能，其常用于实现移动语义。</p>
+</li>
+</ol>
+</li>
+<li><p>无序容器（哈希表）<br>用法和功能同map一模一样，区别在于哈希表的效率更高。<br>(1) 无序容器具有以下 2 个特点：<br>a. 无序容器内部存储的键值对是无序的，各键值对的存储位置取决于该键值对中的键，<br>b. 和关联式容器相比，无序容器擅长通过指定键查找对应的值（平均时间复杂度为 O(1)）；但对于使用迭代器遍历容器中存储的元素，无序容器的执行效率则不如关联式容器。<br>(2) 和关联式容器一样，无序容器只是一类容器的统称，其包含有 4 个具体容器，分别为 unordered_map、unordered_multimap、unordered_set 以及 unordered_multiset。功能如下表：</p>
+<table>
+<thead>
+<tr>
+<th>无序容器</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>unordered_map</td>
+<td>存储键值对 &lt;key, value&gt; 类型的元素，其中各个键值对键的值不允许重复，且该容器中存储的键值对是无序的。</td>
+</tr>
+<tr>
+<td>unordered_multimap</td>
+<td>和 unordered_map 唯一的区别在于，该容器允许存储多个键相同的键值对。</td>
+</tr>
+<tr>
+<td>unordered_set</td>
+<td>不再以键值对的形式存储数据，而是直接存储数据元素本身（当然也可以理解为，该容器存储的全部都是键 key 和值 value 相等的键值对，正因为它们相等，因此只存储 value 即可）。另外，该容器存储的元素不能重复，且容器内部存储的元素也是无序的。</td>
+</tr>
+</tbody></table>
+<pre><code>| unordered\_multiset | 和 unordered\_set 唯一的区别在于，该容器允许存储值相同的元素。 |
+</code></pre>
+</li>
+<li><p>正则表达式<br>可以认为正则表达式实质上是一个字符串，该字符串描述了一种特定模式的字符串。</p>
+</li>
+<li><p>Lambda匿名函数<br>所谓匿名函数，简单地理解就是没有名称的函数，又常被称为 lambda 函数或者 lambda 表达式。</p>
+</li>
+</ol>
+<h2 id="C-中智能指针和指针的区别是什么？"><a href="#C-中智能指针和指针的区别是什么？" class="headerlink" title="C++ 中智能指针和指针的区别是什么？"></a>C++ 中智能指针和指针的区别是什么？</h2><p><strong>参考回答</strong></p>
+<ol>
+<li><p>智能指针</p>
+<p> 如果在程序中使用new从堆（自由存储区）分配内存，等到不需要时，应使用delete将其释放。C++引用了智能指针auto_ptr，以帮助自动完成这个过程。随后的编程体验（尤其是使用STL）表明，需要有更精致的机制。基于程序员的编程体验和BOOST库提供的解决方案，C++11摒弃了auto_ptr，并新增了三种智能指针：unique_ptr、shared_ptr和weak_ptr。所有新增的智能指针都能与STL容器和移动语义协同工作。</p>
+</li>
+<li><p>指针</p>
+<p> C 语言规定所有变量在使用前必须先定义，指定其类型，并按此分配内存单元。指针变量不同于整型变量和其他类型的变量，它是专门用来存放地址的，所以必须将它定义为“指针类型”。</p>
+</li>
+<li><p>智能指针和普通指针的区别</p>
+</li>
+</ol>
+<p> <strong>智能指针和普通指针的区别</strong>在于智能指针实际上是对普通指针加了一层封装机制，区别是它负责自动释放所指的对象，这样的一层封装机制的目的是为了使得智能指针可以方便的管理一个对象的生命期。</p>
+<h2 id="C-中的智能指针有哪些？分别解决的问题以及区别？"><a href="#C-中的智能指针有哪些？分别解决的问题以及区别？" class="headerlink" title="C++中的智能指针有哪些？分别解决的问题以及区别？"></a>C++中的智能指针有哪些？分别解决的问题以及区别？</h2><ol>
+<li><p>C++中的智能指针有4种，分别为：<strong>shared_ptr、unique_ptr、weak_ptr、auto_ptr</strong>，其中auto_ptr被C++11弃用。</p>
+</li>
+<li><p>使用智能指针的原因</p>
+<p> 申请的空间（即new出来的空间），在使用结束时，需要delete掉，否则会形成内存碎片。在程序运行期间，new出来的对象，在析构函数中delete掉，但是这种方法不能解决所有问题，因为有时候new发生在某个全局函数里面，该方法会给程序员造成精神负担。<strong>此时，智能指针就派上了用场。</strong>使用智能指针可以很大程度上避免这个问题，因为智能指针就是一个类，当超出了类的作用域时，类会自动调用析构函数，析构函数会自动释放资源。所以，智能指针的作用原理就是在函数结束时自动释放内存空间，避免了手动释放内存空间。</p>
+</li>
+<li><p>四种指针分别解决的问题以及各自特性如下：</p>
+<p>（1）auto_ptr（C++98的方案，C++11已经弃用）</p>
+<p> 采用所有权模式。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">auto_ptr&lt;string&gt; <span class="title">p1</span><span class="params">(<span class="keyword">new</span> string(<span class="string">&quot;I reigned loney as a cloud.&quot;</span>))</span></span>;</span><br><span class="line">auto_ptr&lt;string&gt; p2;</span><br><span class="line">p2=p1; <span class="comment">//auto_ptr不会报错</span></span><br></pre></td></tr></table></figure>
+
+<p> 此时不会报错，p2剥夺了p1的所有权，但是当程序运行时访问p1将会报错。所以auto_ptr的缺点是：存在潜在的内存崩溃问题。</p>
+<p>（2）unique_ptr（替换auto_ptr）</p>
+<p> unique_ptr实现独占式拥有或严格拥有概念，保证同一时间内只有一个智能指针可以指向该对象。它对于避免资源泄露，例如，以new创建对象后因为发生异常而忘记调用delete时的情形特别有用。</p>
+<p> 采用所有权模式，和上面例子一样。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">auto_ptr&lt;string&gt; <span class="title">p3</span><span class="params">(<span class="keyword">new</span> string(<span class="string">&quot;I reigned loney as a cloud.&quot;</span>))</span></span>;</span><br><span class="line">auto_ptr&lt;string&gt; p4;</span><br><span class="line">p4=p3; <span class="comment">//此时不会报错</span></span><br></pre></td></tr></table></figure>
+
+<p> 编译器认为P4&#x3D;P3非法，避免了p3不再指向有效数据的问题。因此，unique_ptr比auto_ptr更安全。 另外unique_ptr还有更聪明的地方：当程序试图将一个 unique_ptr 赋值给另一个时，如果源 unique_ptr 是个临时右值，编译器允许这么做；如果源 unique_ptr 将存在一段时间，编译器将禁止这么做，比如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">unique_ptr&lt;string&gt; <span class="title">pu1</span><span class="params">(<span class="keyword">new</span> string (<span class="string">&quot;hello world&quot;</span>))</span></span>;</span><br><span class="line">unique_ptr&lt;string&gt; pu2;</span><br><span class="line">pu2 = pu1;                                      <span class="comment">// #1 not allowed</span></span><br><span class="line">unique_ptr&lt;string&gt; pu3;</span><br><span class="line">pu3 = <span class="built_in">unique_ptr</span>&lt;string&gt;(<span class="keyword">new</span> <span class="built_in">string</span> (<span class="string">&quot;You&quot;</span>));   <span class="comment">// #2 allowed</span></span><br></pre></td></tr></table></figure>
+
+<p> 其中#1留下悬挂的unique_ptr(pu1)，这可能导致危害。而#2不会留下悬挂的unique_ptr，因为它调用 unique_ptr 的构造函数，该构造函数创建的临时对象在其所有权让给 pu3 后就会被销毁。这种随情况而已的行为表明，unique_ptr 优于允许两种赋值的auto_ptr 。</p>
+<p> <strong>注意：</strong>如果确实想执行类似与#1的操作，要安全的重用这种指针，可给它赋新值。C++有一个标准库函数std::move()，让你能够将一个unique_ptr赋给另一个。</p>
+<p>（3）shared_ptr（非常好使）</p>
+<p> shared_ptr实现共享式拥有概念。多个智能指针可以指向相同对象，该对象和其相关资源会在“最后一个引用被销毁”时候释放。从名字share就可以看出了资源可以被多个指针共享，它使用计数机制来表明资源被几个指针共享。可以通过成员函数use_count()来查看资源的所有者个数。除了可以通过new来构造，还可以通过传入auto_ptr, unique_ptr,weak_ptr来构造。当我们调用release()时，当前指针会释放资源所有权，计数减一。当计数等于0时，资源会被释放。</p>
+<p> shared_ptr 是为了解决 auto_ptr 在对象所有权上的局限性(auto_ptr 是独占的), 在使用引用计数的机制上提供了可以共享所有权的智能指针。</p>
+<p><strong>成员函数：</strong></p>
+<p><strong>use_count</strong> 返回引用计数的个数</p>
+<p><strong>unique</strong> 返回是否是独占所有权( use_count 为 1)</p>
+<p><strong>swap</strong> 交换两个 shared_ptr 对象(即交换所拥有的对象)</p>
+<p><strong>reset</strong> 放弃内部对象的所有权或拥有对象的变更, 会引起原有对象的引用计数的减少</p>
+<p><strong>get</strong> 返回内部对象(指针), 由于已经重载了()方法, 因此和直接使用对象是一样的.如 shared_ptr sp(new int(1)); sp 与 sp.get()是等价的</p>
+<p>（4）weak_ptr</p>
+<p> weak_ptr 是一种不控制对象生命周期的智能指针, 它指向一个 shared_ptr 管理的对象。进行该对象的内存管理的是那个强引用的 shared_ptr。weak_ptr只是提供了对管理对象的一个访问手段。weak_ptr 设计的目的是为配合 shared_ptr 而引入的一种智能指针来协助 shared_ptr 工作，它只可以从一个 shared_ptr 或另一个 weak_ptr 对象构造, 它的构造和析构不会引起引用记数的增加或减少。weak_ptr是用来解决shared_ptr相互引用时的死锁问题，如果说两个shared_ptr相互引用，那么这两个指针的引用计数永远不可能下降为0,资源永远不会释放。它是对对象的一种弱引用，不会增加对象的引用计数，和shared_ptr之间可以相互转化，shared_ptr可以直接赋值给它，它可以通过调用lock函数来获得shared_ptr。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">B</span>;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    shared_ptr&lt;B&gt; pb_;</span><br><span class="line">    ~<span class="built_in">A</span>()</span><br><span class="line">&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;A delete\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">B</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    shared_ptr&lt;A&gt; pa_;</span><br><span class="line">    ~<span class="built_in">B</span>()</span><br><span class="line">&#123;</span><br><span class="line">    cout&lt;&lt;<span class="string">&quot;B delete\n&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">fun</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">shared_ptr&lt;B&gt; <span class="title">pb</span><span class="params">(<span class="keyword">new</span> B())</span></span>;</span><br><span class="line">    <span class="function">shared_ptr&lt;A&gt; <span class="title">pa</span><span class="params">(<span class="keyword">new</span> A())</span></span>;</span><br><span class="line">    pb-&gt;pa_ = pa;</span><br><span class="line">    pa-&gt;pb_ = pb;</span><br><span class="line">    cout&lt;&lt;pb.<span class="built_in">use_count</span>()&lt;&lt;endl;</span><br><span class="line">    cout&lt;&lt;pa.<span class="built_in">use_count</span>()&lt;&lt;endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">fun</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> 可以看到fun函数中pa ，pb之间互相引用，两个资源的引用计数为2，当要跳出函数时，智能指针pa，pb析构时两个资源引用计数会减一，但是两者引用计数还是为1，导致跳出函数时资源没有被释放（A B的析构函数没有被调用），如果把其中一个改为weak_ptr就可以了，我们把类A里面的shared_ptr pb_; 改为weak_ptr pb; 运行结果如下，这样的话，资源B的引用开始就只有1，当pb析构时，B的计数变为0，B得到释放，B释放的同时也会使A的计数减一，同时pa析构时使A的计数减一，那么A的计数为0，A得到释放。</p>
+<p> <strong>注意</strong>：我们不能通过weak_ptr直接访问对象的方法，比如B对象中有一个方法print(),我们不能这样访问，pa-&gt;pb_-&gt;print(); 英文pb_是一个weak_ptr，应该先把它转化为shared_ptr，如：shared_ptr p &#x3D; pa-&gt;pb_.lock(); p-&gt;print();</p>
+</li>
+</ol>
+
+        </div>
+
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/C/">#C++</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/08/09/ROS/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">ROS</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">李仁杰</a>
+        </div>
+        
+            <script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-11-%E7%9A%84%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-number">1.</span> <span class="nav-text">C++11 的新特性有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%92%8C%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">C++ 中智能指针和指针的区别是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E7%9A%84%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E5%88%86%E5%88%AB%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">C++中的智能指针有哪些？分别解决的问题以及区别？</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
