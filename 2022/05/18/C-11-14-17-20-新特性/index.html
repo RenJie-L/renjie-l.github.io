@@ -9,7 +9,7 @@
     
     <title>
         
-            C++ 11/14/17 新特性 |
+            C++ 11/14/17/20 新特性 |
         
         仁杰的杂记
     </title>
@@ -142,7 +142,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">C++ 11/14/17 新特性</span>
+            <span class="title-hover-animation">C++ 11/14/17/20 新特性</span>
         </div>
 
         
@@ -159,8 +159,8 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-08-11 16:28:32</span>
-        <span class="mobile">2022-08-11 16:28</span>
+        <span class="pc">2022-05-18 16:28:32</span>
+        <span class="mobile">2022-05-18 16:28</span>
     </span>
     
     
@@ -183,12 +183,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>3.8k 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>4.4k 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>14 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>17 分钟</span>
         </span>
     
     
@@ -204,7 +204,7 @@
         
 
         <div class="article-content markdown-body">
-            <h2 id="C-11-的新特性有哪些"><a href="#C-11-的新特性有哪些" class="headerlink" title="C++11 的新特性有哪些"></a>C++11 的新特性有哪些</h2><p> C++新特性主要包括包含语法改进和标准库扩充两个方面，主要包括以下11点：</p>
+            <h1 id="C-11"><a href="#C-11" class="headerlink" title="C++11"></a>C++11</h1><h2 id="C-11-的新特性有哪些"><a href="#C-11-的新特性有哪些" class="headerlink" title="C++11 的新特性有哪些"></a>C++11 的新特性有哪些</h2><p> C++新特性主要包括包含语法改进和标准库扩充两个方面，主要包括以下11点：</p>
 <ol>
 <li><p>统一的初始化方法<br> C++98&#x2F;03 可以使用初始化列表（initializer list）进行初始化：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> i_arr[<span class="number">3</span>] = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span> &#125;;</span><br><span class="line"><span class="type">long</span> l_arr[] = &#123; <span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span> &#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> x;</span><br><span class="line">    <span class="type">int</span> y;</span><br><span class="line">&#125; a = &#123; <span class="number">1</span>, <span class="number">2</span> &#125;;</span><br></pre></td></tr></table></figure>
@@ -332,7 +332,41 @@
 <p> <strong>注意</strong>：我们不能通过weak_ptr直接访问对象的方法，比如B对象中有一个方法print(),我们不能这样访问，pa-&gt;pb_-&gt;print(); 英文pb_是一个weak_ptr，应该先把它转化为shared_ptr，如：shared_ptr p &#x3D; pa-&gt;pb_.lock(); p-&gt;print();</p>
 </li>
 </ol>
+<h1 id="C-14"><a href="#C-14" class="headerlink" title="C++14"></a>C++14</h1><p>相对于C++11，C++14的改动可谓非常mini了，主要的改动一句话便是：扩大自动类型推断的应用范围。</p>
+<h2 id="函数返回值类型推导"><a href="#函数返回值类型推导" class="headerlink" title="函数返回值类型推导"></a>函数返回值类型推导</h2><p>C++14对函数返回类型推导规则做了优化，先看一段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">func</span><span class="params">(<span class="type">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="built_in">func</span>(<span class="number">4</span>) &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>使用C++11编译：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">~/test$ g++ test.cc -std=c++<span class="number">11</span></span><br><span class="line">test.cc:<span class="number">5</span>:<span class="number">16</span>: error: ‘func’ function uses ‘<span class="keyword">auto</span>’ type specifier without trailing <span class="keyword">return</span> type</span><br><span class="line"> <span class="keyword">auto</span> <span class="built_in">func</span>(<span class="type">int</span> i) &#123;</span><br><span class="line">                ^</span><br><span class="line">test.cc:<span class="number">5</span>:<span class="number">16</span>: note: deduced <span class="keyword">return</span> type only available with -std=c++<span class="number">14</span> <span class="keyword">or</span> -std=gnu++<span class="number">14</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的代码使用C++11是不能通过编译的，通过编译器输出的信息也可以看见这个特性需要到C++14才被支持。</p>
+<p>返回值类型推导也可以用在模板中：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">auto</span> <span class="title">func</span><span class="params">(T t)</span> </span>&#123; <span class="keyword">return</span> t; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="built_in">func</span>(<span class="number">4</span>) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="built_in">func</span>(<span class="number">3.4</span>) &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：</p>
+<ul>
+<li>函数内如果有多个return语句，它们必须返回相同的类型，否则编译失败。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">func</span><span class="params">(<span class="type">bool</span> flag)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (flag) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> <span class="number">2.3</span>; <span class="comment">// error</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// inconsistent deduction for auto return type: ‘int’ and then ‘double’</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果return语句返回初始化列表，返回值类型推导也会失败</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;; <span class="comment">// error returning initializer list</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="lambda参数auto"><a href="#lambda参数auto" class="headerlink" title="lambda参数auto"></a>lambda参数auto</h2><p>在C++11中，lambda表达式参数需要使用具体的类型声明：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> f = [] (<span class="type">int</span> a) &#123; <span class="keyword">return</span> a; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在C++14中，对此进行优化，lambda表达式参数可以直接是auto：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> f = [] (<span class="keyword">auto</span> a) &#123; <span class="keyword">return</span> a; &#125;;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; f(<span class="number">1</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"><span class="built_in">cout</span> &lt;&lt; f(<span class="number">2.3f</span>) &lt;&lt; <span class="built_in">endl</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="std-shared-timed-mutex与std-shared-lock"><a href="#std-shared-timed-mutex与std-shared-lock" class="headerlink" title="std::shared_timed_mutex与std::shared_lock"></a>std::shared_timed_mutex与std::shared_lock</h2><p>C++14通过std::shared_timed_mutex和std::shared_lock来实现读写锁，保证多个线程可以同时读，但是写线程必须独立运行，写操作不可以同时和读操作一起进行。</p>
+<h2 id="std-quoted"><a href="#std-quoted" class="headerlink" title="std::quoted"></a>std::quoted</h2><p>C++14引入std::quoted用于给字符串添加双引号</p>
+<h2 id="std-exchange"><a href="#std-exchange" class="headerlink" title="std::exchange"></a>std::exchange</h2><h1 id="C-17"><a href="#C-17" class="headerlink" title="C++17"></a>C++17</h1><h2 id="构造函数模板推导"><a href="#构造函数模板推导" class="headerlink" title="构造函数模板推导"></a>构造函数模板推导</h2><p>在C++17前构造一个模板类对象需要指明类型：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">pair&lt;<span class="type">int</span>, <span class="type">double</span>&gt; <span class="title">p</span><span class="params">(<span class="number">1</span>, <span class="number">2.2</span>)</span></span>; <span class="comment">// before c++17</span></span><br></pre></td></tr></table></figure>
+
+<p>C++17就不需要特殊指定，直接可以推导出类型，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">pair <span class="title">p</span><span class="params">(<span class="number">1</span>, <span class="number">2.2</span>)</span></span>; <span class="comment">// c++17 自动推导</span></span><br><span class="line">vector v = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;; <span class="comment">// c++17</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="C-20"><a href="#C-20" class="headerlink" title="C++20"></a>C++20</h1>
         </div>
 
         
@@ -357,13 +391,13 @@
                     <div class="article-prev">
                         <a class="prev"
                            rel="prev"
-                           href="/2022/08/11/%E6%9E%84%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84GYM%E8%AE%AD%E7%BB%83%E7%8E%AF%E5%A2%83/"
+                           href="/2022/08/09/Liunx/"
                         >
                             <span class="left arrow-icon flex-center">
                               <i class="fas fa-chevron-left"></i>
                             </span>
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">构建自己的GYM训练环境</span>
+                                <span class="post-nav-title-item">Liunx</span>
                                 <span class="post-nav-item">上一篇</span>
                             </span>
                         </a>
@@ -373,10 +407,10 @@
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/08/09/ROS/"
+                           href="/2022/03/09/C++/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">ROS</span>
+                                <span class="post-nav-title-item">C++</span>
                                 <span class="post-nav-item">下一篇</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -498,7 +532,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-11-%E7%9A%84%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-number">1.</span> <span class="nav-text">C++11 的新特性有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%92%8C%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">C++ 中智能指针和指针的区别是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E7%9A%84%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E5%88%86%E5%88%AB%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">C++中的智能指针有哪些？分别解决的问题以及区别？</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-11"><span class="nav-number">1.</span> <span class="nav-text">C++11</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-11-%E7%9A%84%E6%96%B0%E7%89%B9%E6%80%A7%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-number">1.1.</span> <span class="nav-text">C++11 的新特性有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E5%92%8C%E6%8C%87%E9%92%88%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">C++ 中智能指针和指针的区别是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E7%9A%84%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E5%88%86%E5%88%AB%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%A5%E5%8F%8A%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">C++中的智能指针有哪些？分别解决的问题以及区别？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-14"><span class="nav-number">2.</span> <span class="nav-text">C++14</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%80%BC%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC"><span class="nav-number">2.1.</span> <span class="nav-text">函数返回值类型推导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lambda%E5%8F%82%E6%95%B0auto"><span class="nav-number">2.2.</span> <span class="nav-text">lambda参数auto</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-shared-timed-mutex%E4%B8%8Estd-shared-lock"><span class="nav-number">2.3.</span> <span class="nav-text">std::shared_timed_mutex与std::shared_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-quoted"><span class="nav-number">2.4.</span> <span class="nav-text">std::quoted</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-exchange"><span class="nav-number">2.5.</span> <span class="nav-text">std::exchange</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-17"><span class="nav-number">3.</span> <span class="nav-text">C++17</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF%E6%8E%A8%E5%AF%BC"><span class="nav-number">3.1.</span> <span class="nav-text">构造函数模板推导</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-20"><span class="nav-number">4.</span> <span class="nav-text">C++20</span></a></li></ol>
     </div>
 </div>
         </aside>
