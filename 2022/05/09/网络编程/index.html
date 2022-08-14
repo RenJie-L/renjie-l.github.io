@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="李仁杰">
+    
+    <title>
+        
+            网络编程 |
+        
+        仁杰的杂记
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/ava.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"renjie-l.github.io","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/ava.jpg","favicon":"/images/ava.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/kOJZ5ofe.jpg","description":null},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":true},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="pjax-progress-icon">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                仁杰的杂记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                所有
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于我
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">所有</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于我</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">网络编程</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/ava.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">李仁杰</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-05-09 19:37:23</span>
+        <span class="mobile">2022-05-09 19:37</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/C/">C++</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E9%9D%A2%E7%BB%8F/">面经</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>7.2k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>25 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="静态路由和动态路由"><a href="#静态路由和动态路由" class="headerlink" title="静态路由和动态路由"></a>静态路由和动态路由</h2><ol>
+<li><p>静态路由是由系统管理员设计与构建的路由表规定的路由。适用于网关数量有限的场合，且网络拓朴结构不经常变化的网络。其缺点是不能动态地适用网络状况的变化，当网络状况变化后必须由网络管理员修改路由表。</p>
+</li>
+<li><p>动态路由是由路由选择协议而动态构建的，路由协议之间通过交换各自所拥有的路由信息实时更新路由表的内容。动态路由可以自动学习网络的拓朴结构，并更新路由表。其缺点是路由广播更新信息将占据大量的网络带宽。</p>
+</li>
+</ol>
+<h2 id="路由协议"><a href="#路由协议" class="headerlink" title="路由协议"></a>路由协议</h2><ol>
+<li><p>路由可分为静态&amp;动态路由。静态路由由管理员手动维护；动态路由由路由协议自动维护。</p>
+<p>路由选择算法的必要步骤：</p>
+<p>1）向其它路由器传递路由信息；</p>
+<p>2）接收其它路由器的路由信息；</p>
+<p>3）根据收到的路由信息计算出到每个目的网络的最优路径，并由此生成路由选择表；</p>
+<p>4）根据网络拓扑的变化及时的做出反应，调整路由生成新的路由选择表，同时把拓扑变化以路由 信息的形式向其它路由器宣告。</p>
+</li>
+</ol>
+<p>两种主要算法：距离向量法（Distance Vector Routing）和链路状态算法（Link-State Routing）。</p>
+<h2 id="域名解析过程，本机如何干预域名解析"><a href="#域名解析过程，本机如何干预域名解析" class="headerlink" title="域名解析过程，本机如何干预域名解析"></a>域名解析过程，本机如何干预域名解析</h2><ol>
+<li><p>（1）在浏览器中输入<code>https://renjie-l.github.io/</code>域名，操作系统会先检查自己本地的hosts文件是否有这个网址映射关系，如果有，就先调用这个IP地址映射，完成域名解析。</p>
+<p>（2）如果hosts里没有这个域名的映射，则查找本地DNS解析器缓存，是否有这个网址映射关系，如果有，直接返回，完成域名解析。</p>
+<p>（3）如果hosts与本地DNS解析器缓存都没有相应的网址映射关系，首先会找TCP&#x2F;IP参数中设置的首选DNS服务器，在此我们叫它本地DNS服务器，此服务器收到查询时，如果要查询的域名，包含在本地配置区域资源中，则返回解析结果给客户机，完成域名解析，此解析具有权威性。</p>
+<p>（4）如果要查询的域名，不由本地DNS服务器区域解析，但该服务器已缓存了此网址映射关系，则调用这个IP地址映射，完成域名解析，此解析不具有权威性。</p>
+<p>（5）如果本地DNS服务器本地区域文件与缓存解析都失效，则根据本地DNS服务器的设置（是否设置转发器）进行查询，如果未用转发模式，本地DNS就把请求发至13台根DNS，根DNS服务器收到请求后会判断这个域名(.com)是谁来授权管理，并会返回一个负责该顶级域名服务器的一个IP。本地DNS服务器收到IP信息后，将会联系负责.com域的这台服务器。这台负责.com域的服务器收到请求后，如果自己无法解析，它就会找一个管理.com域的下一级DNS服务器地址给本地DNS服务器。当本地DNS服务器收到这个地址后，就会找域服务器，重复上面的动作，进行查询，直至找到<code>https://renjie-l.github.io/</code>主机。</p>
+<p>（6）如果用的是转发模式，此DNS服务器就会把请求转发至上一级DNS服务器，由上一级服务器进行解析，上一级服务器如果不能解析，或找根DNS或把转请求转至上上级，以此循环。不管是本地DNS服务器用是是转发，还是根提示，最后都是把结果返回给本地DNS服务器，由此DNS服务器再返回给客户机。</p>
+<p>从客户端到本地DNS服务器是属于递归查询，而DNS服务器之间就是的交互查询就是迭代查询。</p>
+</li>
+<li><p>通过修改本机host来干预域名解析，例如：<br>在&#x2F;etc&#x2F;hosts文件中添加一句话</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.188.1 www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<p>保存文件后再ping一下<a class="link"   target="_blank" rel="noopener" href="http://www.baidu.com就会连接到192.168.188.1了/" >www.baidu.com就会连接到192.168.188.1了<i class="fas fa-external-link-alt"></i></a></p>
+<p>每一行为一条记录，分成两部分，第一部分是IP，第二部分是域名。</p>
+<ul>
+<li>一个IP后面可以跟多个域名，可以是几十个甚至上百个</li>
+<li>每一行只能有一个IP，也就是说一个域名不能对应多个IP</li>
+<li>如果有多行中出现相同的域名（对应的ip不一样），会按最前面的记录来解析</li>
+</ul>
+</li>
+</ol>
+<h2 id="DNS劫持"><a href="#DNS劫持" class="headerlink" title="DNS劫持"></a>DNS劫持</h2><p>  DNS劫持就是通过劫持了DNS服务器，通过某些手段取得某域名的解析记录控制权，进而修改此域名的解析结果，导致对该域名的访问由原IP地址转入到修改后的指定IP，其结果就是对特定的网址不能访问或访问的是假网址，从而实现窃取资料或者破坏原有正常服务的目的。DNS劫持通过篡改DNS服务器上的数据返回给用户一个错误的查询结果来实现的。</p>
+<p>DNS劫持症状：在某些地区的用户在成功连接宽带后，首次打开任何页面都指向ISP提供的“电信互联星空”、“网通黄页广告”等内容页面。还有就是曾经出现过用户访问Google域名的时候出现了百度的网站。这些都属于DNS劫持。</p>
+<h2 id="MAC地址和IP地址"><a href="#MAC地址和IP地址" class="headerlink" title="MAC地址和IP地址"></a>MAC地址和IP地址</h2><ol>
+<li><p>IP地址是IP协议提供的一种统一的地址格式，它为互联网上的每一个网络和每一台主机分配一个逻辑地址，以此来屏蔽物理地址的差异。而MAC地址，指的是物理地址，用来定义网络设备的位置。</p>
+</li>
+<li><p>IP地址的分配是<strong>根据网络的拓扑结构</strong>，而不是根据谁制造了网络设置。若将高效的路由选择方案建立在设备制造商的基础上而不是网络所处的拓朴位置基础上，这种方案是不可行的。</p>
+</li>
+<li><p>当存在一个附加层的地址寻址时，设备更易于移动和维修。例如，如果一个以太网卡坏了，可以被更换，而无须取得一个新的IP地址。如果一个IP主机从一个网络移到另一个网络，可以给它一个新的IP地址，而无须换一个新的网卡。</p>
+</li>
+<li><p>无论是局域网，还是广域网中的计算机之间的通信，最终都表现为将数据包从某种形式的链路上的初始节点出发，从一个节点传递到另一个节点，最终传送到目的节点。数据包在这些节点之间的移动都是由<strong>ARP</strong>（Address Resolution Protocol：地址解析协议）负责<strong>将IP地址映射到MAC地址上来完成的</strong>。</p>
+</li>
+</ol>
+<h2 id="TCP-三次握手和四次挥手的过程"><a href="#TCP-三次握手和四次挥手的过程" class="headerlink" title="TCP 三次握手和四次挥手的过程"></a>TCP 三次握手和四次挥手的过程</h2><h3 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h3><p><img src="https://git.poker/RenJie-L/PicHub/blob/master/20220814/image.7k2iy086q400.png?raw=true" alt="image"></p>
+<p>1）第一次握手：建立连接时，客户端向服务器发送SYN包（seq&#x3D;x），请求建立连接，等待确认</p>
+<p>2）第二次握手：服务端收到客户端的SYN包，回一个ACK包（ACK&#x3D;x+1）确认收到，同时发送一个SYN包（seq&#x3D;y）给客户端</p>
+<p>3）第三次握手：客户端收到SYN+ACK包，再回一个ACK包（ACK&#x3D;y+1）告诉服务端已经收到</p>
+<p>4）三次握手完成，成功建立连接，开始传输数据</p>
+<h3 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h3><p><img src="https://git.poker/RenJie-L/PicHub/blob/master/20220814/image.6s40z8i8x3k0.png?raw=true" alt="image"><br>1）客户端发送FIN包（FIN&#x3D;1）给服务端，告诉它自己的数据已经发送完毕，请求终止连接，此时客户端不发送数据，但还能接收数据</p>
+<p>2）服务端收到FIN包，回一个ACK包给客户端告诉它已经收到包了，此时还没有断开socket连接，而是等待剩下的数据传输完毕</p>
+<p>3）服务端等待数据传输完毕后，向客户端发送FIN包，表明可以断开连接</p>
+<p>4）客户端收到后，回一个ACK包表明确认收到，等待一段时间，确保服务端不再有数据发过来，然后彻底断开连接</p>
+<h2 id="TCP-2次握手行不行？为什么要3次"><a href="#TCP-2次握手行不行？为什么要3次" class="headerlink" title="TCP 2次握手行不行？为什么要3次"></a>TCP 2次握手行不行？为什么要3次</h2><ol>
+<li><p>为了实现可靠数据传输， TCP 协议的通信双方， 都必须维护一个序列号， 以标识发送出去的数据包中， 哪些是已经被对方收到的。 三次握手的过程即是通信双方相互告知序列号起始值， 并确认对方已经收到了序列号起始值的必经步骤</p>
+</li>
+<li><p>如果只是两次握手， 至多只有连接发起方的起始序列号能被确认， 另一方选择的序列号则得不到确认</p>
+</li>
+</ol>
+<h2 id="如果三次握手时候每次握手信息对方没收到会怎么样"><a href="#如果三次握手时候每次握手信息对方没收到会怎么样" class="headerlink" title="如果三次握手时候每次握手信息对方没收到会怎么样"></a>如果三次握手时候每次握手信息对方没收到会怎么样</h2><ol>
+<li><p>如果第一次握手消息丢失，那么请求方不会得到ack消息，超时后进行重传</p>
+</li>
+<li><p>如果第二次握手消息丢失，那么请求方不会得到ack消息，超时后进行重传</p>
+</li>
+<li><p>如果第三次握手消息丢失，那么Server 端该TCP连接的状态为SYN_RECV,并且会根据 TCP的超时重传机制，会等待3秒、6秒、12秒后重新发送SYN+ACK包，以便Client重新发送ACK包。而Server重发SYN+ACK包的次数，可以设置&#x2F;proc&#x2F;sys&#x2F;net&#x2F;ipv4&#x2F;tcp_synack_retries修改，默认值为5.如果重发指定次数之后，仍然未收到 client 的ACK应答，那么一段时间后，Server自动关闭这个连接。</p>
+<p>client 一般是通过 connect() 函数来连接服务器的，而connect()是在 TCP的三次握手的第二次握手完成后就成功返回值。也就是说 client 在接收到 SYN+ACK包，它的TCP连接状态就为 established （已连接），表示该连接已经建立。那么如果 第三次握手中的ACK包丢失的情况下，Client 向 server端发送数据，Server端将以 RST包响应，方能感知到Server的错误。</p>
+</li>
+</ol>
+<h2 id="TCP-和-UDP-的区别，它们的头部结构是什么样的"><a href="#TCP-和-UDP-的区别，它们的头部结构是什么样的" class="headerlink" title="TCP 和 UDP 的区别，它们的头部结构是什么样的"></a>TCP 和 UDP 的区别，它们的头部结构是什么样的</h2><ol>
+<li><p>TCP协议是有连接的，有连接的意思是开始传输实际数据之前TCP的客户端和服务器端必须通过三次握手建立连接，会话结束之后也要结束连接。而UDP是无连接的</p>
+<p>TCP协议保证数据按序发送，按序到达，提供超时重传来保证可靠性，但是UDP不保证按序到达，甚至不保证到达，只是努力交付，即便是按序发送的序列，也不保证按序送到。</p>
+<p>TCP协议所需资源多，TCP首部需20个字节（不算可选项），UDP首部字段只需8个字节。</p>
+<p>TCP有流量控制和拥塞控制，UDP没有，网络拥堵不会影响发送端的发送速率</p>
+<p>TCP是一对一的连接，而UDP则可以支持一对一，多对多，一对多的通信。</p>
+<p>TCP面向的是字节流的服务，UDP面向的是报文的服务。</p>
+</li>
+</ol>
+<p>TCP头部结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*TCP头定义，共20个字节*/</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_TCP_HEADER</span> &#123;</span><br><span class="line">    <span class="type">short</span> m_sSourPort;        　　　　　　<span class="comment">// 源端口号16bit</span></span><br><span class="line">    <span class="type">short</span> m_sDestPort;       　　　　　　 <span class="comment">// 目的端口号16bit</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> m_uiSequNum;       　　<span class="comment">// 序列号32bit</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> m_uiAcknowledgeNum;  <span class="comment">// 确认号32bit</span></span><br><span class="line">    <span class="type">short</span> m_sHeaderLenAndFlag;      　　<span class="comment">// 前4位：TCP头长度；中6位：保留；后6位：标志位</span></span><br><span class="line">    <span class="type">short</span> m_sWindowSize;       　　　　　<span class="comment">// 窗口大小16bit</span></span><br><span class="line">    <span class="type">short</span> m_sCheckSum;        　　　　　 <span class="comment">// 检验和16bit</span></span><br><span class="line">    <span class="type">short</span> m_surgentPointer;      　　　　 <span class="comment">// 紧急数据偏移量16bit</span></span><br><span class="line">&#125;__attribute__((packed))TCP_HEADER, *PTCP_HEADER;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>UDP头部结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*UDP头定义，共8个字节*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">_UDP_HEADER</span> &#123;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> m_usSourPort;    　　　<span class="comment">// 源端口号16bit</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> m_usDestPort;    　　　<span class="comment">// 目的端口号16bit</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> m_usLength;    　　　　<span class="comment">// 数据包长度16bit</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">short</span> m_usCheckSum;    　　<span class="comment">// 校验和16bit</span></span><br><span class="line">&#125;__attribute__((packed))UDP_HEADER, *PUDP_HEADER;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="TCP-慢启动"><a href="#TCP-慢启动" class="headerlink" title="TCP 慢启动"></a>TCP 慢启动</h2><p><strong>慢启动</strong>（Slow Start），是传输控制协议（TCP）使用的一种阻塞控制机制。慢启动也叫做指数增长期。慢启动是指每次TCP接收窗口收到确认时都会增长。增加的大小就是已确认段的数目。这种情况一直保持到要么没有收到一些段，要么窗口大小到达预先定义的阈值。如果发生丢失事件，TCP就认为这是网络阻塞，就会采取措施减轻网络拥挤。一旦发生丢失事件或者到达阈值，TCP就会进入线性增长阶段。这时，每经过一个RTT窗口增长一个段。</p>
+<h2 id="TCP-如何保证有序"><a href="#TCP-如何保证有序" class="headerlink" title="TCP 如何保证有序"></a>TCP 如何保证有序</h2><ul>
+<li><p>主机每次发送数据时，TCP就给每个数据包分配一个序列号并且在一个特定的时间内等待接收主机对分配的这个序列号进行确认，如果发送主机在一个特定时间内没有收到接收主机的确认，则发送主机会重传此数据包。接收主机利用序列号对接收的数据进行确认，以便检测对方发送的数据是否有丢失或者乱序等，接收主机一旦收到已经顺序化的数据，它就将这些数据按正确的顺序重组成数据流并传递到高层进行处理。</p>
+</li>
+<li><p>具体步骤如下：</p>
+<p>（1）为了保证数据包的可靠传递，发送方必须把已发送的数据包保留在缓冲区；</p>
+<p>（2）并为每个已发送的数据包启动一个超时定时器；</p>
+<p>（3）如在定时器超时之前收到了对方发来的应答信息（可能是对本包的应答，也可以是对本包后续包的应答），则释放该数据包占用的缓冲区;</p>
+<p>（4）否则，重传该数据包，直到收到应答或重传次数超过规定的最大次数为止。</p>
+<p>（5）接收方收到数据包后，先进行CRC校验，如果正确则把数据交给上层协议，然后给发送方发送一个累计应答包，表明该数据已收到，如果接收方正好也有数据要发给发送方，应答包也可方在数据包中捎带过去。</p>
+</li>
+</ul>
+<h2 id="TCP-可靠性保证"><a href="#TCP-可靠性保证" class="headerlink" title="TCP 可靠性保证"></a>TCP 可靠性保证</h2><p>TCP主要提供了<strong>检验和、序列号&#x2F;确认应答、超时重传、最大消息长度、滑动窗口控制</strong>等方法实现了可靠性传输。</p>
+<h3 id="检验和"><a href="#检验和" class="headerlink" title="检验和"></a><strong>检验和</strong></h3><ul>
+<li>通过检验和的方式，接收端可以检测出来数据是否有差错和异常，假如有差错就会直接丢弃TCP段，重新发送。TCP在计算检验和时，会在TCP首部加上一个12字节的伪首部。检验和总共计算3部分：TCP首部、TCP数据、TCP伪首部<br><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932425713/8B3A0FE3661628DCF27F95BC7BF77726" alt="图片说明" title="图片标题"></li>
+</ul>
+<h3 id="序列号-x2F-确认应答"><a href="#序列号-x2F-确认应答" class="headerlink" title="序列号&#x2F;确认应答"></a><strong>序列号&#x2F;确认应答</strong></h3><ul>
+<li><p>这个机制类似于问答的形式。比如在课堂上老师会问你“明白了吗？”，假如你没有隔一段时间没有回应或者你说不明白，那么老师就会重新讲一遍。其实计算机的确认应答机制也是一样的，发送端发送信息给接收端，接收端会回应一个包，这个包就是应答包。</p>
+</li>
+<li><p>上述过程中，只要发送端有一个包传输，接收端没有回应确认包（ACK包），都会重发。或者接收端的应答包，发送端没有收到也会重发数据。这就可以保证数据的完整性。<br><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932453593/D09DA1AB1CD3F916F8E8345CE7D201F6" alt="图片说明" title="图片标题"></p>
+</li>
+</ul>
+<h4 id="超时重传"><a href="#超时重传" class="headerlink" title="超时重传"></a><strong>超时重传</strong></h4><ul>
+<li><p>超时重传是指发送出去的数据包到接收到确认包之间的时间，如果超过了这个时间会被认为是丢包了，需要重传。那么我们该如何确认这个时间值呢？</p>
+</li>
+<li><p>我们知道，一来一回的时间总是差不多的，都会有一个类似于平均值的概念。比如发送一个包到接收端收到这个包一共是0.5s，然后接收端回发一个确认包给发送端也要0.5s，这样的两个时间就是RTT（往返时间）。然后可能由于网络原因的问题，时间会有偏差，称为抖动（方差）。</p>
+</li>
+<li><p>从上面的介绍来看，超时重传的时间大概是比往返时间+抖动值还要稍大的时间。<br><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932486856/A4541736F158A2B080AF4649517CF437" alt="图片说明" title="图片标题"></p>
+</li>
+<li><p>但是在重发的过程中，假如一个包经过多次的重发也没有收到对端的确认包，那么就会认为接收端异常，强制关闭连接。并且通知应用通信异常强行终止。</p>
+</li>
+</ul>
+<h3 id="最大消息长度"><a href="#最大消息长度" class="headerlink" title="最大消息长度"></a><strong>最大消息长度</strong></h3><ul>
+<li>在建立TCP连接的时候，双方约定一个最大的长度（MSS）作为发送的单位，重传的时候也是以这个单位来进行重传。理想的情况下是该长度的数据刚好不被网络层分块。<br><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932502076/7FC42AB847F62CFF688B47D2767983D2" alt="图片说明" title="图片标题"></li>
+</ul>
+<h3 id="滑动窗口控制"><a href="#滑动窗口控制" class="headerlink" title="滑动窗口控制"></a><strong>滑动窗口控制</strong></h3><ul>
+<li><p>我们上面提到的超时重传的机制存在效率低下的问题，发送一个包到发送下一个包要经过一段时间才可以。所以我们就想着能不能不用等待确认包就发送下一个数据包呢？这就提出了一个滑动窗口的概念。<br><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932523218/C2C50AD3D705E50C85E7E5A389FA1C5A" alt="图片说明" title="图片标题"></p>
+</li>
+<li><p>窗口的大小就是在无需等待确认包的情况下，发送端还能发送的最大数据量。这个机制的实现就是使用了大量的缓冲区，通过对多个段进行确认应答的功能。通过下一次的确认包可以判断接收端是否已经接收到了数据，如果已经接收了就从缓冲区里面删除数据。</p>
+</li>
+<li><p>在窗口之外的数据就是还未发送的和对端已经收到的数据。那么发送端是怎么样判断接收端有没有接收到数据呢？或者怎么知道需要重发的数据有哪些呢？通过下面这个图就知道了。<br><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932544426/82F70852E06C3C8DB2B4CE34BFF20DAF" alt="图片说明" title="图片标题"></p>
+</li>
+<li><p>如上图，接收端在没有收到自己所期望的序列号数据之前，会对之前的数据进行重复确认。发送端在收到某个应答包之后，又连续3次收到同样的应答包，则数据已经丢失了，需要重发。</p>
+</li>
+</ul>
+<h3 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a><strong>拥塞控制</strong></h3><ul>
+<li><p>窗口控制解决了 两台主机之间因传送速率而可能引起的丢包问题，在一方面保证了TCP数据传送的可靠性。然而如果网络非常拥堵，此时再发送数据就会加重网络负担，那么发送的数据段很可能超过了最大生存时间也没有到达接收方，就会产生丢包问题。为此TCP引入慢启动机制，先发出少量数据，就像探路一样，先摸清当前的网络拥堵状态后，再决定按照多大的速度传送数据。</p>
+</li>
+<li><p>发送开始时定义拥塞窗口大小为1；每次收到一个ACK应答，拥塞窗口加1；而在每次发送数据时，发送窗口取拥塞窗口与接送段接收窗口最小者。</p>
+</li>
+<li><p>慢启动：在启动初期以指数增长方式增长；设置一个慢启动的阈值，当以指数增长达到阈值时就停止指数增长，按照线性增长方式增加至拥塞窗口；线性增长达到网络拥塞时立即把拥塞窗口置回1，进行新一轮的“慢启动”，同时新一轮的阈值变为原来的一半。</p>
+</li>
+</ul>
+<p><img src="https://uploadfiles.nowcoder.com/images/20210305/102124_1614932558168/E48D9C30838AC332D4E278C96DFEDDD0" alt="图片说明" title="图片标题"></p>
+<h2 id="TCP-的-TIME-WAIT，为什么需要有这个状态"><a href="#TCP-的-TIME-WAIT，为什么需要有这个状态" class="headerlink" title="TCP 的 TIME_WAIT，为什么需要有这个状态"></a>TCP 的 TIME_WAIT，为什么需要有这个状态</h2><ol>
+<li><p>TIME_WAIT状态也成为2MSL等待状态。每个具体TCP实现必须选择一个报文段最大生存时间MSL（Maximum Segment Lifetime），它是任何报文段被丢弃前在网络内的最长时间。这个时间是有限的，因为TCP报文段以IP数据报在网络内传输，而IP数据报则有限制其生存时间的TTL字段。</p>
+<p>对一个具体实现所给定的MSL值，处理的原则是：当TCP执行一个主动关闭，并发回最后一个ACK，该连接必须在TIME_WAIT状态停留的时间为2倍的MSL。这样可让TCP再次发送最后的ACK以防这个ACK丢失（另一端超时并重发最后的FIN）。</p>
+<p>这种2MSL等待的另一个结果是这个TCP连接在2MSL等待期间，定义这个连接的插口（客户的IP地址和端口号，服务器的IP地址和端口号）不能再被使用。这个连接只能在2MSL结束后才能再被使用。</p>
+</li>
+<li><p>理论上，四个报文都发送完毕，就可以直接进入CLOSE状态了，但是可能网络是不可靠的，有可能最后一个ACK丢失。所以TIME_WAIT状态就是用来重发可能丢失的ACK报文。</p>
+</li>
+</ol>
+<h2 id="什么是-MSL，为什么客户端连接要等待2MSL的时间才能完全关闭"><a href="#什么是-MSL，为什么客户端连接要等待2MSL的时间才能完全关闭" class="headerlink" title="什么是 MSL，为什么客户端连接要等待2MSL的时间才能完全关闭"></a>什么是 MSL，为什么客户端连接要等待2MSL的时间才能完全关闭</h2><ol>
+<li><p>MSL是Maximum Segment Lifetime的英文缩写，可译为“最长报文段寿命”，它是任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。</p>
+</li>
+<li><p>为了保证客户端发送的最后一个ACK报文段能够到达服务器。因为这个ACK有可能丢失，从而导致处在LAST-ACK状态的服务器收不到对FIN-ACK的确认报文。服务器会超时重传这个FIN-ACK，接着客户端再重传一次确认，重新启动时间等待计时器。最后客户端和服务器都能正常的关闭。假设客户端不等待2MSL，而是在发送完ACK之后直接释放关闭，一但这个ACK丢失的话，服务器就无法正常的进入关闭连接状态。</p>
+</li>
+</ol>
+<ul>
+<li><p>两个理由：</p>
+<ul>
+<li><p>保证客户端发送的最后一个ACK报文段能够到达服务端。</p>
+<p>这个ACK报文段有可能丢失，使得处于LAST-ACK状态的B收不到对已发送的FIN+ACK报文段的确认，服务端超时重传FIN+ACK报文段，而客户端能在2MSL时间内收到这个重传的FIN+ACK报文段，接着客户端重传一次确认，重新启动2MSL计时器，最后客户端和服务端都进入到CLOSED状态，若客户端在TIME-WAIT状态不等待一段时间，而是发送完ACK报文段后立即释放连接，则无法收到服务端重传的FIN+ACK报文段，所以不会再发送一次确认报文段，则服务端无法正常进入到CLOSED状态。</p>
+</li>
+<li><p>防止“已失效的连接请求报文段”出现在本连接中。</p>
+<p>客户端在发送完最后一个ACK报文段后，再经过2MSL，就可以使本连接持续的时间内所产生的所有报文段都从网络中消失，使下一个新的连接中不会出现这种旧的连接请求报文段。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="TCP-粘包和拆包"><a href="#TCP-粘包和拆包" class="headerlink" title="TCP 粘包和拆包"></a>TCP 粘包和拆包</h2><ol>
+<li>TCP是个“流”协议，所谓流，就是没有界限的一串数据。大家可以想想河里的流水，是连成一片的，其间并没有分界线。TCP底层并不了解上层业务数据的具体含义，它会根据TCP缓冲区的实际情况进行包的划分，所以在业务上认为，一个完整的包可能会被TCP拆分成多个包进行发送，也有可能把多个小的包封装成一个大的数据包发送，这就是所谓的TCP粘包和拆包问题。</li>
+</ol>
+<p>假设客户端分别发送了两个数据包D1和D2给服务端，由于服务端一次读取到的字节数是不确定的，故可能存在以下4种情况。</p>
+<p>（1）服务端分两次读取到了两个独立的数据包，分别是D1和D2，没有粘包和拆包；</p>
+<p>（2）服务端一次接收到了两个数据包，D1和D2粘合在一起，被称为TCP粘包；</p>
+<p>（3）服务端分两次读取到了两个数据包，第一次读取到了完整的D1包和D2包的部分内容，第二次读取到了D2包的剩余内容，这被称为TCP拆包；</p>
+<p>（4）服务端分两次读取到了两个数据包，第一次读取到了D1包的部分内容D1_1，第二次读取到了D1包的剩余内容D1_2和D2包的整包。</p>
+<p>如果此时服务端TCP接收滑窗非常小，而数据包D1和D2比较大，很有可能会发生第五种可能，即服务端分多次才能将D1和D2包接收完全，期间发生多次拆包。</p>
+<h2 id="TCP-与-UDP-在网络协议中的哪一层，他们之间有什么区别？"><a href="#TCP-与-UDP-在网络协议中的哪一层，他们之间有什么区别？" class="headerlink" title="TCP 与 UDP 在网络协议中的哪一层，他们之间有什么区别？"></a>TCP 与 UDP 在网络协议中的哪一层，他们之间有什么区别？</h2><p>TCP和UDP协议都是<strong>传输层</strong>协议。二者的区别主要有：</p>
+<ol>
+<li>基于连接vs无连接</li>
+</ol>
+<ul>
+<li>TCP是面向连接的协议。</li>
+<li>UDP是无连接的协议。UDP更加适合消息的多播发布，从单个点向多个点传输消息。</li>
+</ul>
+<ol start="2">
+<li>可靠性</li>
+</ol>
+<ul>
+<li>TCP提供交付保证，传输过程中丢失，将会重发。</li>
+<li>UDP是不可靠的，不提供任何交付保证。（网游和视频的丢包情况）</li>
+</ul>
+<ol start="3">
+<li>有序性</li>
+</ol>
+<ul>
+<li>TCP保证了消息的有序性，即使到达客户端顺序不同，TCP也会排序。</li>
+<li>UDP不提供有序性保证。</li>
+</ul>
+<ol start="4">
+<li>数据边界</li>
+</ol>
+<ul>
+<li><p>TCP不保存数据边界。</p>
+<ul>
+<li>虽然TCP也将在收集所有字节之后生成一个完整的消息，但是这些信息在传给传输给接受端之前将储存在TCP缓冲区，以确保更好的使用网络带宽。</li>
+</ul>
+</li>
+<li><p>UDP保证。</p>
+<ul>
+<li>在UDP中，数据包单独发送的，只有当他们到达时，才会再次集成。包有明确的界限来哪些包已经收到，这意味着在消息发送后，在接收器接口将会有一个读操作，来生成一个完整的消息。</li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li>速度</li>
+</ol>
+<ul>
+<li>TCP速度慢</li>
+<li>UDP速度快。应用在在线视频媒体，电视广播和多人在线游戏。</li>
+</ul>
+<ol start="6">
+<li>发送消耗</li>
+</ol>
+<ul>
+<li><p>TCP是重量级。</p>
+</li>
+<li><p>UDP是轻量级。</p>
+<ul>
+<li>因为UDP传输的信息中不承担任何间接创造连接，保证交货或秩序的的信息。</li>
+<li>这也反映在用于报头大小。</li>
+</ul>
+</li>
+</ul>
+<ol start="7">
+<li>报头大小</li>
+</ol>
+<ul>
+<li><p>TCP头大。</p>
+<ul>
+<li>一个TCP数据包报头的大小是20字节。</li>
+<li>TCP报头中包含序列号，ACK号，数据偏移量，保留，控制位，窗口，紧急指针，可选项，填充项，校验位，源端口和目的端口。</li>
+</ul>
+</li>
+<li><p>UDP头小。</p>
+<ul>
+<li>UDP数据报报头是8个字节。</li>
+<li>而UDP报头只包含长度，源端口号，目的端口，和校验和。</li>
+</ul>
+</li>
+</ul>
+<ol start="8">
+<li>拥塞或流控制</li>
+</ol>
+<ul>
+<li><p>TCP有流量控制。</p>
+<ul>
+<li>在任何用户数据可以被发送之前，TCP需要三数据包来设置一个套接字连接。TCP处理的可靠性和拥塞控制。</li>
+</ul>
+</li>
+<li><p>UDP不能进行流量控制。</p>
+</li>
+</ul>
+<ol start="9">
+<li>应用</li>
+</ol>
+<ul>
+<li>由于TCP提供可靠交付和有序性的保证，它是最适合需要高可靠并且对传输时间要求不高的应用。</li>
+<li>UDP是更适合的应用程序需要快速，高效的传输的应用，如游戏。</li>
+<li>UDP是无状态的性质，在服务器端需要对大量客户端产生的少量请求进行应答的应用中是非常有用的。</li>
+<li>在实践中，TCP被用于金融领域，如FIX协议是一种基于TCP的协议，而UDP是大量使用在游戏和娱乐场所。</li>
+</ul>
+<p>10.上层使用的协议</p>
+<ul>
+<li>基于TCP协议的：Telnet，FTP以及SMTP协议。</li>
+<li>基于UDP协议的：DHCP、DNS、SNMP、TFTP、BOOTP。</li>
+</ul>
+<h2 id="从系统层面上，UDP-如何保证尽量可靠？"><a href="#从系统层面上，UDP-如何保证尽量可靠？" class="headerlink" title="从系统层面上，UDP 如何保证尽量可靠？"></a>从系统层面上，UDP 如何保证尽量可靠？</h2><ol>
+<li><p>UDP仅提供了最基本的数据传输功能，至于传输时连接的建立和断开、传输可靠性的保证这些UDP统统不关心，而是把这些问题抛给了UDP上层的应用层程序去处理，自己仅提供传输层协议的最基本功能。</p>
+</li>
+<li><p>最简单的方式是在应用层模仿传输层TCP的可靠性传输。下面不考虑拥塞处理，可靠UDP的简单设计。</p>
+<ul>
+<li>添加seq&#x2F;ack机制，确保数据发送到对端</li>
+<li>添加发送和接收缓冲区，主要是用户超时重传。</li>
+<li>添加超时重传机制。</li>
+</ul>
+</li>
+</ol>
+
+        </div>
+
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/C/">#C++</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">#计算机网络</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/05/18/C-11-14-17-20-%E6%96%B0%E7%89%B9%E6%80%A7/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">C++ 11/14/17/20 新特性</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/03/09/C++/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">C++</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">李仁杰</a>
+        </div>
+        
+            <script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E8%B7%AF%E7%94%B1%E5%92%8C%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1"><span class="nav-number">1.</span> <span class="nav-text">静态路由和动态路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.</span> <span class="nav-text">路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B%EF%BC%8C%E6%9C%AC%E6%9C%BA%E5%A6%82%E4%BD%95%E5%B9%B2%E9%A2%84%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">域名解析过程，本机如何干预域名解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS%E5%8A%AB%E6%8C%81"><span class="nav-number">4.</span> <span class="nav-text">DNS劫持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MAC%E5%9C%B0%E5%9D%80%E5%92%8CIP%E5%9C%B0%E5%9D%80"><span class="nav-number">5.</span> <span class="nav-text">MAC地址和IP地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">6.</span> <span class="nav-text">TCP 三次握手和四次挥手的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">6.1.</span> <span class="nav-text">三次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-number">6.2.</span> <span class="nav-text">四次挥手</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-2%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%A1%8C%E4%B8%8D%E8%A1%8C%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%813%E6%AC%A1"><span class="nav-number">7.</span> <span class="nav-text">TCP 2次握手行不行？为什么要3次</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E6%97%B6%E5%80%99%E6%AF%8F%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%BF%A1%E6%81%AF%E5%AF%B9%E6%96%B9%E6%B2%A1%E6%94%B6%E5%88%B0%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7"><span class="nav-number">8.</span> <span class="nav-text">如果三次握手时候每次握手信息对方没收到会怎么样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E5%92%8C-UDP-%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%A4%B4%E9%83%A8%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84"><span class="nav-number">9.</span> <span class="nav-text">TCP 和 UDP 的区别，它们的头部结构是什么样的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E6%85%A2%E5%90%AF%E5%8A%A8"><span class="nav-number">10.</span> <span class="nav-text">TCP 慢启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9C%89%E5%BA%8F"><span class="nav-number">11.</span> <span class="nav-text">TCP 如何保证有序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%BF%9D%E8%AF%81"><span class="nav-number">12.</span> <span class="nav-text">TCP 可靠性保证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E9%AA%8C%E5%92%8C"><span class="nav-number">12.1.</span> <span class="nav-text">检验和</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8F%B7-x2F-%E7%A1%AE%E8%AE%A4%E5%BA%94%E7%AD%94"><span class="nav-number">12.2.</span> <span class="nav-text">序列号&#x2F;确认应答</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%97%B6%E9%87%8D%E4%BC%A0"><span class="nav-number">12.2.1.</span> <span class="nav-text">超时重传</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E6%B6%88%E6%81%AF%E9%95%BF%E5%BA%A6"><span class="nav-number">12.3.</span> <span class="nav-text">最大消息长度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%8E%A7%E5%88%B6"><span class="nav-number">12.4.</span> <span class="nav-text">滑动窗口控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6"><span class="nav-number">12.5.</span> <span class="nav-text">拥塞控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E7%9A%84-TIME-WAIT%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E6%9C%89%E8%BF%99%E4%B8%AA%E7%8A%B6%E6%80%81"><span class="nav-number">13.</span> <span class="nav-text">TCP 的 TIME_WAIT，为什么需要有这个状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-MSL%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5%E8%A6%81%E7%AD%89%E5%BE%852MSL%E7%9A%84%E6%97%B6%E9%97%B4%E6%89%8D%E8%83%BD%E5%AE%8C%E5%85%A8%E5%85%B3%E9%97%AD"><span class="nav-number">14.</span> <span class="nav-text">什么是 MSL，为什么客户端连接要等待2MSL的时间才能完全关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E7%B2%98%E5%8C%85%E5%92%8C%E6%8B%86%E5%8C%85"><span class="nav-number">15.</span> <span class="nav-text">TCP 粘包和拆包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-%E4%B8%8E-UDP-%E5%9C%A8%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E4%B8%AD%E7%9A%84%E5%93%AA%E4%B8%80%E5%B1%82%EF%BC%8C%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">16.</span> <span class="nav-text">TCP 与 UDP 在网络协议中的哪一层，他们之间有什么区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E7%B3%BB%E7%BB%9F%E5%B1%82%E9%9D%A2%E4%B8%8A%EF%BC%8CUDP-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E5%B0%BD%E9%87%8F%E5%8F%AF%E9%9D%A0%EF%BC%9F"><span class="nav-number">17.</span> <span class="nav-text">从系统层面上，UDP 如何保证尽量可靠？</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
