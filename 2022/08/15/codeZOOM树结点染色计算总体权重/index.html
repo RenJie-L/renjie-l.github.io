@@ -9,7 +9,7 @@
     
     <title>
         
-            code美团生活在树上 |
+            codeZOOM树结点染色计算总体权重 |
         
         仁杰的杂记
     </title>
@@ -168,7 +168,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">code美团生活在树上</span>
+            <span class="title-hover-animation">codeZOOM树结点染色计算总体权重</span>
         </div>
 
         
@@ -185,51 +185,17 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-08-15 16:48:27</span>
-        <span class="mobile">2022-08-15 16:48</span>
+        <span class="pc">2022-08-15 16:25:09</span>
+        <span class="mobile">2022-08-15 16:25</span>
     </span>
     
-        <span class="article-categories article-meta-item">
-            <i class="fas fa-folder"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/categories/code/">code</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
-    
-    
-        <span class="article-tags article-meta-item">
-            <i class="fas fa-tags"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/tags/C/">C++</a>&nbsp;
-                    </li>
-                
-                    <li>
-                        | <a href="/tags/code/">code</a>&nbsp;
-                    </li>
-                
-                    <li>
-                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
     
 
     
     
-        <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>494 字</span>
-        </span>
-    
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>2 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>1 分钟</span>
         </span>
     
     
@@ -245,50 +211,39 @@
         
 
         <div class="article-content markdown-body">
-            <h2 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h2><p>给一棵有n个节点的二叉树，节点的编号从1到n。<br>其中，节点k的左儿子为节点2*k（当2*k大于n时，不存在左儿子）<br>节点k的右儿子为节点2*k+1（当2*k+1大于n时，不存在右儿子）<br>该二叉树的根节点为节点1。<br>对于每个节点，节点上有一些金钱。<br>现在你可以从根节点1开始，每次选择左儿子或者右儿子向下走，直到走到叶子节点停止，并获得你走过的这些节点上的金钱。<br>你的任务是求出你可以获得的最大的金钱总量。  </p>
-<h2 id="输入描述"><a href="#输入描述" class="headerlink" title="输入描述"></a>输入描述</h2><p>第一行是一个正整数n，表示二叉树上总共有n个节点。<br>第二行有n个正整数，第i个正整数表示节点i上有多少数量的金钱。<br>1 &lt;&#x3D; n &lt;&#x3D; 100000<br>对所有数据保证：单个节点上的金钱数量在 [1, 1000] 之间  </p>
-<h2 id="输出描述"><a href="#输出描述" class="headerlink" title="输出描述"></a>输出描述</h2><p>一行一个正整数，表示你所能获得的最大的金钱总量</p>
-<h2 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">样例解释1该样例中，二叉树上有三个节点，根节点为1号节点，其左儿子为2号节点，右儿子为3号节点，所能获取的最大金钱为13，为从1号节点走到3号节点，共获得5 + 8 = 13的金钱。</span><br></pre></td></tr></table></figure>
-
-<p>输入样例</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">5</span><br><span class="line">863 163 396 428 90</span><br></pre></td></tr></table></figure>
-<p>输出样例</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">21454</span><br></pre></td></tr></table></figure>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>LeetCode经典 三角形最小路径。不用care是不是叶子。因为叶子的累计的值一定比非叶子大</p>
-<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    cin &gt;&gt; n;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">nums</span><span class="params">(n+<span class="number">1</span>)</span></span>;</span><br><span class="line">    <span class="type">int</span> ans = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n+<span class="number">1</span>; ++i) &#123;</span><br><span class="line">        cin &gt;&gt; nums[i];</span><br><span class="line">        <span class="keyword">if</span>(i &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            nums[i] += nums[i/<span class="number">2</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i*<span class="number">2</span> &gt; n+<span class="number">1</span> &amp;&amp; i*<span class="number">2</span> + <span class="number">1</span> &gt; n+<span class="number">1</span>) &#123;</span><br><span class="line">            ans = <span class="built_in">max</span>(ans, nums[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    cout &lt;&lt; ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            
         </div>
 
         
 
         
-            <ul class="post-tags-box">
-                
-                    <li class="tag-item">
-                        <a href="/tags/C/">#C++</a>&nbsp;
-                    </li>
-                
-                    <li class="tag-item">
-                        <a href="/tags/code/">#code</a>&nbsp;
-                    </li>
-                
-                    <li class="tag-item">
-                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
-                    </li>
-                
-            </ul>
-        
 
         
             <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/08/15/code%E7%BE%8E%E5%9B%A2%E7%94%9F%E6%B4%BB%E5%9C%A8%E6%A0%91%E4%B8%8A/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">code美团生活在树上</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
                 
                 
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/08/15/codeZOOM%E6%A0%91%E7%BB%93%E7%82%B9%E6%9F%93%E8%89%B2%E8%AE%A1%E7%AE%97%E6%80%BB%E4%BD%93%E6%9D%83%E9%87%8D/"
+                           href="/2022/08/15/code%E7%BE%8E%E5%9B%A2%E5%90%88%E6%B3%95%E5%85%83%E7%BB%84%E6%95%B0/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">codeZOOM树结点染色计算总体权重</span>
+                                <span class="post-nav-title-item">code美团合法元组数</span>
                                 <span class="post-nav-item">下一篇</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -410,7 +365,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">题目描述：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">输入描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E6%8F%8F%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">输出描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">5.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3"><span class="nav-number">6.</span> <span class="nav-text">题解</span></a></li></ol>
+        
     </div>
 </div>
         </aside>
