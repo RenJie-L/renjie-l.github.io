@@ -433,11 +433,80 @@
 
     
         <aside class="page-aside">
-            <div class="post-toc-wrap">
-    <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%9E%84%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84gym%E8%AE%AD%E7%BB%83%E7%8E%AF%E5%A2%83"><span class="nav-number">2.</span> <span class="nav-text">一、构建自己的gym训练环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-init"><span class="nav-number">2.1.</span> <span class="nav-text">1. __init __</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-seed"><span class="nav-number">2.2.</span> <span class="nav-text">2. seed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-step"><span class="nav-number">2.3.</span> <span class="nav-text">3. step</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-reset"><span class="nav-number">2.4.</span> <span class="nav-text">4. reset</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-render"><span class="nav-number">2.5.</span> <span class="nav-text">5. render</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-closer"><span class="nav-number">2.6.</span> <span class="nav-text">6. closer</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B0%86%E8%AE%AD%E7%BB%83%E7%8E%AF%E5%A2%83%E6%B7%BB%E5%8A%A0%E5%88%B0%E5%BA%93%E4%B8%AD"><span class="nav-number">3.</span> <span class="nav-text">二、将训练环境添加到库中</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%B3%A8%E5%86%8C"><span class="nav-number">3.1.</span> <span class="nav-text">1.注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%94%BE%E5%85%A5%E5%BA%93%E4%B8%AD"><span class="nav-number">3.2.</span> <span class="nav-text">2.放入库中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%B5%8B%E8%AF%95"><span class="nav-number">3.3.</span> <span class="nav-text">3. 测试</span></a></li></ol></li></ol>
-    </div>
-</div>
+            .post-toc-wrap {
+  width: 100%;
+  font-size: 0.92rem;
+  box-sizing: border-box;
+
+  .post-toc {
+
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0 2px 12px 10px;
+      text-align: left;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      > ol {
+        padding-left: 0;
+      }
+
+      a {
+        transition-property: all;
+        transition();
+      }
+    }
+
+
+    .nav-item {
+      line-height: 1.8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+
+    .nav {
+      .nav-child {
+        display: hexo-config('toc.expand_all') ? block : none;
+      }
+
+      .active > .nav-child {
+        display: block;
+      }
+
+      .active-current > .nav-child {
+        display: block;
+
+        > .nav-item {
+          display: block;
+        }
+      }
+
+
+      .nav-number, .nav-text {
+        color: var(--default-text-color);
+      }
+
+      .active > a {
+        .nav-number, .nav-text {
+          color: var(--primary-color);
+        }
+      }
+
+      .active-current > a {
+        .nav-number, .nav-text {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+
+
         </aside>
     
 

@@ -479,11 +479,80 @@
 
     
         <aside class="page-aside">
-            <div class="post-toc-wrap">
-    <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">线程概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E5%A4%84%E7%90%86%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%97%B6%E5%80%99%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%AF%94%E4%BD%BF%E7%94%A8%E5%A4%9A%E8%BF%9B%E7%A8%8B%E8%A6%81%E6%9B%B4%E6%9C%89%E4%BC%98%E5%8A%BF%EF%BC%8C%E4%BD%86%E6%98%AF%E7%BA%BF%E7%A8%8B%E5%B9%B6%E4%B8%8D%E6%98%AF%E8%B6%8A%E5%A4%9A%E8%B6%8A%E5%A5%BD%EF%BC%8C%E5%A6%82%E4%BD%95%E6%8E%A7%E5%88%B6%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%AA%E6%95%B0%E5%91%A2%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">在处理多任务程序的时候使用多线程比使用多进程要更有优势，但是线程并不是越多越好，如何控制线程的个数呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%A4%A7%E5%B0%8F%E7%9A%84%E9%98%BB%E6%8A%97%E5%8C%B9%E9%85%8D%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">什么是线程池大小的阻抗匹配原则?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%9E%84%E9%80%A0%E8%A6%81%E5%81%9A%E5%88%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%EF%BC%8C%E5%94%AF%E4%B8%80%E7%9A%84%E8%A6%81%E6%B1%82%E6%98%AF%E5%9C%A8%E6%9E%84%E9%80%A0%E6%9C%9F%E9%97%B4%E4%B8%8D%E8%A6%81%E6%B3%84%E9%9C%B2this%E6%8C%87%E9%92%88%E5%8D%B3"><span class="nav-number">4.</span> <span class="nav-text">对象构造要做到线程安全，唯一的要求是在构造期间不要泄露this指针即</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E7%9A%84%E5%9B%9B%E9%A1%B9%E5%8E%9F%E5%88%99%EF%BC%8C%E6%8C%89%E9%87%8D%E8%A6%81%E6%80%A7%E6%8E%92%E5%88%97"><span class="nav-number">5.</span> <span class="nav-text">线程同步的四项原则，按重要性排列:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">线程间通信的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">7.</span> <span class="nav-text">线程同步方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E4%BA%86%E8%BF%9B%E7%A8%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E8%A6%81%E6%9C%89%E7%BA%BF%E7%A8%8B%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">有了进程，为什么还要有线程？</span></a></li></ol>
-    </div>
-</div>
+            .post-toc-wrap {
+  width: 100%;
+  font-size: 0.92rem;
+  box-sizing: border-box;
+
+  .post-toc {
+
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0 2px 12px 10px;
+      text-align: left;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      > ol {
+        padding-left: 0;
+      }
+
+      a {
+        transition-property: all;
+        transition();
+      }
+    }
+
+
+    .nav-item {
+      line-height: 1.8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+
+    .nav {
+      .nav-child {
+        display: hexo-config('toc.expand_all') ? block : none;
+      }
+
+      .active > .nav-child {
+        display: block;
+      }
+
+      .active-current > .nav-child {
+        display: block;
+
+        > .nav-item {
+          display: block;
+        }
+      }
+
+
+      .nav-number, .nav-text {
+        color: var(--default-text-color);
+      }
+
+      .active > a {
+        .nav-number, .nav-text {
+          color: var(--primary-color);
+        }
+      }
+
+      .active-current > a {
+        .nav-number, .nav-text {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+
+
         </aside>
     
 

@@ -224,12 +224,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>606 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>768 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>2 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>3 分钟</span>
         </span>
     
     
@@ -255,8 +255,8 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4 2 1 3</span><br></pre></td></tr></table></figure>
 
 <h2 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">样例解释1初始牌堆为：4 2 1 31. </span><br><span class="line">Alice和Bob分别操作后牌堆为：1 3 4 2，此时1被翻开，牌堆变为3 4 22. </span><br><span class="line">Alice和Bob分别操作后牌堆为：2 3 4，此时2被翻开，牌堆变为3 43. </span><br><span class="line">Alice和Bob分别操作后牌堆为：3 4，此时3被翻开，牌堆变为44.</span><br><span class="line">Alice和Bob分别操作后牌堆依旧为4，此时4被翻开。</span><br></pre></td></tr></table></figure>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>用双向队列的 简单模拟 牌堆可以使用双向队列模拟。每轮从牌堆顶抽一张牌，再放入牌堆底。这个动作可以抽象为从队列头取出一个元素，再放入队尾。我们使用origin数组模拟初始牌堆中每张牌的顺序和每张牌的牌点的关系。</p>
-
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>用双向队列的 简单模拟 牌堆可以使用双向队列模拟。每轮从牌堆顶抽一张牌，再放入牌堆底。这个动作可以抽象为从队列头取出一个元素，再放入队尾。我们使用数组模拟初始牌堆中每张牌的顺序和每张牌的牌点的关系。</p>
+<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;deque&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// int n;</span></span><br><span class="line">    <span class="comment">// cin &gt;&gt; n;</span></span><br><span class="line">    <span class="comment">// vector&lt;int&gt;vec(n);</span></span><br><span class="line">    <span class="comment">// for (int i = 0; i &lt; n; ++i) &#123;</span></span><br><span class="line">    <span class="comment">//     cin &gt;&gt; vec[i];</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line">    <span class="type">int</span> n = <span class="number">4</span>;</span><br><span class="line">    <span class="type">int</span> vec[<span class="number">4</span>] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>&#125;;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    deque&lt;<span class="type">int</span>&gt; sumlatin;</span><br><span class="line">    vector&lt;<span class="type">int</span>&gt; sumRse;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">ans</span><span class="params">(n)</span></span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        sumlatin.<span class="built_in">push_back</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 模拟玩牌过程</span></span><br><span class="line">    <span class="keyword">while</span> (!sumlatin.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">        sumlatin.<span class="built_in">push_back</span>(sumlatin.<span class="built_in">front</span>());</span><br><span class="line">        sumlatin.<span class="built_in">pop_front</span>();</span><br><span class="line">        sumlatin.<span class="built_in">push_back</span>(sumlatin.<span class="built_in">front</span>());</span><br><span class="line">        sumlatin.<span class="built_in">pop_front</span>();</span><br><span class="line"></span><br><span class="line">        sumRse.<span class="built_in">push_back</span>(sumlatin.<span class="built_in">front</span>());</span><br><span class="line">        sumlatin.<span class="built_in">pop_front</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">        ans[sumRse[i]] = vec[i];</span><br><span class="line">        cout &lt;&lt; sumRse[i] &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        cout &lt;&lt; ans[i] &lt;&lt; <span class="string">&quot; &quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         </div>
 
         
@@ -409,11 +409,80 @@
 
     
         <aside class="page-aside">
-            <div class="post-toc-wrap">
-    <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">题目描述：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">输出描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%8F%8F%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">输入描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">5.</span> <span class="nav-text">思路</span></a></li></ol>
-    </div>
-</div>
+            .post-toc-wrap {
+  width: 100%;
+  font-size: 0.92rem;
+  box-sizing: border-box;
+
+  .post-toc {
+
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0 2px 12px 10px;
+      text-align: left;
+
+      &:last-child {
+        padding-bottom: 0;
+      }
+
+      > ol {
+        padding-left: 0;
+      }
+
+      a {
+        transition-property: all;
+        transition();
+      }
+    }
+
+
+    .nav-item {
+      line-height: 1.8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+
+    .nav {
+      .nav-child {
+        display: hexo-config('toc.expand_all') ? block : none;
+      }
+
+      .active > .nav-child {
+        display: block;
+      }
+
+      .active-current > .nav-child {
+        display: block;
+
+        > .nav-item {
+          display: block;
+        }
+      }
+
+
+      .nav-number, .nav-text {
+        color: var(--default-text-color);
+      }
+
+      .active > a {
+        .nav-number, .nav-text {
+          color: var(--primary-color);
+        }
+      }
+
+      .active-current > a {
+        .nav-number, .nav-text {
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+}
+
+
         </aside>
     
 
