@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="李仁杰">
+    
+    <title>
+        
+            Buffer类的设计与应用 |
+        
+        仁杰的杂记
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/ava.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"renjie-l.github.io","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/ava.jpg","favicon":"/images/ava.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/kOJZ5ofe.jpg","description":null},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":true},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="pjax-progress-icon">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                仁杰的杂记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                所有
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于我
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">所有</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于我</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Buffer类的设计与应用</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/ava.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">李仁杰</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-06-19 13:06:26</span>
+        <span class="mobile">2022-06-19 13:06</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/C/">C++</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/C/">C++</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Linux/">Linux</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%9D%82%E8%AE%B0/">杂记</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.4k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>5 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>本文由读《Linux多线程服务端编程：使用muduo C++网络库》总结而来</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>服务器处理器都是多核，线程是不可避免的。libev提出“one loop per thread is usually a good model”。</p>
+<p>如果采用one loop per thread的模型，多线程服务端编程的问题就简化为如何设计一个高效且易于使用的event loop，然后每个线程run一个event loop就行了(当然、同步和互斥是不可或缺的)。在“高效”这方面已经有了很多成熟的范例( libev、libevent、memcached、redis、lighttpd、nginx )。</p>
+<p>event loop 是non-blocking 网络编程的核心，在现实生活中，non-blocking几乎总是和IO multiplexing一起使用,原因有两点:</p>
+<ul>
+<li>没有人真的会用轮询( busy-pooling)来检查某个non-blocking IO操作是否完成，这样太浪费CPU cycles。</li>
+<li>IOmultiplexing一般不能和 blocking IO用在一起，因为blocking IO中read()&#x2F;write() &#x2F;accept()&#x2F;connect()都有可能阻塞当前线程，这样线程就没办法处理其他socket 上的IO事件了。</li>
+</ul>
+<p>non-blocking IO的核心思想是避免阻塞在read()或write()或其他IO系统调用上，这样可以最大限度地复用thread-of-control，让一个线程能服务于多个socket连接。IO线程只能阻塞在IO multiplexing函数上，如select&#x2F;poll&#x2F;epoll_wait。这样一来，应用层的缓冲是必需的，每个TCP socket都要有stateful的input buffer和output buffer。</p>
+<p>TcpConnection必须要有output buffer考虑一个常见场景:程序想通过TCP连接发送100kB的数据，但是在write()调用中，操作系统只接受了80kB(受TCPadvertised window的控制)，你肯定不想在原地等待，因为不知道会等多久（取决于对方什么时候接收数据，然后滑动TCP窗口)。程序应该尽快交出控制权，返回event loop。在这种情况下，剩余的20kB数据怎么办?</p>
+<p>对于应用程序而言，它只管生成数据，它不应该关心到底数据是一次性发送还是分成几次发送，这些应该由网络库来操心，程序只要调用TcpConnection: : send()就行了，网络库会负责到底。网络库应该接管这剩余的20kB数据，把它保存在该TCPconnection 的 output buffer 里，然后注册POLLOUT事件，一旦socket变得可写就立刻发送数据。当然，这第二次write()也不一定能完全写入20kB，如果还有剩余，网络库应该继续关注POLLOUT事件;如果写完了20kB，网络库应该停止关注 POLLOUT,以免造成busy loop。</p>
+<p>如果程序又写入了50kB，而这时候output buffer 里还有待发送的20kB数据,那么网络库不应该直接调用write()，而应该把这50kB数据append在那20kB数据之后，等socket变得可写的时候再一并写入。</p>
+<p>如果output buffer里还有待发送的数据，而程序又想关闭连接（对程序而言，调用TcpConnection: : send()之后他就认为数据迟早会发出去)，那么这时候网络库不能立即关闭，而要等待数据发送完毕。</p>
+<p>综上，要让程序在write操作上不阻塞，网络库必须要给每个TCP connection配置output buffer。</p>
+<p><strong>TcpConnection必须要有input buffer</strong> </p>
+<p>TCP是一个无边界的字节流协议，接收方必须要处理“收到的数据尚不构成一条完整的消息”和“一次收到两条消息的数据”等情况。一个常见的场景是，发送方send()了两条1kB的消息（共2kB)，接收方收到数据的情况可能是:</p>
+<ul>
+<li>一次性收到2kB数据;</li>
+<li>分两次收到，第一次600B，第二次1400B;·分两次收到，第一次1400B，第二次600B;·分两次收到，第一次1kB，第二次1kB;</li>
+<li>分三次收到，第一次600B，第二次800B，第三次600B;</li>
+<li>其他任何可能。一般而言，长度为n字节的消息分块到达的可能性有2n-1种。</li>
+</ul>
+<p>网络库在处理“socket可读”事件的时候，必须一次性把socket里的数据读完（从操作系统buffer搬到应用层 buffer )，否则会反复触发POLLIN事件，造成busy-loop。那么网络库必然要应对“数据不完整”的情况，收到的数据先放到 inputbuffer 里，等构成一条完整的消息再通知程序的业务逻辑。所以，在TCP网络编程中，网络库必须要给每个TCP connection配置input buffer。</p>
+<p>所有muduo 中的IO都是带缓冲的IO ( buffered IO)，你不会自己去read()或write()某个socket，只会操作TcpConnection 的 input buffer和 output buffer。更确切地说，是在onMessage()回调里读取input buffer;调用TcpConnection : : send()来间接操作output buffer，一般不会直接操作output buffer。</p>
+<p>另外, muduo的onMessage()的原型如下，它既可以是free function，也可以是member function，反正muduo TcpConnection只认boost: : function&lt;&gt;。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">onMessage</span><span class="params">(<span class="type">const</span> TcpConnectionPtr&amp; conn，Buffer* buf，Timestamp receiveTime)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>对于网络程序来说，一个简单的验收测试是:输入数据每次收到一个字节(200字节的输人数据会分200次收到，每次间隔10ms )，程序的功能不受影响。对于muduo程序，通常可以用codec来分离“消息接收”与“消息处理”。</p>
+<p>如果某个网络库只提供相当于char buf[8192]的缓冲，或者根本不提供缓冲区而仅仅通知程序“某socket可读&#x2F;某socket可写”，要程序自己操心IO buffering，这样的网络库用起来就很不方便了。</p>
+<h2 id="Buffer的功能需求"><a href="#Buffer的功能需求" class="headerlink" title="Buffer的功能需求"></a>Buffer的功能需求</h2><h2 id="Buffer的数据结构"><a href="#Buffer的数据结构" class="headerlink" title="Buffer的数据结构"></a>Buffer的数据结构</h2><h2 id="Buffer的操作"><a href="#Buffer的操作" class="headerlink" title="Buffer的操作"></a>Buffer的操作</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>
+        </div>
+
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/C/">#C++</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/Linux/">#Linux</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%9D%82%E8%AE%B0/">#杂记</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/08/09/Linux/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Linux</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/05/18/C-11-14-17-20-%E6%96%B0%E7%89%B9%E6%80%A7/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">C++ 11/14/17/20 新特性</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2021</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">李仁杰</a>
+        </div>
+        
+            <script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E7%9A%84%E5%8A%9F%E8%83%BD%E9%9C%80%E6%B1%82"><span class="nav-number">2.</span> <span class="nav-text">Buffer的功能需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">Buffer的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E7%9A%84%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">Buffer的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
