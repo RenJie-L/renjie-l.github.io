@@ -224,12 +224,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>3.1k 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>4.5k 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>10 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>15 分钟</span>
         </span>
     
     
@@ -317,6 +317,45 @@
 <p>各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些平台每次读都是从偶地址开始，如果一个int型（假设为32位系统）如果存放在偶地址开始的地方，那么一个读周期就可以读出这32bit，而如果存放在奇地址开始的地方，就需要2个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该32bit数据。显然在读取效率上下降很多。</p>
 </li>
 </ol>
+<h2 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h2><p>设想一个场景，如果两个进程都会内存进行写入操作，那么会发生一个问题，进程一在写入完数据后，进程二会将进程一写入的数据给覆盖掉，这是我们非常不愿意看到的，这样会造成程序的崩溃。</p>
+<p>为了解决这个问题，必须给每个进程分配不同的内存空间来进行操作，这样不同的进程在执行的时候就不会产生冲突了，而实现这一功能就需要引入虚拟内存。</p>
+<p>即操作系统会为每个进程分配一个虚拟内存，操作系统内部会维护一张表，用于记录虚拟内存和实际内存地址之间的映射。这样进程在执行数据写入的时候，操作系统可以通过虚拟地址和实际内存地址之间的映射来确定要操作的内存地址。</p>
+<p><img src="https://img-blog.csdnimg.cn/e513597b2c5248cf9f7ea9469425f35c.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p> 具体过程可以参考这张图。</p>
+<h2 id="内存分页和内存分段"><a href="#内存分页和内存分段" class="headerlink" title="内存分页和内存分段"></a>内存分页和内存分段</h2><p>操作系统为了管理虚拟内存和实际内存之间的关系，采用内存分页和内存分段。</p>
+<h3 id="内存分段"><a href="#内存分段" class="headerlink" title="内存分段"></a>内存分段</h3><p><img src="https://img-blog.csdnimg.cn/6d60b3cfa1ad4b7f8d9c63ad5c4c96cf.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p><img src="https://img-blog.csdnimg.cn/59924d29dc254a8a81bef86bdba8367f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>内存分段机制下的虚拟地址主要由两部分组成：段选择因子和段内偏移量</p>
+<p>可以参考上面这张图，段选择子用于定位段表，进而找到内存中段对应的实际地址的起始地址，而段内偏移量用于定位内存地址在段中的位置 。</p>
+<p>也可以这么理解，段选择因子用于定位你住在哪栋楼，段内偏移量用于定位你住在这栋楼的哪一户。</p>
+<p>比如我要访问段号3中偏移量为500的内存空间，那么这个内存空间对应的实际物理地址的为7000+500 &#x3D; 7500。</p>
+<p><strong>但内存分段带来两个问题：</strong></p>
+<p><strong>一是内存碎片的产生。</strong></p>
+<p><strong>二是内存交换的效率较低。</strong></p>
+<p>首先来看第一个问题：</p>
+<p><img src="https://img-blog.csdnimg.cn/704560d2a61b4885ac2a09214e0501c4.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>如图，内存中游戏，浏览器和音乐的程序分别占用512MB，128MB，256MB内存，但浏览器退出后，物理内存中会多处128MB内存，此时一个200MB的新程序试图加入内存中，此时内存中有256MB的空闲空间，理论上来说可以容纳新的程序，但是因为这256MB的内存空间是不连续的，在新程序不支持不连续存储的情况下，无法为其分配内存。</p>
+<p>为了给新来的程序分配内存，必须要将内存中的部分程序移出至交换空间，然后才可以为新来的程序分配内存。但这样也会存在一个问题，如果内存交换移出的是一个很大的程序，那么将造成长时间的卡顿，用户体验非常不好。</p>
+<p>因此，为了解决内存分段带来的问题，操作系统还有一种内存管理方式，叫做内存分页。</p>
+<h3 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h3><p>内存分页是把整个虚拟内存和整个内存空间切成一段段固定的大小。将这样连续且尺寸固定的空间成为页。</p>
+<p><img src="https://img-blog.csdnimg.cn/106ffcafcbb54346a62c3e9af635f352.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>⻚表是存储在内存⾥的，内存管理单元 （MMU）就做将虚拟内存地址转换成物理地址的⼯作。 </p>
+<p><img src="https://img-blog.csdnimg.cn/453fd2aea9af48c68d63061265948301.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>由于内存空间都是预先划分好的，也就不会像分段会产⽣间隙⾮常⼩的内存，这正是分段会产⽣内存碎⽚的原因。⽽采⽤了分⻚，那么释放的内存都是以⻚为单位释放的，也就不会产⽣⽆法给进程使⽤的⼩内存。<br>如果内存空间不够，操作系统会把其他正在运⾏的进程中的最近没被使⽤的内存⻚⾯给释放掉，也就是暂时写在硬盘上。⼀旦需要的时候，再加载进来。所以，⼀次性写⼊磁盘的也只有少数的⼀个⻚或者⼏个⻚，不会花太多时间，内存交换的效率就相对⽐较⾼。</p>
+<p>分页管理下，虚拟地址和物理地址之间的映射方式与分段管理类似。</p>
+<p>同样是通过起始地址 + 偏移量的方式来确定。</p>
+<p><img src="https://img-blog.csdnimg.cn/e669f81ccedd4c9d8fea253b4e8171ff.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>但简单的分页放在实际的操作系统中运行是会有问题的。因为页的内存空间大小相对较小，页表的大小较大，因此占用了大量的内存空间。于是出现了多级页表和段页式管理。</p>
+<h3 id="多级页表"><a href="#多级页表" class="headerlink" title="多级页表"></a>多级页表</h3><p><img src="https://img-blog.csdnimg.cn/4a97743f47ef43aeb592b7aa53bf4cc3.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>多级页表的结构如图所示，一级页表中将不再存储页号信息而是存储着二级页表的地址，二级页表也将存储着下一级页表结构的地址，直到最后一级页表中会存储着对应的物理页号。</p>
+<p>可以把多级页表理解为树结构，下级页表是上级页表的子结点，物理页号存储在叶子结点中。</p>
+<p>只有在子页表结构中有存储物理页号时，才会创建这个子结点，否则，将不进行子结点的创建，这样将大大节省内存空间。</p>
+<h3 id="段页式管理"><a href="#段页式管理" class="headerlink" title="段页式管理"></a>段页式管理</h3><p><img src="https://img-blog.csdnimg.cn/c19940be341740179b1c0a4d0608d762.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5rWB5YWJ5Lqm5rWB6L-e,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>如图所示，段页式管理的原理如下：</p>
+<p>1.先将内存划分成多个段</p>
+<p>2.将每个段划分成多个页</p>
+<p>3.通过段表映射到每个段对应的段页表</p>
+<p>4.通过每个段对应的段页表查找到物理内存中的对应地址。</p>
 
         </div>
 
@@ -487,7 +526,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">C++的内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">内存分配方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">常见的内存错误及其对策：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">内存泄露及解决办法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%A0%86%E6%A0%88%EF%BC%8C%E5%B8%B8%E9%87%8F%E5%8C%BA%E3%80%82"><span class="nav-number">5.</span> <span class="nav-text">内存模型，堆栈，常量区。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="nav-number">6.</span> <span class="nav-text">C++中内存对齐</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">C++的内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">内存分配方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">常见的内存错误及其对策：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">内存泄露及解决办法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%A0%86%E6%A0%88%EF%BC%8C%E5%B8%B8%E9%87%8F%E5%8C%BA%E3%80%82"><span class="nav-number">5.</span> <span class="nav-text">内存模型，堆栈，常量区。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="nav-number">6.</span> <span class="nav-text">C++中内存对齐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="nav-number">7.</span> <span class="nav-text">虚拟内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E6%AE%B5"><span class="nav-number">8.</span> <span class="nav-text">内存分页和内存分段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E6%AE%B5"><span class="nav-number">8.1.</span> <span class="nav-text">内存分段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5"><span class="nav-number">8.2.</span> <span class="nav-text">内存分页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="nav-number">8.3.</span> <span class="nav-text">多级页表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E9%A1%B5%E5%BC%8F%E7%AE%A1%E7%90%86"><span class="nav-number">8.4.</span> <span class="nav-text">段页式管理</span></a></li></ol></li></ol>
     </div>
 </div>
         </aside>
