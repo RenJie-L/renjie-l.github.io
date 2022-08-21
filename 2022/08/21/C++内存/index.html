@@ -9,7 +9,7 @@
     
     <title>
         
-            code网易互联网820T1 |
+            C++内存 |
         
         仁杰的杂记
     </title>
@@ -168,7 +168,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">code网易互联网820T1</span>
+            <span class="title-hover-animation">C++内存</span>
         </div>
 
         
@@ -185,8 +185,8 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-08-21 15:12:47</span>
-        <span class="mobile">2022-08-21 15:12</span>
+        <span class="pc">2022-08-21 16:47:45</span>
+        <span class="mobile">2022-08-21 16:47</span>
     </span>
     
         <span class="article-categories article-meta-item">
@@ -194,7 +194,7 @@
             <ul>
                 
                     <li>
-                        <a href="/categories/code/">code</a>&nbsp;
+                        <a href="/categories/C/">C++</a>&nbsp;
                     </li>
                 
             </ul>
@@ -210,11 +210,11 @@
                     </li>
                 
                     <li>
-                        | <a href="/tags/code/">code</a>&nbsp;
+                        | <a href="/tags/%E9%9D%A2%E7%BB%8F/">面经</a>&nbsp;
                     </li>
                 
                     <li>
-                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
+                        | <a href="/tags/%E5%86%85%E5%AD%98/">内存</a>&nbsp;
                     </li>
                 
             </ul>
@@ -224,12 +224,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>417 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.7k 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>2 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>5 分钟</span>
         </span>
     
     
@@ -245,14 +245,37 @@
         
 
         <div class="article-content markdown-body">
-            <h2 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h2><p>小红拿到了两个正整数a和b，她每次操作可以选择其中个正整数，删除个数位。例如，对于”1243”而言，进行一次操作可以生成”124”、”123”、 “143”或”243”。<br>小红希望最终a是b的倍数或者b是a的倍数。她想知道自己最少的操作次数是多少？<br>输入2个数a b，其中a,b&lt;&#x3D;1e9<br>输出最少的操作次数。</p>
-<h2 id="输入输出"><a href="#输入输出" class="headerlink" title="输入输出"></a>输入输出</h2><p>input:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1234 99</span><br></pre></td></tr></table></figure>
-<p>output:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2</span><br></pre></td></tr></table></figure>
+            <h2 id="堆和栈的区别"><a href="#堆和栈的区别" class="headerlink" title="堆和栈的区别"></a>堆和栈的区别</h2><p>• 堆栈空间分配不同。栈由操作系统自动分配释放 ，存放函数的参数值，局部变量的值等；堆一般由程序员分配释放。<br>• 堆栈缓存方式不同。栈使用的是一级缓存， 它们通常都是被调用时处于存储空间中，调用完毕立即释放；堆则是存放在二级缓存中，速度要慢些。<br>• 堆栈数据结构不同。堆类似数组结构；栈类似栈结构，先进后出。</p>
+<p><strong>分配和管理方式不同:</strong></p>
+<ul>
+<li>堆是动态分配的，其空间的分配和释放都由程序员控制;</li>
+<li>栈是由编译器自动管理的，其分配方式有两种:静态分配由编译器完成，比如局部变量的分配﹔动态分配由alloca()函数进行分配，但是会由编译器释放;</li>
+</ul>
+<p><strong>产生碎片不同:</strong></p>
+<ul>
+<li>对堆来说，频繁使用new&#x2F;delete或者malloc&#x2F;free会造成内存空间的不连续产生大量碎片，是程序<br>效率降低;</li>
+<li>对栈来说，不存在碎片问题，因为栈具有先进后出的特性;</li>
+</ul>
+<p><strong>生长方向不同:</strong></p>
+<ul>
+<li>堆是向着内存地址增加的方向增长的，从内存的低地址向高地址方向增长;</li>
+<li>栈是向着内存地址减小的方向增长的，从内存的高地址向低地址方向增长;</li>
+</ul>
+<p><strong>申请大小限制不同:</strong></p>
+<ul>
+<li>栈顶和栈底是预设好的，大小固定;</li>
+<li>堆是不连续的内存区域，其大小可以灵活调整</li>
+</ul>
+<h2 id="简述C-的内存管理"><a href="#简述C-的内存管理" class="headerlink" title="简述C++的内存管理"></a>简述C++的内存管理</h2><p><strong>内存分配方式：</strong><br>在C++中，内存分成5个区，他们分别是堆、栈、自由存储区、全局&#x2F;静态存储区和常量存储区。</p>
+<p><strong>栈</strong>，在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。<br><strong>堆</strong>，就是那些由new分配的内存块，一般一个new就要对应一个delete。<br><strong>自由存储区</strong>，就是那些由malloc等分配的内存块，和堆是十分相似的，不过是用free来结束自己的生命。<br><strong>全局&#x2F;静态存储区</strong>，全局变量和静态变量被分配到同一块内存中<br><strong>常量存储区</strong>，这是一块比较特殊的存储区，里面存放的是常量，不允许修改。</p>
+<p><strong>常见的内存错误及其对策：</strong><br>（1）内存分配未成功，却使用了它。<br>（2）内存分配虽然成功，但是尚未初始化就引用它。<br>（3）内存分配成功并且已经初始化，但操作越过了内存的边界。<br>（4）忘记了释放内存，造成内存泄露。<br>（5）释放了内存却继续使用它。</p>
+<p><strong>对策：</strong><br>（1）定义指针时，先初始化为NULL。<br>（2）用malloc或new申请内存之后，应该立即检查指针值是否为NULL。防止使用指针值为NULL的内存。<br>（3）不要忘记为数组和动态内存赋初值。防止将未被初始化的内存作为右值使用。<br>（4）避免数字或指针的下标越界，特别要当心发生“多1”或者“少1”操作<br>（5）动态内存的申请与释放必须配对，防止内存泄漏<br>（6）用free或delete释放了内存之后，立即将指针设置为NULL，防止“野指针”<br>（7）使用智能指针。</p>
+<p><strong>内存泄露及解决办法：</strong><br>简单地说就是申请了一块内存空间，使用完毕后没有释放掉。（1）new和malloc申请资源使用后，没有用delete和free释放；（2）子类继承父类时，父类析构函数不是虚函数。（3）Windows句柄资源使用后没有释放。</p>
+<p>怎么检测？<br>第一：良好的编码习惯，使用了内存分配的函数，一旦使用完毕,要记得使用其相应的函数释放掉。<br>第二：将分配的内存的指针以链表的形式自行管理，使用完毕之后从链表中删除，程序结束时可检查改链表。<br>第三：使用智能指针。<br>第四：一些常见的工具插件，如ccmalloc、Dmalloc、Leaky、Valgrind等等。</p>
+<h2 id="malloc和局部变量分配在堆还是栈？"><a href="#malloc和局部变量分配在堆还是栈？" class="headerlink" title="malloc和局部变量分配在堆还是栈？"></a>malloc和局部变量分配在堆还是栈？</h2><p>​ malloc是在堆上分配内存，需要程序员自己回收内存；局部变量是在栈中分配内存，超过作用域就自动回收。</p>
+<h2 id="程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？"><a href="#程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？" class="headerlink" title="程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？"></a>程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</h2><p>• 数据段：存放程序中已初始化的全局变量和静态变量的一块内存区域。<br>• 代码段：存放程序执行代码的一块内存区域。只读，代码段的头部还会包含一些只读的常数变量。<br>• BSS 段：存放程序中未初始化的全局变量和静态变量的一块内存区域。<br>• 可执行程序在运行时又会多出两个区域：堆区和栈区。<br><strong>堆区heap</strong>：动态申请内存用。堆从低地址向高地址增长。（一个new对应一个delete）<br><strong>栈区stack</strong> ：存储局部变量、函数参数值。栈从高地址向低地址增长。是一块连续的空间。<br>• 最后还有一个文件映射区，位于堆和栈之间。</p>
+<p><strong>程序启动的过程：</strong><br>    • 操作系统首先创建相应的进程并分配私有的进程空间，然后操作系统的加载器负责把可执行文件的数据段和代码段映射到进程的虚拟内存空间中。<br>    • 加载器读入可执行程序的导入符号表，根据这些符号表可以查找出该可执行程序的所有依赖的动态链接库。<br>    • 加载器针对该程序的每一个动态链接库调用LoadLibrary<br>    （1）查找对应的动态库文件，加载器为该动态链接库确定一个合适的基地址。<br>    （2）加载器读取该动态链接库的导入符号表和导出符号表，比较应用程序要求的导入符号是否匹配该库的导出符号。<br>    （3）针对该库的导入符号表，查找对应的依赖的动态链接库，如有跳转，则跳到3<br>    （4）调用该动态链接库的初始化函数<br>    • 初始化应用程序的全局变量，对于全局对象自动调用构造函数。<br>    • 进入应用程序入口点函数开始执行。</p>
 
-<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><p>tips:来源牛客</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unordered_set&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function">unordered_set&lt;<span class="type">int</span>&gt; <span class="title">deleteOne</span><span class="params">(unordered_set&lt;<span class="type">int</span>&gt; last)</span></span>&#123;</span><br><span class="line">    unordered_set&lt;<span class="type">int</span>&gt; ans = last;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span> i:last) &#123;</span><br><span class="line">        string istr = <span class="built_in">to_string</span>(i);</span><br><span class="line">        <span class="keyword">if</span>(istr.<span class="built_in">length</span>()==<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>;j&lt;istr.<span class="built_in">length</span>();j++)&#123;</span><br><span class="line">            string dstr;</span><br><span class="line">            <span class="keyword">if</span>(j&gt;<span class="number">0</span>)</span><br><span class="line">                dstr=istr.<span class="built_in">substr</span>(<span class="number">0</span>,j);</span><br><span class="line">            <span class="keyword">if</span>(j!=istr.<span class="built_in">length</span>()<span class="number">-1</span>)</span><br><span class="line">                dstr.<span class="built_in">append</span>(istr.<span class="built_in">substr</span>(j+<span class="number">1</span>,istr.<span class="built_in">length</span>()-j<span class="number">-1</span>));</span><br><span class="line">            <span class="type">int</span> toi=<span class="built_in">stoi</span>(dstr);</span><br><span class="line">            ans.<span class="built_in">insert</span>(toi);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> a,b;</span><br><span class="line">    cin &gt;&gt; a &gt;&gt; b;</span><br><span class="line">    <span class="keyword">if</span> (a &gt; b) &#123;</span><br><span class="line">        <span class="built_in">swap</span>(a, b);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(a == b) &#123;</span><br><span class="line">        cout &lt;&lt; <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (b%a == <span class="number">0</span>) &#123;</span><br><span class="line">        cout &lt;&lt; <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    unordered_set&lt;<span class="type">int</span>&gt; aa[<span class="number">10</span>], bb[<span class="number">10</span>];</span><br><span class="line">    aa[<span class="number">0</span>].<span class="built_in">insert</span>(a);</span><br><span class="line">    bb[<span class="number">0</span>].<span class="built_in">insert</span>(b);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = a, j = <span class="number">1</span>; i &gt; <span class="number">9</span>; i /= <span class="number">10</span>, j++) &#123;</span><br><span class="line">        aa[j] = <span class="built_in">deleteOne</span>(aa[j<span class="number">-1</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = b, j = <span class="number">1</span>; i &gt; <span class="number">9</span>; i /= <span class="number">10</span>, j++) &#123;</span><br><span class="line">        bb[j] = <span class="built_in">deleteOne</span>(bb[j<span class="number">-1</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    string bs = <span class="built_in">to_string</span>(b);</span><br><span class="line">    string as = <span class="built_in">to_string</span>(a);</span><br><span class="line">    <span class="type">int</span> bl = bs.<span class="built_in">length</span>();</span><br><span class="line">    <span class="type">int</span> al = as.<span class="built_in">length</span>();</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt; al+bl<span class="number">-1</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> ad = <span class="number">0</span>; ad &lt;= i &amp;&amp; ad &lt; al; ad++) &#123;</span><br><span class="line">            <span class="type">int</span> bd = i - ad;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">auto</span> ai : aa[ad]) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">auto</span> bi : bb[bd]) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (ai%bi == <span class="number">0</span> || bi%ai == <span class="number">0</span>) &#123;</span><br><span class="line">                        cout &lt;&lt; i;</span><br><span class="line">                        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    cout &lt;&lt; <span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         </div>
 
         
@@ -265,11 +288,11 @@
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/code/">#code</a>&nbsp;
+                        <a href="/tags/%E9%9D%A2%E7%BB%8F/">#面经</a>&nbsp;
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
+                        <a href="/tags/%E5%86%85%E5%AD%98/">#内存</a>&nbsp;
                     </li>
                 
             </ul>
@@ -278,29 +301,14 @@
         
             <div class="article-nav">
                 
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/2022/08/21/%E6%95%B0%E6%8D%AE%E5%BA%93/"
-                        >
-                            <span class="left arrow-icon flex-center">
-                              <i class="fas fa-chevron-left"></i>
-                            </span>
-                            <span class="title flex-center">
-                                <span class="post-nav-title-item">数据库</span>
-                                <span class="post-nav-item">上一篇</span>
-                            </span>
-                        </a>
-                    </div>
-                
                 
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/08/15/code%E7%BE%8E%E5%9B%A2%E7%94%9F%E6%B4%BB%E5%9C%A8%E6%A0%91%E4%B8%8A/"
+                           href="/2022/08/21/%E6%95%B0%E6%8D%AE%E5%BA%93/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">code美团生活在树上</span>
+                                <span class="post-nav-title-item">数据库</span>
                                 <span class="post-nav-item">下一篇</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -422,7 +430,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">题目描述：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA"><span class="nav-number">2.</span> <span class="nav-text">输入输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">题解</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">简述C++的内存管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li></ol>
     </div>
 </div>
         </aside>
