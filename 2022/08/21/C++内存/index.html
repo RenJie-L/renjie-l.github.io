@@ -224,12 +224,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>1.7k 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.1k 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>5 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>10 分钟</span>
         </span>
     
     
@@ -275,6 +275,48 @@
 <h2 id="malloc和局部变量分配在堆还是栈？"><a href="#malloc和局部变量分配在堆还是栈？" class="headerlink" title="malloc和局部变量分配在堆还是栈？"></a>malloc和局部变量分配在堆还是栈？</h2><p>​ malloc是在堆上分配内存，需要程序员自己回收内存；局部变量是在栈中分配内存，超过作用域就自动回收。</p>
 <h2 id="程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？"><a href="#程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？" class="headerlink" title="程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？"></a>程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</h2><p>• 数据段：存放程序中已初始化的全局变量和静态变量的一块内存区域。<br>• 代码段：存放程序执行代码的一块内存区域。只读，代码段的头部还会包含一些只读的常数变量。<br>• BSS 段：存放程序中未初始化的全局变量和静态变量的一块内存区域。<br>• 可执行程序在运行时又会多出两个区域：堆区和栈区。<br><strong>堆区heap</strong>：动态申请内存用。堆从低地址向高地址增长。（一个new对应一个delete）<br><strong>栈区stack</strong> ：存储局部变量、函数参数值。栈从高地址向低地址增长。是一块连续的空间。<br>• 最后还有一个文件映射区，位于堆和栈之间。</p>
 <p><strong>程序启动的过程：</strong><br>    • 操作系统首先创建相应的进程并分配私有的进程空间，然后操作系统的加载器负责把可执行文件的数据段和代码段映射到进程的虚拟内存空间中。<br>    • 加载器读入可执行程序的导入符号表，根据这些符号表可以查找出该可执行程序的所有依赖的动态链接库。<br>    • 加载器针对该程序的每一个动态链接库调用LoadLibrary<br>    （1）查找对应的动态库文件，加载器为该动态链接库确定一个合适的基地址。<br>    （2）加载器读取该动态链接库的导入符号表和导出符号表，比较应用程序要求的导入符号是否匹配该库的导出符号。<br>    （3）针对该库的导入符号表，查找对应的依赖的动态链接库，如有跳转，则跳到3<br>    （4）调用该动态链接库的初始化函数<br>    • 初始化应用程序的全局变量，对于全局对象自动调用构造函数。<br>    • 进入应用程序入口点函数开始执行。</p>
+<h2 id="内存模型，堆栈，常量区。"><a href="#内存模型，堆栈，常量区。" class="headerlink" title="内存模型，堆栈，常量区。"></a>内存模型，堆栈，常量区。</h2><p><img src="https://static.nowcoder.com/images/activity/2021jxy/c/assert/2.png" alt="image-20201219142956762"></p>
+<p><strong>内存模型（内存布局）：</strong></p>
+<p>如上图，<strong>从低地址到高地址，一个程序由代码段、数据段、</strong> <strong>BSS</strong> <strong>段组成。</strong></p>
+<ol>
+<li><p><strong>数据段：</strong>存放程序中已初始化的全局变量和静态变量的一块内存区域。</p>
+</li>
+<li><p><strong>代码段：</strong>存放程序执行代码的一块内存区域。只读，代码段的头部还会包含一些只读的常数变量。</p>
+</li>
+<li><p><strong>BSS</strong> 段：存放程序中未初始化的全局变量和静态变量的一块内存区域。</p>
+</li>
+<li><p>可执行程序在运行时又会多出两个区域：堆区和栈区。</p>
+<p><strong>堆区：</strong> 动态申请内存用。堆从低地址向高地址增长。</p>
+<p><strong>栈区：</strong> 存储局部变量、函数参数值。栈从高地址向低地址增长。是一块连续的空间。</p>
+</li>
+<li><p>最后还有一个<strong>文件映射区</strong> ，位于堆和栈之间。</p>
+</li>
+</ol>
+<p><strong>堆 heap</strong> ：由new分配的内存块，其释放由程序员控制（一个new对应一个delete）</p>
+<p><strong>栈 stack</strong> ：是那些编译器在需要时分配，在不需要时自动清除的存储区。存放局部变量、函数参数。</p>
+<p><strong>常量存储区</strong> ：存放常量，不允许修改。</p>
+<h2 id="C-中内存对齐"><a href="#C-中内存对齐" class="headerlink" title="C++中内存对齐"></a>C++中内存对齐</h2><p>内存对齐应用于三种数据类型中：<strong>struct&#x2F;class&#x2F;union</strong></p>
+<p>struct&#x2F;class&#x2F;union内存对齐原则有四个：</p>
+<ol>
+<li><p>数据成员对齐规则：结构(struct)或联合(union)的数据成员，第一个数据成员放在offset为0的地方，以后每个数据成员存储的起始位置要从该成员大小或者成员的子成员大小的整数倍开始。</p>
+</li>
+<li><p>结构体作为成员:如果一个结构里有某些结构体成员,则结构体成员要从其内部”最宽基本类型成员”的整数倍地址开始存储。(struct a里存有struct b,b里有char,int ,double等元素,那b应该从8的整数倍开始存储)。</p>
+</li>
+<li><p>收尾工作:结构体的总大小，也就是sizeof的结果，必须是其内部最大成员的”最宽基本类型成员”的整数倍。不足的要补齐。(基本类型不包括struct&#x2F;class&#x2F;uinon)。</p>
+</li>
+<li><p>sizeof(union)，以结构里面size最大元素为union的size，因为在某一时刻，union只有一个成员真正存储于该地址。</p>
+</li>
+<li><p><strong>什么是内存对齐？</strong></p>
+<p>那么什么是字节对齐？在C语言中，结构体是一种复合数据类型，其构成元素既可以是基本数据类型（如int、long、float等）的变量，也可以是一些复合数据类型（如数组、结构体、联合体等）的数据单元。在结构体中，<strong>编译器为结构体的每个成员按其自然边界（alignment）分配空间。</strong>各个成员按照它们被声明的顺序在内存中顺序存储，第一个成员的地址和整个结构体的地址相同。</p>
+<p>为了使CPU能够对变量进行快速的访问，变量的起始地址应该具有某些特性，<strong>即所谓的“对齐”，比如4字节的int型，其起始地址应该位于4字节的边界上，即起始地址能够被4整除</strong>，也即“对齐”跟数据在内存中的位置有关。如果一个变量的内存地址正好位于它长度的整数倍，他就被称做自然对齐。</p>
+<p>比如在32位cpu下，假设一个整型变量的地址为0x00000004(为4的倍数)，那它就是自然对齐的，而如果其地址为0x00000002（非4的倍数）则是非对齐的。现代计算机中内存空间都是按照byte划分的，从理论上讲似乎对任何类型的变量的访问可以从任何地址开始，但实际情况是在访问特定类型变量的时候经常在特定的内存地址访问，这就需要各种类型数据按照一定的规则在空间上排列，而不是顺序的一个接一个的排放，这就是对齐。</p>
+</li>
+<li><p><strong>为什么要字节对齐？</strong></p>
+<p>需要字节对齐的根本原因在于CPU访问数据的效率问题。假设上面整型变量的地址不是自然对齐，比如为0x00000002，则CPU如果取它的值的话需要访问两次内存，第一次取从0x00000002-0x00000003的一个short，第二次取从0x00000004-0x00000005的一个short然后组合得到所要的数据，如果变量在0x00000003地址上的话则要访问三次内存，第一次为char，第二次为short，第三次为char，然后组合得到整型数据。</p>
+<p>而如果变量在自然对齐位置上，则只要一次就可以取出数据。一些系统对对齐要求非常严格，比如sparc系统，如果取未对齐的数据会发生错误，而在x86上就不会出现错误，只是效率下降。</p>
+<p>各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些平台每次读都是从偶地址开始，如果一个int型（假设为32位系统）如果存放在偶地址开始的地方，那么一个读周期就可以读出这32bit，而如果存放在奇地址开始的地方，就需要2个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该32bit数据。显然在读取效率上下降很多。</p>
+</li>
+</ol>
 
         </div>
 
@@ -430,7 +472,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">C++的内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">内存分配方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">常见的内存错误及其对策：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">内存泄露及解决办法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">C++的内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">内存分配方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">常见的内存错误及其对策：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">内存泄露及解决办法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%A0%86%E6%A0%88%EF%BC%8C%E5%B8%B8%E9%87%8F%E5%8C%BA%E3%80%82"><span class="nav-number">5.</span> <span class="nav-text">内存模型，堆栈，常量区。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="nav-number">6.</span> <span class="nav-text">C++中内存对齐</span></a></li></ol>
     </div>
 </div>
         </aside>
