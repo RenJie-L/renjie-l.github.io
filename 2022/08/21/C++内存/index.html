@@ -224,12 +224,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>4.5k 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>4.9k 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>15 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>16 分钟</span>
         </span>
     
     
@@ -265,6 +265,28 @@
 <ul>
 <li>栈顶和栈底是预设好的，大小固定;</li>
 <li>堆是不连续的内存区域，其大小可以灵活调整</li>
+</ul>
+<h2 id="malloc和new的区别"><a href="#malloc和new的区别" class="headerlink" title="malloc和new的区别"></a>malloc和new的区别</h2><ul>
+<li><p>malloc是从堆上开辟空间，而new是从自由存储区开辟；（自由存储区是 C++抽象出来的概念，不仅可以是堆，还可以是静态存储区）；</p>
+</li>
+<li><p>malloc&#x2F;free是函数，而new&#x2F;delete是关键字</p>
+</li>
+<li><p>malloc对开辟的空间大小需要严格指定，而new只需要对象名</p>
+</li>
+<li><p>malloc开辟的空间即可以给单个对象用也可以给数组用，释放的方式都是free()；而new开辟对象数组用的是new[size] ,释放的的时候是 delete[]</p>
+</li>
+<li><p>开辟成功返回值：malloc开辟内存成功返回void*，而new开辟内存成功对象指针</p>
+</li>
+<li><p>开辟失败返回值：malloc开辟失败返回NULL，所以我们可以用NULL判断是否开辟成功，而new开辟失败抛出一个异常，</p>
+</li>
+<li><p>new的实现可以用malloc，malloc的实现不可以使用new；</p>
+</li>
+<li><p>new和free不但负责开辟空间，还会调用对象的构造函数和析构函数；</p>
+</li>
+<li><p>我们可以重载自己的operator new&#x2F;delete，但是不可以重载new&#x2F;delete&#x2F;malloc&#x2F;free;</p>
+</li>
+<li><p>malloc开辟 的内存如果太小，想要换一块大一点的，可以调用relloc实现，但是new没有直观的方法来改变；当new中的底层实现如果获取不到更多的内存，会触发new_handler机制，留有一个set_new_handler句柄，看看用户是否设置了这个句柄，如果设置了就去执行，句柄的目的是看看能不能尝试着从操作系统释放点内存，找点内存，如果实在不行就抛出bad_alloc异常；而malloc就没有这种尝试了</p>
+</li>
 </ul>
 <h2 id="C-的内存管理"><a href="#C-的内存管理" class="headerlink" title="C++的内存管理"></a>C++的内存管理</h2><h3 id="内存分配方式："><a href="#内存分配方式：" class="headerlink" title="内存分配方式："></a>内存分配方式：</h3><p>在C++中，内存分成5个区，他们分别是堆、栈、自由存储区、全局&#x2F;静态存储区和常量存储区。</p>
 <p><strong>栈</strong>，在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。<br><strong>堆</strong>，就是那些由new分配的内存块，一般一个new就要对应一个delete。<br><strong>自由存储区</strong>，就是那些由malloc等分配的内存块，和堆是十分相似的，不过是用free来结束自己的生命。<br><strong>全局&#x2F;静态存储区</strong>，全局变量和静态变量被分配到同一块内存中<br><strong>常量存储区</strong>，这是一块比较特殊的存储区，里面存放的是常量，不允许修改。</p>
@@ -526,7 +548,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">C++的内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">内存分配方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">常见的内存错误及其对策：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="nav-number">2.3.</span> <span class="nav-text">内存泄露及解决办法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%A0%86%E6%A0%88%EF%BC%8C%E5%B8%B8%E9%87%8F%E5%8C%BA%E3%80%82"><span class="nav-number">5.</span> <span class="nav-text">内存模型，堆栈，常量区。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="nav-number">6.</span> <span class="nav-text">C++中内存对齐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="nav-number">7.</span> <span class="nav-text">虚拟内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E6%AE%B5"><span class="nav-number">8.</span> <span class="nav-text">内存分页和内存分段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E6%AE%B5"><span class="nav-number">8.1.</span> <span class="nav-text">内存分段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5"><span class="nav-number">8.2.</span> <span class="nav-text">内存分页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="nav-number">8.3.</span> <span class="nav-text">多级页表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E9%A1%B5%E5%BC%8F%E7%AE%A1%E7%90%86"><span class="nav-number">8.4.</span> <span class="nav-text">段页式管理</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8Cnew%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">malloc和new的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">C++的内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">3.1.</span> <span class="nav-text">内存分配方式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96%EF%BC%9A"><span class="nav-number">3.2.</span> <span class="nav-text">常见的内存错误及其对策：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%9A"><span class="nav-number">3.3.</span> <span class="nav-text">内存泄露及解决办法：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E8%BF%98%E6%98%AF%E6%A0%88%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">malloc和局部变量分配在堆还是栈？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%9C%89%E5%93%AA%E4%BA%9Bsection%EF%BC%8C%E5%88%86%E5%88%AB%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E7%9A%84%E8%BF%87%E7%A8%8B%EF%BC%9F%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E5%88%86%E9%85%8D%E5%9C%A8%E6%A0%88%E4%B8%8A%E8%BF%98%E6%98%AF%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">程序有哪些section，分别的作用？程序启动的过程？怎么判断数据分配在栈上还是堆上？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%A0%86%E6%A0%88%EF%BC%8C%E5%B8%B8%E9%87%8F%E5%8C%BA%E3%80%82"><span class="nav-number">6.</span> <span class="nav-text">内存模型，堆栈，常量区。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E4%B8%AD%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="nav-number">7.</span> <span class="nav-text">C++中内存对齐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="nav-number">8.</span> <span class="nav-text">虚拟内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E6%AE%B5"><span class="nav-number">9.</span> <span class="nav-text">内存分页和内存分段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E6%AE%B5"><span class="nav-number">9.1.</span> <span class="nav-text">内存分段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5"><span class="nav-number">9.2.</span> <span class="nav-text">内存分页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="nav-number">9.3.</span> <span class="nav-text">多级页表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AE%B5%E9%A1%B5%E5%BC%8F%E7%AE%A1%E7%90%86"><span class="nav-number">9.4.</span> <span class="nav-text">段页式管理</span></a></li></ol></li></ol>
     </div>
 </div>
         </aside>
