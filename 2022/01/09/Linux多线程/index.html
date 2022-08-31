@@ -224,12 +224,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fas fa-file-word"></i>&nbsp;<span>4.7k 字</span>
+            <i class="fas fa-file-word"></i>&nbsp;<span>5.3k 字</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>17 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>20 分钟</span>
         </span>
     
     
@@ -393,6 +393,33 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sched.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">pthread_attr_t</span> attr;</span><br><span class="line"><span class="type">pthread_t</span> tid;</span><br><span class="line">sched_param param;</span><br><span class="line"><span class="type">int</span> newprio = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*初始化属性*/</span></span><br><span class="line"><span class="built_in">pthread_attr_init</span>(&amp;attr);</span><br><span class="line"><span class="comment">/*设置优先级*/</span></span><br><span class="line"><span class="built_in">pthread_attr_getschedparam</span>(&amp;attr, ¶m); </span><br><span class="line">param.sched_priority = newprio;</span><br><span class="line"><span class="built_in">pthread_attr_setschedparam</span>(&amp;attr, ¶m);</span><br><span class="line"><span class="built_in">pthread_create</span>(&amp;tid,&amp;attr, (<span class="type">void</span>*)myfunction, myarg);</span><br></pre></td></tr></table></figure>
 
 
+<h2 id="线程的实现"><a href="#线程的实现" class="headerlink" title="线程的实现"></a>线程的实现</h2><ul>
+<li><strong>用户线程（User Thread）</strong>：在用户空间实现的线程，不是由内核管理的线程，是由用户态的线程库来完成线程的管理；</li>
+<li><strong>内核线程（Kernel Thread）</strong>：在内核中实现的线程，是由内核管理的线程；</li>
+<li><strong>轻量级进程（LightWeight Process）</strong>：在内核中来支持用户线程；</li>
+</ul>
+<p><strong>用户线程的优点：</strong></p>
+<ul>
+<li>每个进程都需要有它私有的线程控制块（TCB）列表，用来跟踪记录它各个线程状态信息（PC、栈指针、寄存器），TCB 由用户级线程库函数来维护，可用于不支持线程技术的操作系统；</li>
+<li>用户线程的切换也是由线程库函数来完成的，无需用户态与内核态的切换，所以速度特别快；</li>
+</ul>
+<p><strong>用户线程的缺点：</strong></p>
+<ul>
+<li>由于操作系统不参与线程的调度，如果一个线程发起了系统调用而阻塞，那进程所包含的用户线程都不能执行了。</li>
+<li>当一个线程开始运行后，除非它主动地交出 CPU 的使用权，否则它所在的进程当中的其他线程无法运行，因为用户态的线程没法打断当前运行中的线程，它没有这个特权，只有操作系统才有，但是用户线程不是由操作系统管理的。</li>
+<li>由于时间片分配给进程，故与其他进程比，在多线程执行时，每个线程得到的时间片较少，执行会比较慢；</li>
+</ul>
+<p><strong>内核线程的优点：</strong></p>
+<ul>
+<li>在一个进程当中，如果某个内核线程发起系统调用而被阻塞，并不会影响其他内核线程的运行；</li>
+<li>分配给线程，多线程的进程获得更多的 CPU 运行时间；</li>
+</ul>
+<p><strong>内核线程的缺点：</strong></p>
+<ul>
+<li>在支持内核线程的操作系统中，由内核来维护进程和线程的上下文信息，如 PCB 和 TCB；</li>
+<li>线程的创建、终止和切换都是通过系统调用的方式来进行，因此对于系统来说，系统开销比较大；</li>
+</ul>
+<p><strong>轻量级进程（Light-weight process，LWP）是内核支持的用户线程，一个进程可有一个或多个 LWP，每个 LWP 是跟内核线程一对一映射的，也就是 LWP 都是由一个内核线程支持，而且 LWP 是由内核管理并像普通进程一样被调度。</strong></p>
 
         </div>
 
@@ -563,7 +590,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">1.线程基础介绍：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">2.概念：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BA%BF%E7%A8%8B%E5%AE%9A%E4%B9%89"><span class="nav-number">3.</span> <span class="nav-text">3.线程定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-number">4.</span> <span class="nav-text">4.线程的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%BA%BF%E7%A8%8B%E7%9A%84%E9%80%80%E5%87%BA"><span class="nav-number">5.</span> <span class="nav-text">5.线程的退出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5"><span class="nav-number">6.</span> <span class="nav-text">6.线程同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%92%E6%96%A5%E9%87%8F%EF%BC%9AMutex"><span class="nav-number">6.1.</span> <span class="nav-text">互斥量：Mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81%EF%BC%9AReader-Writer-Locks"><span class="nav-number">6.2.</span> <span class="nav-text">读写锁：Reader-Writer Locks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conditional-Variable%EF%BC%9A%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F"><span class="nav-number">6.3.</span> <span class="nav-text">Conditional Variable：条件变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%BA%BF%E7%A8%8B%E5%B1%9E%E6%80%A7"><span class="nav-number">7.</span> <span class="nav-text">7.线程属性</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80%E4%BB%8B%E7%BB%8D%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">1.线程基础介绍：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="nav-number">2.</span> <span class="nav-text">2.概念：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BA%BF%E7%A8%8B%E5%AE%9A%E4%B9%89"><span class="nav-number">3.</span> <span class="nav-text">3.线程定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-number">4.</span> <span class="nav-text">4.线程的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%BA%BF%E7%A8%8B%E7%9A%84%E9%80%80%E5%87%BA"><span class="nav-number">5.</span> <span class="nav-text">5.线程的退出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5"><span class="nav-number">6.</span> <span class="nav-text">6.线程同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%92%E6%96%A5%E9%87%8F%EF%BC%9AMutex"><span class="nav-number">6.1.</span> <span class="nav-text">互斥量：Mutex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E9%94%81%EF%BC%9AReader-Writer-Locks"><span class="nav-number">6.2.</span> <span class="nav-text">读写锁：Reader-Writer Locks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Conditional-Variable%EF%BC%9A%E6%9D%A1%E4%BB%B6%E5%8F%98%E9%87%8F"><span class="nav-number">6.3.</span> <span class="nav-text">Conditional Variable：条件变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%BA%BF%E7%A8%8B%E5%B1%9E%E6%80%A7"><span class="nav-number">7.</span> <span class="nav-text">7.线程属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">8.</span> <span class="nav-text">线程的实现</span></a></li></ol>
     </div>
 </div>
         </aside>
