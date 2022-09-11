@@ -9,7 +9,7 @@
     
     <title>
         
-            算法与数据结构 |
+            查并集 |
         
         仁杰的杂记
     </title>
@@ -168,7 +168,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">算法与数据结构</span>
+            <span class="title-hover-animation">查并集</span>
         </div>
 
         
@@ -185,9 +185,20 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-08-11 19:13:24</span>
-        <span class="mobile">2022-08-11 19:13</span>
+        <span class="pc">2022-07-11 19:13:24</span>
+        <span class="mobile">2022-07-11 19:13</span>
     </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/C/">C++</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
     
     
         <span class="article-tags article-meta-item">
@@ -196,6 +207,14 @@
                 
                     <li>
                         <a href="/tags/C/">C++</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%9D%82%E8%AE%B0/">杂记</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
                     </li>
                 
             </ul>
@@ -226,7 +245,7 @@
         
 
         <div class="article-content markdown-body">
-            <h2 id="查并集"><a href="#查并集" class="headerlink" title="查并集"></a>查并集</h2><h3 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h3><p><strong>定义：</strong><br>并查集是一种树型的数据结构，用于处理一些不相交集合的合并及查询问题（即所谓的并、查）。比如说，我们可以用并查集来判断一个森林中有几棵树、某个节点是否属于某棵树等。</p>
+            <h3 id="概论"><a href="#概论" class="headerlink" title="概论"></a>概论</h3><p><strong>定义：</strong><br>并查集是一种树型的数据结构，用于处理一些不相交集合的合并及查询问题（即所谓的并、查）。比如说，我们可以用并查集来判断一个森林中有几棵树、某个节点是否属于某棵树等。</p>
 <p><strong>主要构成：</strong><br>并查集主要由一个整型数组pre[ ]和两个函数find( )、join( )构成。<br>数组 pre[ ] 记录了每个点的前驱节点是谁，函数 find(x) 用于查找指定节点 x 属于哪个集合，函数 join(x,y) 用于合并两个节点 x 和 y 。</p>
 <p><strong>作用：</strong><br>并查集的主要作用是求连通分支数（如果一个图中所有点都存在可达关系（直接或间接相连），则此图的连通分支数为1；如果此图有两大子图各自全部可达，则此图的连通分支数为2……）</p>
 <h3 id="并查集的初始化"><a href="#并查集的初始化" class="headerlink" title="并查集的初始化"></a>并查集的初始化</h3><p>将所有元素的前驱都设为他自己。</p>
@@ -264,6 +283,14 @@
                         <a href="/tags/C/">#C++</a>&nbsp;
                     </li>
                 
+                    <li class="tag-item">
+                        <a href="/tags/%E6%9D%82%E8%AE%B0/">#杂记</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
+                    </li>
+                
             </ul>
         
 
@@ -273,13 +300,13 @@
                     <div class="article-prev">
                         <a class="prev"
                            rel="prev"
-                           href="/2022/08/11/code%E6%94%B9%E7%BC%96x%20%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9%20/"
+                           href="/2022/08/09/Linux/"
                         >
                             <span class="left arrow-icon flex-center">
                               <i class="fas fa-chevron-left"></i>
                             </span>
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">code改编-x 的平方根</span>
+                                <span class="post-nav-title-item">Linux</span>
                                 <span class="post-nav-item">上一篇</span>
                             </span>
                         </a>
@@ -289,10 +316,10 @@
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/08/11/%E6%9E%84%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84GYM%E8%AE%AD%E7%BB%83%E7%8E%AF%E5%A2%83/"
+                           href="/2022/07/10/io%E5%A4%8D%E7%94%A8/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">构建自己的GYM训练环境</span>
+                                <span class="post-nav-title-item">io复用</span>
                                 <span class="post-nav-item">下一篇</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -414,7 +441,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E5%B9%B6%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text">查并集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%AE%BA"><span class="nav-number">1.1.</span> <span class="nav-text">概论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.2.</span> <span class="nav-text">并查集的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#find%EF%BC%88%EF%BC%89%E5%87%BD%E6%95%B0"><span class="nav-number">1.3.</span> <span class="nav-text">find（）函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#join%E5%87%BD%E6%95%B0"><span class="nav-number">1.4.</span> <span class="nav-text">join函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E5%8E%8B%E7%BC%A9%E7%AE%97%E6%B3%95-%E4%BC%98%E5%8C%96find-%E5%87%BD%E6%95%B0"><span class="nav-number">1.5.</span> <span class="nav-text">路径压缩算法:优化find( )函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E5%8E%8B%E7%BC%A9%E7%AE%97%E6%B3%95-%E5%8A%A0%E6%9D%83%E6%A0%87%E8%AE%B0%E6%B3%95"><span class="nav-number">1.6.</span> <span class="nav-text">路径压缩算法:加权标记法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">1.7.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%B2%E6%88%9A"><span class="nav-number">1.7.1.</span> <span class="nav-text">亲戚</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%B6%E9%85%AA%E9%97%AE%E9%A2%98"><span class="nav-number">1.7.2.</span> <span class="nav-text">奶酪问题</span></a></li></ol></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">概论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">并查集的初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#find%EF%BC%88%EF%BC%89%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">find（）函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#join%E5%87%BD%E6%95%B0"><span class="nav-number">4.</span> <span class="nav-text">join函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E5%8E%8B%E7%BC%A9%E7%AE%97%E6%B3%95-%E4%BC%98%E5%8C%96find-%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">路径压缩算法:优化find( )函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E5%8E%8B%E7%BC%A9%E7%AE%97%E6%B3%95-%E5%8A%A0%E6%9D%83%E6%A0%87%E8%AE%B0%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text">路径压缩算法:加权标记法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">7.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%B2%E6%88%9A"><span class="nav-number">7.1.</span> <span class="nav-text">亲戚</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%B6%E9%85%AA%E9%97%AE%E9%A2%98"><span class="nav-number">7.2.</span> <span class="nav-text">奶酪问题</span></a></li></ol></li></ol>
     </div>
 </div>
         </aside>
