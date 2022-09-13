@@ -9,7 +9,7 @@
     
     <title>
         
-            code华为高速公路休息站充电规划 |
+            code百度字符矩阵 |
         
         仁杰的杂记
     </title>
@@ -168,7 +168,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">code华为高速公路休息站充电规划</span>
+            <span class="title-hover-animation">code百度字符矩阵</span>
         </div>
 
         
@@ -185,8 +185,8 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-09-01 12:34:03</span>
-        <span class="mobile">2022-09-01 12:34</span>
+        <span class="pc">2022-09-13 21:33:50</span>
+        <span class="mobile">2022-09-13 21:33</span>
     </span>
     
         <span class="article-categories article-meta-item">
@@ -214,11 +214,11 @@
                     </li>
                 
                     <li>
-                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
+                        | <a href="/tags/%E6%94%B9%E7%BC%96/">改编</a>&nbsp;
                     </li>
                 
                     <li>
-                        | <a href="/tags/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">背包问题</a>&nbsp;
+                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
                     </li>
                 
             </ul>
@@ -227,9 +227,13 @@
 
     
     
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>582 字</span>
+        </span>
+    
     
         <span class="article-min2read article-meta-item">
-            <i class="fas fa-clock"></i>&nbsp;<span>1 分钟</span>
+            <i class="fas fa-clock"></i>&nbsp;<span>2 分钟</span>
         </span>
     
     
@@ -245,7 +249,16 @@
         
 
         <div class="article-content markdown-body">
-            
+            <h2 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h2><p>小红拿到了一个字符矩阵，矩阵仅由’r’、’e’、’d’三种字符组成。她初始站在左上角，每次可以走到一个相邻的字符上(每个字符上、下、左、右最多4个相邻）。但有个限制,小红不能从’r’走到d’，从’e’走到r，从’d走到e’，其他情况都能走。<br>小红想知道，从左上角走到右下角至少需要多少步?  </p>
+<h2 id="输入描述"><a href="#输入描述" class="headerlink" title="输入描述:"></a>输入描述:</h2><p>第一行输入两个正整数n和m,代表矩阵的行数和列数。<br>接下来的n行,每行输入一个长度为m的字符串，用来表示矩阵。<br>1&lt;n, m ≤500</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">3 3  </span><br><span class="line">red  </span><br><span class="line">der  </span><br><span class="line">rdr</span><br></pre></td></tr></table></figure>
+
+<h2 id="输出描述"><a href="#输出描述" class="headerlink" title="输出描述:"></a>输出描述:</h2><p>如果小红无法到达右下角，则输出-1。<br>否则输出一个整数，代表小红的最少移动步数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4</span><br></pre></td></tr></table></figure>
+
+<h2 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h2><p>小红可以走r→e→e→d→r,共需要移动4步。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>广度优先遍历,使用pair储存xy坐标放入队列中，使用额外矩阵记录坐标是否经过，当前最优步数是多少。</p>
+<h2 id="解答"><a href="#解答" class="headerlink" title="解答"></a>解答</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="type">int</span> n, m;</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; xx = &#123;<span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>, <span class="number">0</span>&#125;;</span><br><span class="line">vector&lt;<span class="type">int</span>&gt; yy = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>&#125;;</span><br><span class="line">vector&lt;vector&lt;<span class="type">int</span>&gt;&gt;<span class="built_in">flg</span> (<span class="number">500</span>, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(<span class="number">500</span>, <span class="number">-1</span>));</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">no</span><span class="params">(<span class="type">char</span> s1, <span class="type">char</span> s2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (s1 == <span class="string">&#x27;r&#x27;</span> &amp;&amp; s2 != <span class="string">&#x27;d&#x27;</span> || s1 == <span class="string">&#x27;e&#x27;</span> &amp;&amp; s2 != <span class="string">&#x27;r&#x27;</span> || s1 == <span class="string">&#x27;d&#x27;</span> &amp;&amp; s2 != <span class="string">&#x27;e&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">bfs</span><span class="params">(vector&lt;vector&lt;<span class="type">char</span>&gt;&gt;&amp; map)</span> </span>&#123;</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">step</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(m, <span class="number">-1</span>));</span><br><span class="line">    step[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">    queue&lt;pair&lt;<span class="type">int</span>, <span class="type">int</span>&gt;&gt; que;</span><br><span class="line">    que.<span class="built_in">push</span>(&#123;<span class="number">0</span>, <span class="number">0</span>&#125;);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (!que.<span class="built_in">empty</span>())&#123;</span><br><span class="line">        <span class="keyword">auto</span> qq = que.<span class="built_in">front</span>();</span><br><span class="line">        que.<span class="built_in">pop</span>();</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++) &#123;</span><br><span class="line">            <span class="type">int</span> nextX = qq.first + xx[i];</span><br><span class="line">            <span class="type">int</span> nextY = qq.second + yy[i];</span><br><span class="line">            <span class="keyword">if</span> (nextX &gt;= <span class="number">0</span> &amp;&amp; nextY &gt;= <span class="number">0</span> &amp;&amp; nextX &lt; n &amp;&amp; nextY &lt; m &amp;&amp; step[nextX][nextY] == <span class="number">-1</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="built_in">no</span>(map[qq.first][qq.second], map[nextX][nextY])) &#123;</span><br><span class="line">                    que.<span class="built_in">push</span>(&#123;nextX, nextY&#125;);</span><br><span class="line">                    step[nextX][nextY] = step[qq.first][qq.second] + <span class="number">1</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> step[n<span class="number">-1</span>][m<span class="number">-1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span>  </span>&#123;</span><br><span class="line">    <span class="type">int</span> step = <span class="number">0</span>;</span><br><span class="line">    cin &gt;&gt; n &gt;&gt; m;</span><br><span class="line"></span><br><span class="line">    vector&lt;vector&lt;<span class="type">char</span>&gt;&gt; <span class="built_in">map</span> (n, <span class="built_in">vector</span>&lt;<span class="type">char</span>&gt;(m));</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; m; j++) &#123;</span><br><span class="line">            cin &gt;&gt; map[i][j];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> ans = <span class="built_in">bfs</span>(map);</span><br><span class="line">    </span><br><span class="line">    cout &lt;&lt; ans;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         </div>
 
         
@@ -262,11 +275,11 @@
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
+                        <a href="/tags/%E6%94%B9%E7%BC%96/">#改编</a>&nbsp;
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">#背包问题</a>&nbsp;
+                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
                     </li>
                 
             </ul>
@@ -275,29 +288,14 @@
         
             <div class="article-nav">
                 
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/2022/09/13/code%E7%99%BE%E5%BA%A6%E2%80%9Cbaidu%E2%80%9D%E5%9E%8B%E5%AD%97%E4%B8%B2%E6%95%B0%E9%87%8F/"
-                        >
-                            <span class="left arrow-icon flex-center">
-                              <i class="fas fa-chevron-left"></i>
-                            </span>
-                            <span class="title flex-center">
-                                <span class="post-nav-title-item">code百度“baidu”型字串数量</span>
-                                <span class="post-nav-item">上一篇</span>
-                            </span>
-                        </a>
-                    </div>
-                
                 
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/09/01/code%E5%8D%8E%E4%B8%BA%E5%A3%AB%E5%85%B5%E7%9A%84%E4%BB%BB%E5%8A%A12/"
+                           href="/2022/09/13/code%E7%99%BE%E5%BA%A601%E4%B8%B2/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">code华为士兵的任务2</span>
+                                <span class="post-nav-title-item">code百度01串</span>
                                 <span class="post-nav-item">下一篇</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -419,7 +417,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">题目描述：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%8F%8F%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">输入描述:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E6%8F%8F%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">输出描述:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">5.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E7%AD%94"><span class="nav-number">6.</span> <span class="nav-text">解答</span></a></li></ol>
     </div>
 </div>
         </aside>

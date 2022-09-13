@@ -9,7 +9,7 @@
     
     <title>
         
-            code华为高速公路休息站充电规划 |
+            code百度01串 |
         
         仁杰的杂记
     </title>
@@ -168,7 +168,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">code华为高速公路休息站充电规划</span>
+            <span class="title-hover-animation">code百度01串</span>
         </div>
 
         
@@ -185,8 +185,8 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-09-01 12:34:03</span>
-        <span class="mobile">2022-09-01 12:34</span>
+        <span class="pc">2022-09-13 21:33:35</span>
+        <span class="mobile">2022-09-13 21:33</span>
     </span>
     
         <span class="article-categories article-meta-item">
@@ -214,11 +214,11 @@
                     </li>
                 
                     <li>
-                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
+                        | <a href="/tags/%E6%94%B9%E7%BC%96/">改编</a>&nbsp;
                     </li>
                 
                     <li>
-                        | <a href="/tags/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">背包问题</a>&nbsp;
+                        | <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a>&nbsp;
                     </li>
                 
             </ul>
@@ -226,6 +226,10 @@
     
 
     
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>389 字</span>
+        </span>
     
     
         <span class="article-min2read article-meta-item">
@@ -245,7 +249,19 @@
         
 
         <div class="article-content markdown-body">
-            
+            <h2 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h2><p>小红拿到了一个01串，她每次可以选择一个长度为2的连续子串取反（0变1,1变0)，她想知道，是否能在有限的操作次数内使得所有字符相同?</p>
+<p>共有q组询问。</p>
+<h2 id="样例输入"><a href="#样例输入" class="headerlink" title="样例输入"></a>样例输入</h2><p>第一行输入一个正整数q,代表询问次数。<br>每次询问输入一个字符串，仅由’0’和’1’组成。所有字符串长度之和不超过200000。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">3</span><br><span class="line">101</span><br><span class="line">1111</span><br><span class="line">1011</span><br></pre></td></tr></table></figure>
+
+<h2 id="样例输出"><a href="#样例输出" class="headerlink" title="样例输出"></a>样例输出</h2><p>对于每次询问，如果该字符串可以通过有限的操作使得所有字符相同，则输出”Yes”,否则输出”No”。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Yes</span><br><span class="line">Yes</span><br><span class="line">No</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="提示"><a href="#提示" class="headerlink" title="提示"></a>提示</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">第一组询问，先对前两个字符操作，变成&quot;011&quot;，然后对后两个字符操作，变成&quot;000&quot;。</span><br><span class="line">第二组询问，不需要任何操作。</span><br><span class="line">第三组询问,显然无法通过有效的操作次数使得所有字符相等。</span><br></pre></td></tr></table></figure>
+
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>通过案例和解释，可以得出0和1只要有一个是偶数个数，就可以通过有限次操作使得所有字符相同。</p>
+<h2 id="解答"><a href="#解答" class="headerlink" title="解答"></a>解答</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span> n;</span><br><span class="line">    cin &gt;&gt; n;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i= <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        string s;</span><br><span class="line">        cin &gt;&gt; s;</span><br><span class="line">        <span class="type">int</span> size = s.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> z = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> o = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> ss : s) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ss == <span class="string">&#x27;1&#x27;</span>) &#123;</span><br><span class="line">                o++;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                z++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//cout &lt;&lt; o &lt;&lt; z &lt;&lt; endl;</span></span><br><span class="line">        <span class="keyword">if</span> (o%<span class="number">2</span> == <span class="number">0</span> || z%<span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            cout &lt;&lt; <span class="string">&quot;Yes&quot;</span> &lt;&lt; endl;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            cout &lt;&lt; <span class="string">&quot;No&quot;</span> &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
         </div>
 
         
@@ -262,11 +278,11 @@
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
+                        <a href="/tags/%E6%94%B9%E7%BC%96/">#改编</a>&nbsp;
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98/">#背包问题</a>&nbsp;
+                        <a href="/tags/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">#算法与数据结构</a>&nbsp;
                     </li>
                 
             </ul>
@@ -278,13 +294,13 @@
                     <div class="article-prev">
                         <a class="prev"
                            rel="prev"
-                           href="/2022/09/13/code%E7%99%BE%E5%BA%A6%E2%80%9Cbaidu%E2%80%9D%E5%9E%8B%E5%AD%97%E4%B8%B2%E6%95%B0%E9%87%8F/"
+                           href="/2022/09/13/code%E7%99%BE%E5%BA%A6%E5%AD%97%E7%AC%A6%E7%9F%A9%E9%98%B5/"
                         >
                             <span class="left arrow-icon flex-center">
                               <i class="fas fa-chevron-left"></i>
                             </span>
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">code百度“baidu”型字串数量</span>
+                                <span class="post-nav-title-item">code百度字符矩阵</span>
                                 <span class="post-nav-item">上一篇</span>
                             </span>
                         </a>
@@ -294,10 +310,10 @@
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2022/09/01/code%E5%8D%8E%E4%B8%BA%E5%A3%AB%E5%85%B5%E7%9A%84%E4%BB%BB%E5%8A%A12/"
+                           href="/2022/09/13/code%E7%99%BE%E5%BA%A6%E2%80%9Cbaidu%E2%80%9D%E5%9E%8B%E5%AD%97%E4%B8%B2%E6%95%B0%E9%87%8F/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">code华为士兵的任务2</span>
+                                <span class="post-nav-title-item">code百度“baidu”型字串数量</span>
                                 <span class="post-nav-item">下一篇</span>
                             </span>
                             <span class="right arrow-icon flex-center">
@@ -419,7 +435,7 @@
         <aside class="page-aside">
             <div class="post-toc-wrap">
     <div class="post-toc">
-        
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0%EF%BC%9A"><span class="nav-number">1.</span> <span class="nav-text">题目描述：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E4%BE%8B%E8%BE%93%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">样例输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E4%BE%8B%E8%BE%93%E5%87%BA"><span class="nav-number">3.</span> <span class="nav-text">样例输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E7%A4%BA"><span class="nav-number">4.</span> <span class="nav-text">提示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">5.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E7%AD%94"><span class="nav-number">6.</span> <span class="nav-text">解答</span></a></li></ol>
     </div>
 </div>
         </aside>
