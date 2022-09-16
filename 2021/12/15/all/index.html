@@ -1657,7 +1657,7 @@
 <p>2）第二次握手：服务端收到客户端的SYN包，回一个ACK包（ACK&#x3D;x+1）确认收到，同时发送一个SYN包（seq&#x3D;y）给客户端</p>
 <p>3）第三次握手：客户端收到SYN+ACK包，再回一个ACK包（ACK&#x3D;y+1）告诉服务端已经收到</p>
 <p>4）三次握手完成，成功建立连接，开始传输数据</p>
-<h3 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h3><p><img src="https://git.poker/RenJie-L/PicHub/blob/master/20220814/image.6s40z8i8x3k0.png?raw=true" alt="image"><br>1）客户端发送FIN包（FIN&#x3D;1）给服务端，告诉它自己的数据已经发送完毕，请求终止连接，此时客户端不发送数据，但还能接收数据</p>
+<h3 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h3><p><img src="https://cdn.staticaly.com/gh/RenJie-L/PicHub@master/20220814/image.6s40z8i8x3k0.png" alt="image"><br>1）客户端发送FIN包（FIN&#x3D;1）给服务端，告诉它自己的数据已经发送完毕，请求终止连接，此时客户端不发送数据，但还能接收数据</p>
 <p>2）服务端收到FIN包，回一个ACK包给客户端告诉它已经收到包了，此时还没有断开socket连接，而是等待剩下的数据传输完毕</p>
 <p>3）服务端等待数据传输完毕后，向客户端发送FIN包，表明可以断开连接</p>
 <p>4）客户端收到后，回一个ACK包表明确认收到，等待一段时间，确保服务端不再有数据发过来，然后彻底断开连接</p>
