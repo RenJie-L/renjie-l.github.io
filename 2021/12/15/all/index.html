@@ -303,10 +303,10 @@
 </ol>
 <h2 id="const-int-a-int-const-a-const-int-a-int-const-a-const-int-const-a分别是什么，有什么特点。"><a href="#const-int-a-int-const-a-const-int-a-int-const-a-const-int-const-a分别是什么，有什么特点。" class="headerlink" title="const int *a, int const *a, const int a, int *const a, const int *const a分别是什么，有什么特点。"></a>const int *a, int const *a, const int a, int *const a, const int *const a分别是什么，有什么特点。</h2><ol>
 <li>const int a;     &#x2F;&#x2F;指的是a是一个常量，不允许修改。</li>
-<li>const int <em>a;    &#x2F;&#x2F;a指针所指向的内存里的值不变，即（</em>a）不变</li>
-<li>int const *a;    &#x2F;&#x2F;同const int *a;</li>
-<li>int *const a;    &#x2F;&#x2F;a指针所指向的内存地址不变，即a不变</li>
-<li>const int <em>const a;   &#x2F;&#x2F;都不变，即（</em>a）不变，a也不变</li>
+<li>const int * a;    &#x2F;&#x2F;a指针所指向的内存里的值不变，即（* a）不变</li>
+<li>int const * a;    &#x2F;&#x2F;同const int *a;</li>
+<li>int * const a;    &#x2F;&#x2F;a指针所指向的内存地址不变，即a不变</li>
+<li>const int * const a;   &#x2F;&#x2F;都不变，即（* a）不变，a也不变</li>
 </ol>
 <h2 id="异常处理机制"><a href="#异常处理机制" class="headerlink" title="异常处理机制"></a>异常处理机制</h2><p>标准库提供了abort()和exit()两个函数，它们可以强行终止程序的运行。这两个函数本身不能检测异常，但在C程序发生异常后经常使用这两个函数使程序终止。<br>异常的抛出方式为使用throw(type e)，try、catch和throw都是C++为处理异常而添加的关键字。</p>
 <h2 id="深拷贝和浅拷贝的区别。"><a href="#深拷贝和浅拷贝的区别。" class="headerlink" title="深拷贝和浅拷贝的区别。"></a>深拷贝和浅拷贝的区别。</h2><p>浅拷贝：位拷贝，拷贝构造函数，赋值重载，多个对象共用同一块资源，同一块资源释放多次，崩溃或者内存泄漏</p>
