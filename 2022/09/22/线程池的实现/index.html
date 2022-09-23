@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="李仁杰">
+    
+    <title>
+        
+            线程池的实现 |
+        
+        仁杰的杂记
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/ava.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"renjie-l.github.io","root":"/","language":"zh-CN","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":false,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/ava.jpg","favicon":"/images/ava.jpg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/kOJZ5ofe.jpg","description":null},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":true},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <span class="pjax-progress-icon">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </span>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                仁杰的杂记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                所有
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于我
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">所有</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于我</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">线程池的实现</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/ava.jpg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">李仁杰</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-09-22 11:40:22</span>
+        <span class="mobile">2022-09-22 11:40</span>
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/C/">C++</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/C/">C++</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Linux/">Linux</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%9D%82%E8%AE%B0/">杂记</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.7k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>6 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="线程池原理"><a href="#线程池原理" class="headerlink" title="线程池原理"></a>线程池原理</h2><p>C++11加入了线程库，从此告别了标准库不支持并发的历史。然而C++对于多线程的支持还是比较低级，稍微高级一点的用法都需要自己去实现，比如线程池、信号量等。线程池（thread pool）这个东西，一般在面试时的回答都是：“<strong>管理一个任务队列，一个线程队列，然后每次去一个任务分配给一个线程去做，循环往复。</strong>”这回答貌似没有问题，但是写起程序来的时候就出问题了。</p>
+<p>有什么问题？线程池一般是要复用线程，所以如果是取一个task分配给某一个thread，执行完之后再重新分配，在语言层面这是基本不能实现的：C++的thread都是执行一个固定的task函数，执行完之后线程也就结束了。所以该如何实现task和thread的分配呢？</p>
+<p>让每一个thread创建后，就去执行调度函数：循环获取task，然后执行。</p>
+<p>这个循环该什么时候停止呢？</p>
+<p>很简单，当线程池停止使用时，循环停止。</p>
+<p>这样一来，就保证了thread函数的唯一性，而且复用线程执行task。</p>
+<p>总结一下，我们的线程池的主要组成部分有二：</p>
+<ul>
+<li>任务队列（Task Queue）</li>
+<li>线程池（Thread Pool）</li>
+</ul>
+<p>线程池与任务队列之间的匹配操作，是典型的生产者-消费者模型，本模型使用了两个工具：一个mutex + 一个条件变量。mutex就是锁，保证任务的添加和移除（获取）的互斥性；一个条件变量保证多个线程获取task的同步性：当任务队列为空时，线程应该等待（阻塞）。</p>
+<h2 id="任务队列（Task-Queue）"><a href="#任务队列（Task-Queue）" class="headerlink" title="任务队列（Task Queue）"></a>任务队列（Task Queue）</h2><p>我们会理所当然地希望任务以发送它相同的顺序来逐个执行，因此队列是最适合的数据结构。</p>
+<p>这里我们把任务队列单拿出来，独自为类，方便以后进行各种骚操作。</p>
+<p>将任务队列单拿出来之后，我们应考虑一个问题：正如上一节提到的线程池task与thread的分配方法所示，线程池中的线程会持续查询任务队列是否有可用工作。当两个甚至多个线程试图同时执行查询工作时，这会引起难以估计的灾难。因而我们需要对C++的std::queue进行包装，实现一个线程安全的SafeQueue。</p>
+<p>实现一个线程安全的SafeQueue原理很简单，利用mutex来限制并发访问即可。我们可以在SafeQueue类中定义一个std::mutex类型的成员变量，并在相应的操作接口（如入队接口enqueue()）中利用互斥体包装器来管理这个mutex，确保没有其他人正在访问该资源。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SafeQueue</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    std::queue&lt;T&gt; m_queue; <span class="comment">//利用模板函数构造队列</span></span><br><span class="line">​</span><br><span class="line">    std::mutex m_mutex; <span class="comment">// 访问互斥信号量</span></span><br><span class="line">​</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">SafeQueue</span>() &#123;&#125;</span><br><span class="line">    <span class="built_in">SafeQueue</span>(SafeQueue &amp;&amp;other) &#123;&#125;</span><br><span class="line">    ~<span class="built_in">SafeQueue</span>() &#123;&#125;</span><br><span class="line">​</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">empty</span><span class="params">()</span> <span class="comment">// 返回队列是否为空</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function">std::unique_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(m_mutex)</span></span>; <span class="comment">// 互斥信号变量加锁，防止m_queue被改变</span></span><br><span class="line">​</span><br><span class="line">        <span class="keyword">return</span> m_queue.<span class="built_in">empty</span>();</span><br><span class="line">    &#125;</span><br><span class="line">​</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">size</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function">std::unique_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(m_mutex)</span></span>; <span class="comment">// 互斥信号变量加锁，防止m_queue被改变</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> m_queue.<span class="built_in">size</span>();</span><br><span class="line">    &#125;</span><br><span class="line">​</span><br><span class="line">    <span class="comment">// 队列添加元素</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">enqueue</span><span class="params">(T &amp;t)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function">std::unique_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(m_mutex)</span></span>;</span><br><span class="line">        m_queue.<span class="built_in">emplace</span>(t);</span><br><span class="line">    &#125;</span><br><span class="line">​</span><br><span class="line">    <span class="comment">// 队列取出元素</span></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">dequeue</span><span class="params">(T &amp;t)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function">std::unique_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(m_mutex)</span></span>; <span class="comment">// 队列加锁</span></span><br><span class="line">​</span><br><span class="line">        <span class="keyword">if</span> (m_queue.<span class="built_in">empty</span>())</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        t = std::<span class="built_in">move</span>(m_queue.<span class="built_in">front</span>()); <span class="comment">// 取出队首元素，返回队首元素值，并进行右值引用</span></span><br><span class="line">​</span><br><span class="line">        m_queue.<span class="built_in">pop</span>(); <span class="comment">// 弹出入队的第一个元素</span></span><br><span class="line">​</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="线程池（Thread-Pool）"><a href="#线程池（Thread-Pool）" class="headerlink" title="线程池（Thread Pool）"></a>线程池（Thread Pool）</h2><p>线程池是线程池模型的主体，我们将它拆成更小的部分来逐步分析，方便理解。</p>
+<h3 id="提交函数"><a href="#提交函数" class="headerlink" title="提交函数"></a>提交函数</h3><p>线程池最重要的方法就是负责向任务队列添加任务。我们的提交函数应该做到以下两点：</p>
+<ul>
+<li>接收任何参数的任何函数。（普通函数，Lambda，成员函数……）</li>
+<li>立即返回“东西”，避免阻塞主线程。这里返回的“东西”或者说“对象”应该包含任务结束的结果。<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Submit a function to be executed asynchronously by the pool</span></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> F, <span class="keyword">typename</span>... Args&gt;</span><br><span class="line">    <span class="function"><span class="keyword">auto</span> <span class="title">submit</span><span class="params">(F &amp;&amp;f, Args &amp;&amp;...args)</span> -&gt; std::future&lt;<span class="title">decltype</span><span class="params">(f(args...))</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// Create a function with bounded parameter ready to execute</span></span><br><span class="line">        std::function&lt;<span class="keyword">decltype</span>(f(args...))()&gt; func = std::<span class="built_in">bind</span>(std::forward&lt;F&gt;(f), std::forward&lt;Args&gt;(args)...); <span class="comment">// 连接函数和参数定义，特殊函数类型，避免左右值错误</span></span><br><span class="line">​</span><br><span class="line">        <span class="comment">// Encapsulate it into a shared pointer in order to be able to copy construct</span></span><br><span class="line">        <span class="keyword">auto</span> task_ptr = std::make_shared&lt;std::packaged_task&lt;<span class="keyword">decltype</span>(<span class="built_in">f</span>(args...))()&gt;&gt;(func);  </span><br><span class="line">​</span><br><span class="line">        <span class="comment">// Warp packaged task into void function</span></span><br><span class="line">        std::function&lt;<span class="type">void</span>()&gt; warpper_func = [task_ptr]()</span><br><span class="line">        &#123;</span><br><span class="line">            (*task_ptr)();</span><br><span class="line">        &#125;;  </span><br><span class="line">​</span><br><span class="line">        <span class="comment">// 队列通用安全封包函数，并压入安全队列</span></span><br><span class="line">        m_queue.<span class="built_in">enqueue</span>(warpper_func);</span><br><span class="line">​</span><br><span class="line">        <span class="comment">// 唤醒一个等待中的线程</span></span><br><span class="line">        m_conditional_lock.<span class="built_in">notify_one</span>();  </span><br><span class="line">​</span><br><span class="line">        <span class="comment">// 返回先前注册的任务指针</span></span><br><span class="line">        <span class="keyword">return</span> task_ptr-&gt;<span class="built_in">get_future</span>();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="内置工作线程类"><a href="#内置工作线程类" class="headerlink" title="内置工作线程类"></a>内置工作线程类</h2><p>本文在线程池中设立私有成员类ThreadWoker作为内置线程工作类，执行真正的工作。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ThreadWorker</span> <span class="comment">// 内置线程工作类</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> m_id; <span class="comment">// 工作id</span></span><br><span class="line">​</span><br><span class="line">    ThreadPool *m_pool; <span class="comment">// 所属线程池</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 构造函数</span></span><br><span class="line">    <span class="built_in">ThreadWorker</span>(ThreadPool *pool, <span class="type">const</span> <span class="type">int</span> id) : <span class="built_in">m_pool</span>(pool), <span class="built_in">m_id</span>(id) &#123; &#125;</span><br><span class="line">​</span><br><span class="line">    <span class="comment">// 重载()操作</span></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        std::function&lt;<span class="type">void</span>()&gt; func; <span class="comment">// 定义基础函数类func</span></span><br><span class="line">​</span><br><span class="line">        <span class="type">bool</span> dequeued; <span class="comment">// 是否正在取出队列中元素</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 判断线程池是否关闭，没有关闭则从任务队列中循环提取任务</span></span><br><span class="line">        <span class="keyword">while</span> (!m_pool-&gt;m_shutdown)</span><br><span class="line">        &#123;</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 为线程环境加锁，互访问工作线程的休眠和唤醒</span></span><br><span class="line">                <span class="function">std::unique_lock&lt;std::mutex&gt; <span class="title">lock</span><span class="params">(m_pool-&gt;m_conditional_mutex)</span></span>;</span><br><span class="line">​</span><br><span class="line">                <span class="comment">// 如果任务队列为空，阻塞当前线程</span></span><br><span class="line">                <span class="keyword">if</span> (m_pool-&gt;m_queue.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                    m_pool-&gt;m_conditional_lock.<span class="built_in">wait</span>(lock); <span class="comment">// 等待条件变量通知，开启线程</span></span><br><span class="line">                &#125;</span><br><span class="line">​</span><br><span class="line">                <span class="comment">// 取出任务队列中的元素</span></span><br><span class="line">                dequeued = m_pool-&gt;m_queue.<span class="built_in">dequeue</span>(func);</span><br><span class="line">            &#125;</span><br><span class="line">​</span><br><span class="line">            <span class="comment">// 如果成功取出，执行工作函数</span></span><br><span class="line">            <span class="keyword">if</span> (dequeued)</span><br><span class="line">                <span class="built_in">func</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这里应该重点关注重载()操作的void operator()()，这里面进行了任务的取出与执行。</p>
+<p>参照注释和上文，我们使用了一个while循环，在线程池处于工作时循环从任务队列中提取任务。并利用条件变量，在任务队列为空时阻塞当前线程，等待上文中的提交函数添加任务后发出的通知。在任务队列不为空时，我们将任务队列中的任务取出，并放在事先声明的基础函数类func中。成功取出后便立即执行该任务。</p>
+
+        </div>
+
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/C/">#C++</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/Linux/">#Linux</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">#多线程</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E6%9D%82%E8%AE%B0/">#杂记</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2022/09/22/%E5%BC%82%E6%AD%A5%E6%97%A5%E5%BF%97%E7%9A%84%E5%AE%9E%E7%8E%B0/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">异步日志的实现</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/09/15/%E5%90%89%E5%88%A9%E6%99%BA%E8%83%BD%E9%A9%BE%E9%A9%B6%E4%B8%80%E9%9D%A2/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">吉利智能驾驶一面</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2021</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">李仁杰</a>
+        </div>
+        
+            <script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">线程池原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E9%98%9F%E5%88%97%EF%BC%88Task-Queue%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">任务队列（Task Queue）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%88Thread-Pool%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">线程池（Thread Pool）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E4%BA%A4%E5%87%BD%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">提交函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E7%BD%AE%E5%B7%A5%E4%BD%9C%E7%BA%BF%E7%A8%8B%E7%B1%BB"><span class="nav-number">4.</span> <span class="nav-text">内置工作线程类</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/code-copy.js"></script>
+
+
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/left-side-toggle.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/toc.js"></script>
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.4.5/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
