@@ -61,4 +61,17 @@
   
   
   
+  
+  
+  <entry>
+    <title>hi，这里是最爱的杂货铺</title>
+    <link href="/"/>
+    <url>/</url>
+    
+    <content type="html"><![CDATA[<h2 id="about-me"><a href="#about-me" class="headerlink" title="about me"></a>about me</h2><p><strong>tel</strong>：18258866903<br><strong>email</strong>：<a href="mailto:&#x72;&#x65;&#x6e;&#106;&#105;&#x65;&#45;&#108;&#x40;&#102;&#x6f;&#120;&#x6d;&#x61;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;">renjie-l@foxmail.com</a></p><h2 id="教育背景"><a href="#教育背景" class="headerlink" title="教育背景"></a>教育背景</h2><ul><li>杭州电子科技大学，硕士研究生，电子信息专业，2020.09 – 2023.06</li><li>ITMO UNIVERSITY(俄罗斯)，Master，Control Engineering专业，2020.09 – 2022.06</li></ul><h2 id="项目经历"><a href="#项目经历" class="headerlink" title="项目经历"></a>项目经历</h2><h3 id="基于强化学习的无人机负载无摆动轨迹生成（科研项目）"><a href="#基于强化学习的无人机负载无摆动轨迹生成（科研项目）" class="headerlink" title="基于强化学习的无人机负载无摆动轨迹生成（科研项目）"></a>基于强化学习的无人机负载无摆动轨迹生成（科研项目）</h3><ul><li><strong>项目背景</strong>：浙江省新苗人才计划项目</li><li><strong>项目时间</strong>：2022.03 – 2023.06</li><li><strong>项目描述</strong>：针对无人机悬挂负载易摆动的问题，通过强化学习算法生成无摆动飞行轨迹，并在实际无人机系统中验证有效性。</li></ul><h2 id="所获奖励"><a href="#所获奖励" class="headerlink" title="所获奖励"></a>所获奖励</h2><table><thead><tr><th>获奖时间</th><th>奖励名称</th></tr></thead><tbody><tr><td>2021.07</td><td>第十六届中国研究生电子设计竞赛 华东赛区一等奖</td></tr><tr><td>2022.08</td><td>第八届浙江省“互联网+”创新创业大赛 银奖</td></tr><tr><td>2021.10</td><td>2021研究生学业奖学金（前10%）</td></tr><tr><td>2020.11</td><td>2020研究生学业奖学金（前20%）</td></tr></tbody></table><h2 id="学术论文"><a href="#学术论文" class="headerlink" title="学术论文"></a>学术论文</h2><ul><li>Renjie, L., &amp; Fan, Y. (2022). Deep Reinforcement Learning-based Swing-Free Trajectories Planning Algorithm for UAV with a Suspended Load. In Proceedings of the CAC CHINAAUTOMATIONCONGRESS 2022.</li></ul>]]></content>
+    
+  </entry>
+  
+  
+  
 </search>
