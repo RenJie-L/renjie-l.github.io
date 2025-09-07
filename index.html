@@ -142,18 +142,6 @@
           
           
             <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
@@ -328,7 +316,7 @@
       
       <a class="index-excerpt index-excerpt__noimg" href="/2025/04/25/ReactHooks/" target="_self">
         <div>
-          1. 背景在新人 onboarding 项目中，需要为智能视角组件注册位置信息以供引导弹窗使用。由于智能视角采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到智能视角组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命
+          1. 背景在某次开发项目中，需要为一个组件注册位置信息以供引导弹窗使用。由于该组件采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命周期内保持一致 借此机会，深入学习
         </div>
       </a>
 
@@ -347,6 +335,46 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/React/">#React</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2023/06/25/hexo%E5%8D%9A%E5%AE%A2/" target="_self">
+          利用 GitHub Pages + Hexo 快速搭建个人博客
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2023/06/25/hexo%E5%8D%9A%E5%AE%A2/" target="_self">
+        <div>
+          拥有一个自己的博客站点是件非常酷炫的事情，利用 GitHub Pages 和 Hexo 可轻松实现这个目标。  ps：GitLab 其实也支持 Pages 功能，但公司内网的该功能域名和证书支持均被禁用，实用性较低，故不展开。  一、准备工作1. GitHub 创建个人仓库 登录 GitHub 账号，点击页面右上角的 New repository 创建新仓库。 仓库名必须为固定格式：用户名.git
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2023-06-25 20:02" pubdate>
+              2023-06-25
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%9D%82%E8%AE%B0/">#杂记</a>
             
           </div>
         

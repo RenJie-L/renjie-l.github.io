@@ -19,15 +19,15 @@
   <meta name="author" content="RenJie">
   <meta name="keywords" content="">
   
-    <meta name="description" content="1. 背景在新人 onboarding 项目中，需要为智能视角组件注册位置信息以供引导弹窗使用。由于智能视角采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到智能视角组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命">
+    <meta name="description" content="1. 背景在某次开发项目中，需要为一个组件注册位置信息以供引导弹窗使用。由于该组件采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命周期内保持一致 借此机会，深入学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="React Hooks 实践：useEffect vs useLayoutEffect &amp; useRef vs createRef 深度解析">
 <meta property="og:url" content="https://renjie-l.github.io/2025/04/25/ReactHooks/index.html">
 <meta property="og:site_name" content="zuiai">
-<meta property="og:description" content="1. 背景在新人 onboarding 项目中，需要为智能视角组件注册位置信息以供引导弹窗使用。由于智能视角采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到智能视角组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命">
+<meta property="og:description" content="1. 背景在某次开发项目中，需要为一个组件注册位置信息以供引导弹窗使用。由于该组件采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命周期内保持一致 借此机会，深入学习">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-25T12:07:47.000Z">
-<meta property="article:modified_time" content="2025-08-25T12:08:25.141Z">
+<meta property="article:modified_time" content="2025-09-07T16:07:27.314Z">
 <meta property="article:author" content="RenJie">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
@@ -144,18 +144,6 @@
               <a class="nav-link" href="/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
               </a>
             </li>
           
@@ -298,8 +286,8 @@
             
               <div class="markdown-body">
                 
-                <h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>在新人 onboarding 项目中，需要为智能视角组件注册位置信息以供引导弹窗使用。由于智能视角采用函数组件实现且 DOM 会动态更新，初期错误使用了 <code>createRef</code> 导致引导功能失效。</p>
-<p><strong>问题现象</strong>：引导弹窗无法正确定位到智能视角组件位置<br><strong>根本原因</strong>：函数组件重渲染时 <code>createRef</code> 会创建新的 ref 对象，导致位置信息丢失<br><strong>解决方案</strong>：改用 <code>useRef</code> 确保 ref 对象在组件生命周期内保持一致</p>
+                <h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>在某次开发项目中，需要为一个组件注册位置信息以供引导弹窗使用。由于该组件采用函数组件实现且 DOM 会动态更新，初期错误使用了 <code>createRef</code> 导致引导功能失效。</p>
+<p><strong>问题现象</strong>：引导弹窗无法正确定位到组件位置<br><strong>根本原因</strong>：函数组件重渲染时 <code>createRef</code> 会创建新的 ref 对象，导致位置信息丢失<br><strong>解决方案</strong>：改用 <code>useRef</code> 确保 ref 对象在组件生命周期内保持一致</p>
 <p>借此机会，深入学习了这些 Hook 的区别和最佳实践。</p>
 <h2 id="2-useEffect-与-useLayoutEffect-的区别"><a href="#2-useEffect-与-useLayoutEffect-的区别" class="headerlink" title="2. useEffect 与 useLayoutEffect 的区别"></a>2. useEffect 与 useLayoutEffect 的区别</h2><p><code>useEffect</code> 和 <code>useLayoutEffect</code> 是 React 中常用的两个 Hook，但在触发时机和执行顺序上有重要区别。</p>
 <h3 id="2-1-执行时机对比"><a href="#2-1-执行时机对比" class="headerlink" title="2.1 执行时机对比"></a>2.1 执行时机对比</h3><p><strong>React 渲染流程</strong>：</p>
@@ -457,6 +445,12 @@
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2023/06/25/hexo%E5%8D%9A%E5%AE%A2/" title="利用 GitHub Pages + Hexo 快速搭建个人博客">
+                        <span class="hidden-mobile">利用 GitHub Pages + Hexo 快速搭建个人博客</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
