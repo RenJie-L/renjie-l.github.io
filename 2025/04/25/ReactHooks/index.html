@@ -27,7 +27,7 @@
 <meta property="og:description" content="1. 背景在某次开发项目中，需要为一个组件注册位置信息以供引导弹窗使用。由于该组件采用函数组件实现且 DOM 会动态更新，初期错误使用了 createRef 导致引导功能失效。 问题现象：引导弹窗无法正确定位到组件位置根本原因：函数组件重渲染时 createRef 会创建新的 ref 对象，导致位置信息丢失解决方案：改用 useRef 确保 ref 对象在组件生命周期内保持一致 借此机会，深入学习">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-25T12:07:47.000Z">
-<meta property="article:modified_time" content="2025-09-07T16:07:27.314Z">
+<meta property="article:modified_time" content="2025-09-10T07:36:16.347Z">
 <meta property="article:author" content="RenJie">
 <meta property="article:tag" content="React">
 <meta name="twitter:card" content="summary_large_image">
