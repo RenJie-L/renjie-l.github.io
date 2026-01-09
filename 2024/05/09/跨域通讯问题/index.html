@@ -1,0 +1,641 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
+  <link rel="icon" href="/img/avatar.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="RenJie">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="跨域通讯调研问题：API客户在某些场景下，页面之间通讯异常页面关系分析 **页面 A **：主页面 https:&#x2F;&#x2F;domain-a.com **页面 B **：A 的子 iframe https:&#x2F;&#x2F;domain-b.com **页面 C **：A 的子 iframe https:&#x2F;&#x2F;domain-b.com&#x2F;page **页面 D **：由页面 C 通过 window.open() 打开的独立">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨域通讯问题">
+<meta property="og:url" content="https://renjie-l.github.io/2024/05/09/%E8%B7%A8%E5%9F%9F%E9%80%9A%E8%AE%AF%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="zuiai">
+<meta property="og:description" content="跨域通讯调研问题：API客户在某些场景下，页面之间通讯异常页面关系分析 **页面 A **：主页面 https:&#x2F;&#x2F;domain-a.com **页面 B **：A 的子 iframe https:&#x2F;&#x2F;domain-b.com **页面 C **：A 的子 iframe https:&#x2F;&#x2F;domain-b.com&#x2F;page **页面 D **：由页面 C 通过 window.open() 打开的独立">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-09T10:19:28.000Z">
+<meta property="article:modified_time" content="2026-01-09T10:22:17.182Z">
+<meta property="article:author" content="RenJie">
+<meta property="article:tag" content="积累">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>跨域通讯问题 - zuiai</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"renjie-l.github.io","root":"/","version":"1.9.8","typing":{"enable":false,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>最爱的杂货铺</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">跨域通讯问题</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-09 18:19" pubdate>
+          2024年5月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">跨域通讯问题</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="跨域通讯调研"><a href="#跨域通讯调研" class="headerlink" title="跨域通讯调研"></a>跨域通讯调研</h1><h2 id="问题：API客户在某些场景下，页面之间通讯异常"><a href="#问题：API客户在某些场景下，页面之间通讯异常" class="headerlink" title="问题：API客户在某些场景下，页面之间通讯异常"></a>问题：API客户在某些场景下，页面之间通讯异常</h2><h2 id="页面关系分析"><a href="#页面关系分析" class="headerlink" title="页面关系分析"></a>页面关系分析</h2><ul>
+<li>**页面 A **：主页面 <a target="_blank" rel="noopener" href="https://domain-a.com/">https://domain-a.com</a></li>
+<li>**页面 B **：A 的子 iframe <a target="_blank" rel="noopener" href="https://domain-b.com/">https://domain-b.com</a></li>
+<li>**页面 C **：A 的子 iframe <a target="_blank" rel="noopener" href="https://domain-b.com/page">https://domain-b.com/page</a></li>
+<li>**页面 D **：由页面 C 通过 <code>window.open()</code> 打开的独立页面 <a target="_blank" rel="noopener" href="https://domain-b.com/preview">https://domain-b.com/preview</a></li>
+</ul>
+<h2 id="当前页面通讯方式"><a href="#当前页面通讯方式" class="headerlink" title="当前页面通讯方式"></a>当前页面通讯方式</h2><p>BroadcastChannel</p>
+<h3 id="BroadcastChannel-通讯示例"><a href="#BroadcastChannel-通讯示例" class="headerlink" title="BroadcastChannel 通讯示例"></a>BroadcastChannel 通讯示例</h3><p>BroadcastChannel 允许同源页面之间进行简单高效的通讯。以下是在同源页面之间使用 BroadcastChannel 的示例：</p>
+<h4 id="页面-1（发送消息）"><a href="#页面-1（发送消息）" class="headerlink" title="页面 1（发送消息）"></a>页面 1（发送消息）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 创建一个 BroadcastChannel 实例，指定频道名称</span><br><span class="hljs-keyword">const</span> channel = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BroadcastChannel</span>(<span class="hljs-string">&#x27;pageCommunication&#x27;</span>);<br><br><span class="hljs-comment">// 发送消息</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sendMessage</span>(<span class="hljs-params">message</span>) &#123;<br>  channel.<span class="hljs-title function_">postMessage</span>(&#123;<br>    <span class="hljs-attr">sender</span>: <span class="hljs-string">&#x27;page1&#x27;</span>,<br>    <span class="hljs-attr">content</span>: message,<br>    <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>  &#125;);<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;消息已发送:&#x27;</span>, message);<br>&#125;<br><br><span class="hljs-comment">// 调用发送消息函数</span><br><span class="hljs-title function_">sendMessage</span>(<span class="hljs-string">&#x27;Hello from Page 1!&#x27;</span>);<br><br><span class="hljs-comment">// 监听来自其他页面的消息</span><br>channel.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面 1 收到消息:&#x27;</span>, event.<span class="hljs-property">data</span>);<br>&#125;);<br><br><span class="hljs-comment">// 关闭频道（可选，在页面卸载时调用）</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;beforeunload&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>  channel.<span class="hljs-title function_">close</span>();<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h4 id="页面-2（接收消息）"><a href="#页面-2（接收消息）" class="headerlink" title="页面 2（接收消息）"></a>页面 2（接收消息）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 创建相同名称的 BroadcastChannel 实例，加入同一个频道</span><br><span class="hljs-keyword">const</span> channel = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BroadcastChannel</span>(<span class="hljs-string">&#x27;pageCommunication&#x27;</span>);<br><br><span class="hljs-comment">// 监听消息</span><br>channel.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面 2 收到消息:&#x27;</span>, event.<span class="hljs-property">data</span>);<br>  <br>  <span class="hljs-comment">// 回复消息</span><br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">data</span>.<span class="hljs-property">sender</span> === <span class="hljs-string">&#x27;page1&#x27;</span>) &#123;<br>    channel.<span class="hljs-title function_">postMessage</span>(&#123;<br>      <span class="hljs-attr">sender</span>: <span class="hljs-string">&#x27;page2&#x27;</span>,<br>      <span class="hljs-attr">content</span>: <span class="hljs-string">&#x27;收到来自页面 1 的消息，已处理！&#x27;</span>,<br>      <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>    &#125;);<br>  &#125;<br>&#125;);<br><br><span class="hljs-comment">// 发送消息到频道</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sendToChannel</span>(<span class="hljs-params">message</span>) &#123;<br>  channel.<span class="hljs-title function_">postMessage</span>(&#123;<br>    <span class="hljs-attr">sender</span>: <span class="hljs-string">&#x27;page2&#x27;</span>,<br>    <span class="hljs-attr">content</span>: message,<br>    <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>  &#125;);<br>&#125;<br><br><span class="hljs-comment">// 关闭频道（可选，在页面卸载时调用）</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;beforeunload&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>  channel.<span class="hljs-title function_">close</span>();<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<h3 id="BroadcastChannel-特性说明"><a href="#BroadcastChannel-特性说明" class="headerlink" title="BroadcastChannel 特性说明"></a>BroadcastChannel 特性说明</h3><ul>
+<li><strong>同源限制</strong>：BroadcastChannel 只能在同源页面之间工作</li>
+<li><strong>简单易用</strong>：API 简洁，只需创建实例并监听消息</li>
+<li><strong>自动广播</strong>：消息会自动发送到所有加入同一频道的页面</li>
+<li><strong>无需显式连接</strong>：不需要建立连接或维护连接状态</li>
+</ul>
+<h2 id="加载失败原因分析"><a href="#加载失败原因分析" class="headerlink" title="加载失败原因分析"></a>加载失败原因分析</h2><p><a target="_blank" rel="noopener" href="https://domain-a.com/">https://domain-a.com/</a> 与 <a target="_blank" rel="noopener" href="https://domain-b.com/">https://domain-b.com/</a> 非同源页面</p>
+<p>BroadcastChannel只能在<strong>同源</strong>的页面之间进行通讯，同源意味着需要满足：</p>
+<ul>
+<li>相同的协议（protocol）</li>
+<li>相同的域名（domain）</li>
+<li>相同的端口（port）</li>
+</ul>
+<p>页面D和页面C虽然都在 <a target="_blank" rel="noopener" href="https://domain-b.com/">https://domain-b.com/</a> 域名下，但由于页面B是通过iframe嵌入在页面A中的，而页面A的域名是 <a target="_blank" rel="noopener" href="https://domain-a.com/">https://domain-a.com/</a>，这创建了一个跨域的iframe环境</p>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><h3 id="1-window-opener-postMessage（首选）"><a href="#1-window-opener-postMessage（首选）" class="headerlink" title="1. window.opener + postMessage（首选）"></a>1. window.opener + postMessage（首选）</h3><p>在跨域环境下，<code>window.opener + postMessage</code> 是一种可靠的页面通讯方式，特别适用于由 <code>window.open()</code> 打开的窗口与父窗口之间的通讯。以下是页面 C（打开窗口的页面）和页面 D（被打开的页面）之间使用这种方式的示例：</p>
+<h4 id="页面-C（打开窗口的页面）"><a href="#页面-C（打开窗口的页面）" class="headerlink" title="页面 C（打开窗口的页面）"></a>页面 C（打开窗口的页面）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 页面C中</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">openPageD</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-comment">// 打开页面D</span><br>  <span class="hljs-keyword">const</span> pageD = <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;https://domain-b.com/preview&#x27;</span>, <span class="hljs-string">&#x27;_blank&#x27;</span>);<br>  <br>  <span class="hljs-comment">// 监听来自页面D的消息</span><br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) &#123;<br>    <span class="hljs-comment">// 验证消息来源（重要的安全措施）</span><br>    <span class="hljs-keyword">if</span> (event.<span class="hljs-property">origin</span> === <span class="hljs-string">&#x27;https://domain-b.com&#x27;</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面C收到来自页面D的消息:&#x27;</span>, event.<span class="hljs-property">data</span>);<br>      <br>      <span class="hljs-comment">// 处理消息</span><br>      <span class="hljs-keyword">if</span> (event.<span class="hljs-property">data</span>.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;statusUpdate&#x27;</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面D状态更新:&#x27;</span>, event.<span class="hljs-property">data</span>.<span class="hljs-property">status</span>);<br>      &#125;<br>    &#125;<br>  &#125;);<br>  <br>  <span class="hljs-comment">// 向页面D发送消息（确保页面D已加载完成）</span><br>  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">if</span> (pageD) &#123;<br>      pageD.<span class="hljs-title function_">postMessage</span>(&#123;<br>        <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;init&#x27;</span>,<br>        <span class="hljs-attr">data</span>: <span class="hljs-string">&#x27;初始化数据&#x27;</span>,<br>        <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>      &#125;, <span class="hljs-string">&#x27;https://domain-b.com&#x27;</span>);<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面C已发送初始化消息到页面D&#x27;</span>);<br>    &#125;<br>  &#125;, <span class="hljs-number">1000</span>);<br>&#125;<br><br><span class="hljs-comment">// 调用打开页面D的函数</span><br><span class="hljs-title function_">openPageD</span>();<br></code></pre></td></tr></table></figure>
+
+<h4 id="页面-D（被打开的页面）"><a href="#页面-D（被打开的页面）" class="headerlink" title="页面 D（被打开的页面）"></a>页面 D（被打开的页面）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 页面D中</span><br><span class="hljs-comment">// 检查是否有父窗口（window.opener）</span><br><span class="hljs-keyword">if</span> (<span class="hljs-variable language_">window</span>.<span class="hljs-property">opener</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面D检测到父窗口&#x27;</span>);<br>  <br>  <span class="hljs-comment">// 监听来自页面C的消息</span><br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) &#123;<br>    <span class="hljs-comment">// 验证消息来源（重要的安全措施）</span><br>    <span class="hljs-keyword">if</span> (event.<span class="hljs-property">origin</span> === <span class="hljs-string">&#x27;https://domain-b.com&#x27;</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面D收到来自页面C的消息:&#x27;</span>, event.<span class="hljs-property">data</span>);<br>      <br>      <span class="hljs-comment">// 处理消息</span><br>      <span class="hljs-keyword">if</span> (event.<span class="hljs-property">data</span>.<span class="hljs-property">type</span> === <span class="hljs-string">&#x27;init&#x27;</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;收到初始化数据:&#x27;</span>, event.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>);<br>        <br>        <span class="hljs-comment">// 回复父窗口</span><br>        <span class="hljs-variable language_">window</span>.<span class="hljs-property">opener</span>.<span class="hljs-title function_">postMessage</span>(&#123;<br>          <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;statusUpdate&#x27;</span>,<br>          <span class="hljs-attr">status</span>: <span class="hljs-string">&#x27;已初始化完成&#x27;</span>,<br>          <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>        &#125;, <span class="hljs-string">&#x27;https://domain-b.com&#x27;</span>);<br>      &#125;<br>    &#125;<br>  &#125;);<br>  <br>  <span class="hljs-comment">// 向父窗口发送状态消息</span><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">sendStatusToParent</span>(<span class="hljs-params">status</span>) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">window</span>.<span class="hljs-property">opener</span>) &#123;<br>      <span class="hljs-variable language_">window</span>.<span class="hljs-property">opener</span>.<span class="hljs-title function_">postMessage</span>(&#123;<br>        <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;statusUpdate&#x27;</span>,<br>        <span class="hljs-attr">status</span>: status,<br>        <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>      &#125;, <span class="hljs-string">&#x27;https://domain-b.com&#x27;</span>);<br>    &#125;<br>  &#125;<br>  <br>  <span class="hljs-comment">// 示例：发送加载完成状态</span><br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;load&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-title function_">sendStatusToParent</span>(<span class="hljs-string">&#x27;页面已完全加载&#x27;</span>);<br>  &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="postMessage-安全注意事项"><a href="#postMessage-安全注意事项" class="headerlink" title="postMessage 安全注意事项"></a>postMessage 安全注意事项</h3><ul>
+<li><strong>验证消息来源</strong>：始终在 <code>message</code> 事件处理函数中检查 <code>event.origin</code>，确保只处理来自可信域名的消息</li>
+<li><strong>指定目标源</strong>：在调用 <code>postMessage</code> 时，始终指定目标域名作为第二个参数，避免消息被恶意站点截获</li>
+<li><strong>消息格式规范</strong>：使用结构化的消息格式（如包含 <code>type</code> 字段），便于消息的分类和处理</li>
+<li><strong>敏感数据保护</strong>：避免通过 postMessage 传输敏感数据，如密码、令牌等</li>
+</ul>
+<h3 id="2-localStorage-storage-事件（备选）"><a href="#2-localStorage-storage-事件（备选）" class="headerlink" title="2. localStorage + storage 事件（备选）"></a>2. localStorage + storage 事件（备选）</h3><h4 id="实时渲染页面（页面C）"><a href="#实时渲染页面（页面C）" class="headerlink" title="实时渲染页面（页面C）"></a>实时渲染页面（页面C）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 页面C中</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">openPageD</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">open</span>(<span class="hljs-string">&#x27;https://domain-b.com/preview&#x27;</span>, <span class="hljs-string">&#x27;_blank&#x27;</span>);<br>  <br>  <span class="hljs-comment">// 监听storage事件</span><br>  <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;storage&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) &#123;<br>    <span class="hljs-keyword">if</span> (event.<span class="hljs-property">key</span> === <span class="hljs-string">&#x27;pageCDCommunication&#x27;</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面C收到存储事件:&#x27;</span>, event.<span class="hljs-property">newValue</span>);<br>      <br>      <span class="hljs-keyword">const</span> data = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(event.<span class="hljs-property">newValue</span>);<br>      <span class="hljs-keyword">if</span> (data.<span class="hljs-property">sender</span> === <span class="hljs-string">&#x27;pageD&#x27;</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;来自页面D的消息:&#x27;</span>, data.<span class="hljs-property">message</span>);<br>      &#125;<br>    &#125;<br>  &#125;);<br>&#125;<br><br><span class="hljs-comment">// 发送消息到localStorage</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sendToStorage</span>(<span class="hljs-params">message</span>) &#123;<br>  <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">setItem</span>(<span class="hljs-string">&#x27;pageCDCommunication&#x27;</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>    <span class="hljs-attr">sender</span>: <span class="hljs-string">&#x27;pageC&#x27;</span>,<br>    <span class="hljs-attr">message</span>: message,<br>    <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>  &#125;));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="单独查看页（页面D）"><a href="#单独查看页（页面D）" class="headerlink" title="单独查看页（页面D）"></a>单独查看页（页面D）</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 页面D中</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;storage&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) &#123;<br>  <span class="hljs-keyword">if</span> (event.<span class="hljs-property">key</span> === <span class="hljs-string">&#x27;pageCDCommunication&#x27;</span>) &#123;<br>    <span class="hljs-keyword">const</span> data = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(event.<span class="hljs-property">newValue</span>);<br>    <span class="hljs-keyword">if</span> (data.<span class="hljs-property">sender</span> === <span class="hljs-string">&#x27;pageC&#x27;</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;页面D收到来自页面C的消息:&#x27;</span>, data.<span class="hljs-property">message</span>);<br>      <br>      <span class="hljs-comment">// 回复消息</span><br>      <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">setItem</span>(<span class="hljs-string">&#x27;pageCDCommunication&#x27;</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>        <span class="hljs-attr">sender</span>: <span class="hljs-string">&#x27;pageD&#x27;</span>,<br>        <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;收到消息，正在处理...&#x27;</span>,<br>        <span class="hljs-attr">timestamp</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>()<br>      &#125;));<br>    &#125;<br>  &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%A7%AF%E7%B4%AF/" class="print-no-link">#积累</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/04/25/ReactHooks/" title="React Hooks 实践：useEffect vs useLayoutEffect &amp; useRef vs createRef 深度解析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">React Hooks 实践：useEffect vs useLayoutEffect &amp; useRef vs createRef 深度解析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/06/25/hexo%E5%8D%9A%E5%AE%A2/" title="利用 GitHub Pages + Hexo 快速搭建个人博客">
+                        <span class="hidden-mobile">利用 GitHub Pages + Hexo 快速搭建个人博客</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Powered by Hexo</span></a> <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
