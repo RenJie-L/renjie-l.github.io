@@ -1,0 +1,798 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
+  <link rel="icon" href="/img/avatar.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="RenJie">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="AI 编码最佳实践 2.0 基于 Cursor Agent 官方指南 的总结   一、了解 Agent HarnessAgent 建立在三个组件之上：  Instructions：引导 agent 行为的 system prompt 和规则   Tools：文件编辑、代码库搜索、终端执行等工具   User messages：你用来指挥工作的提示词和后续交互  Cursor 会为每个模型专门调整">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 编码最佳实践 2.0">
+<meta property="og:url" content="https://renjie-l.github.io/2026/02/14/AI%20%E7%BC%96%E7%A0%81%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B52.0/index.html">
+<meta property="og:site_name" content="zuiai">
+<meta property="og:description" content="AI 编码最佳实践 2.0 基于 Cursor Agent 官方指南 的总结   一、了解 Agent HarnessAgent 建立在三个组件之上：  Instructions：引导 agent 行为的 system prompt 和规则   Tools：文件编辑、代码库搜索、终端执行等工具   User messages：你用来指挥工作的提示词和后续交互  Cursor 会为每个模型专门调整">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/blog/past-chats.jpg&w=1920&q=70">
+<meta property="og:image" content="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/changelog/changelog-2-2-judge.jpg&w=1920&q=70">
+<meta property="og:image" content="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/blog/web-and-mobile.jpg&w=1920&q=70">
+<meta property="og:image" content="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/changelog/changelog-2-2-debug-dropdown.jpg&w=1920&q=70">
+<meta property="article:published_time" content="2026-02-14T06:00:20.000Z">
+<meta property="article:modified_time" content="2026-02-14T06:33:56.675Z">
+<meta property="article:author" content="RenJie">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/blog/past-chats.jpg&w=1920&q=70">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>AI 编码最佳实践 2.0 - zuiai</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"renjie-l.github.io","root":"/","version":"1.9.8","typing":{"enable":false,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>最爱的杂货铺</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">AI 编码最佳实践 2.0</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-02-14 14:00" pubdate>
+          2026年2月14日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">AI 编码最佳实践 2.0</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="AI-编码最佳实践-2-0"><a href="#AI-编码最佳实践-2-0" class="headerlink" title="AI 编码最佳实践 2.0"></a>AI 编码最佳实践 2.0</h1><blockquote>
+<p>基于 <a target="_blank" rel="noopener" href="https://cursor.com/cn/blog/agent-best-practices">Cursor Agent 官方指南</a> 的总结</p>
+</blockquote>
+<hr>
+<h2 id="一、了解-Agent-Harness"><a href="#一、了解-Agent-Harness" class="headerlink" title="一、了解 Agent Harness"></a>一、了解 Agent Harness</h2><p>Agent 建立在三个组件之上：</p>
+<ol>
+<li><strong>Instructions</strong>：引导 agent 行为的 system prompt 和规则  </li>
+<li><strong>Tools</strong>：文件编辑、代码库搜索、终端执行等工具  </li>
+<li><strong>User messages</strong>：你用来指挥工作的提示词和后续交互</li>
+</ol>
+<p>Cursor 会为每个模型专门调整 instructions 和工具。不同模型对同一提示响应方式不同（有的更偏好 grep，有的需要明确要求在编辑后调用 linter），harness 帮你处理这些差异，让你专注构建软件本身。</p>
+<hr>
+<h2 id="二、从规划开始"><a href="#二、从规划开始" class="headerlink" title="二、从规划开始"></a>二、从规划开始</h2><blockquote>
+<p>你能做出的最大改变：<strong>在编写代码之前先进行规划</strong>。</p>
+</blockquote>
+<p>芝加哥大学研究发现，有经验的开发者更倾向于在生成代码之前先规划。规划让你更清晰自己要构建什么，并为 Agent 提供明确目标。</p>
+<h3 id="2-1-使用-Plan-模式"><a href="#2-1-使用-Plan-模式" class="headerlink" title="2.1 使用 Plan 模式"></a>2.1 使用 Plan 模式</h3><p>在 agent 输入框按 <strong><code>Shift+Tab</code></strong> 切换 Plan 模式。Agent 不会立即写代码，而是：</p>
+<ol>
+<li>分析代码库以查找相关文件  </li>
+<li>就你的需求提出澄清问题  </li>
+<li>创建包含文件路径和代码引用的详细实现计划  </li>
+<li>在开始构建前<strong>等待你的确认</strong></li>
+</ol>
+<p>计划以 Markdown 打开，可直接编辑、删减、补充。</p>
+<p><strong>提示</strong>：点击 “Save to workspace” 可保存到 <code>.cursor/plans/</code>，方便团队协作和中断后续写。</p>
+<p><strong>不需要计划的场景</strong>：简单小改动、已做过多次的任务，直接交给 agent 即可。</p>
+<h3 id="2-2-从计划重新开始"><a href="#2-2-从计划重新开始" class="headerlink" title="2.2 从计划重新开始"></a>2.2 从计划重新开始</h3><p>若 Agent 生成的内容不符合预期，<strong>不要反复修补提示</strong>，而应：</p>
+<ol>
+<li>回滚改动  </li>
+<li>重新细化计划，把需求描述得更具体  </li>
+<li>再执行一次</li>
+</ol>
+<p>这通常比「修一个进行中的 agent」更快、结果更干净。</p>
+<hr>
+<h2 id="三、管理上下文"><a href="#三、管理上下文" class="headerlink" title="三、管理上下文"></a>三、管理上下文</h2><p>随着 Agent 编写代码越来越多，你的主要工作变成：<strong>为每个 agent 提供完成其任务所需的上下文</strong>。</p>
+<h3 id="3-1-让-Agent-自行获取上下文"><a href="#3-1-让-Agent-自行获取上下文" class="headerlink" title="3.1 让 Agent 自行获取上下文"></a>3.1 让 Agent 自行获取上下文</h3><p>不必在提示里手动 @ 每一个文件。Agent 具备 grep 和语义搜索，会按需查找。</p>
+<p><strong>例如</strong>：问 “the authentication flow”（身份验证流程）时，Agent 会搜索到相关文件，即使你的提示里没有这些词。</p>
+<p><strong>原则</strong>：</p>
+<ul>
+<li>知道确切文件 → 在提示中引用  </li>
+<li>不知道 → 交给 Agent 去查  </li>
+<li>包含不相关文件 → 会让 Agent 弄不清重点</li>
+</ul>
+<h3 id="3-2-善用-引用"><a href="#3-2-善用-引用" class="headerlink" title="3.2 善用 @ 引用"></a>3.2 善用 @ 引用</h3><ul>
+<li><p><strong><code>@Branch</code></strong>：让 Agent 了解当前工作，如  </p>
+<ul>
+<li>“Review the changes on this branch”  </li>
+<li>“What am I working on?”</li>
+</ul>
+</li>
+<li><p><strong><code>@Past Chats</code></strong>：新对话时引用历史，Agent 可有选择地读取，只提取所需上下文，比复制整段对话更高效</p>
+</li>
+</ul>
+<p><img src="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/blog/past-chats.jpg&w=1920&q=70" srcset="/img/loading.gif" lazyload alt="通过引用以往的聊天记录，将之前对话的上下文带入当前会话"></p>
+<h3 id="3-3-何时开新对话-vs-继续当前对话"><a href="#3-3-何时开新对话-vs-继续当前对话" class="headerlink" title="3.3 何时开新对话 vs 继续当前对话"></a>3.3 何时开新对话 vs 继续当前对话</h3><table>
+<thead>
+<tr>
+<th>开始新对话</th>
+<th>继续当前对话</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>切换到不同任务或功能</td>
+<td>对同一功能迭代</td>
+</tr>
+<tr>
+<td>Agent 困惑、重复犯同样错误</td>
+<td>Agent 需要先前讨论的上下文</td>
+</tr>
+<tr>
+<td>完成一个逻辑完整的工作单元</td>
+<td>正在调试 Agent 刚构建的内容</td>
+</tr>
+</tbody></table>
+<p><strong>注意</strong>：过长对话会积累噪音，Agent 易分散注意力。若效果下降，应及时开新对话。</p>
+<hr>
+<h2 id="四、扩展-Agent：Rules-与-Skills"><a href="#四、扩展-Agent：Rules-与-Skills" class="headerlink" title="四、扩展 Agent：Rules 与 Skills"></a>四、扩展 Agent：Rules 与 Skills</h2><h3 id="4-1-Rules：静态上下文"><a href="#4-1-Rules：静态上下文" class="headerlink" title="4.1 Rules：静态上下文"></a>4.1 Rules：静态上下文</h3><p>在 <code>.cursor/rules/</code> 创建 Markdown 规则，<strong>每次对话都会加载</strong>。</p>
+<p><strong>示例</strong>（聚焦要点：命令、模式、示例引用）：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-section"># Commands</span><br><br><span class="hljs-bullet">-</span> <span class="hljs-code">`npm run build`</span>: Build the project<br><span class="hljs-bullet">-</span> <span class="hljs-code">`npm run typecheck`</span>: Run the typechecker<br><span class="hljs-bullet">-</span> <span class="hljs-code">`npm run test`</span>: Run tests (prefer single test files for speed)<br><br><span class="hljs-section"># 代码风格</span><br><br><span class="hljs-bullet">-</span> 使用 ES 模块(import/export)，而非 CommonJS(require)<br><span class="hljs-bullet">-</span> 尽可能使用解构导入：<span class="hljs-code">`import &#123; foo &#125; from &#x27;bar&#x27;`</span><br><span class="hljs-bullet">-</span> 参考 <span class="hljs-code">`components/Button.tsx`</span> 了解标准组件结构<br><br><span class="hljs-section"># Workflow</span><br><br><span class="hljs-bullet">-</span> Always typecheck after making a series of code changes<br><span class="hljs-bullet">-</span> API routes go in <span class="hljs-code">`app/api/`</span> following existing patterns<br></code></pre></td></tr></table></figure>
+
+<p><strong>应避免</strong>：</p>
+<ul>
+<li>复制整份风格指南（交给 linter）  </li>
+<li>记录所有可能的命令（agent 已了解常用工具）  </li>
+<li>为极少适用的边缘情况添加指令</li>
+</ul>
+<p><strong>提示</strong>：从简单开始，只有 agent 反复犯同样错误时再新增规则。将规则提交到 Git，团队可共享。</p>
+<h3 id="4-2-Skills：动态能力"><a href="#4-2-Skills：动态能力" class="headerlink" title="4.2 Skills：动态能力"></a>4.2 Skills：动态能力</h3><p>Skills 在 agent <strong>认为相关时</strong>才加载，可包含：</p>
+<ul>
+<li><strong>Custom commands</strong>：用 <code>/</code> 触发的可复用工作流  </li>
+<li><strong>Hooks</strong>：在 agent 动作前后运行的脚本  </li>
+<li><strong>Domain knowledge</strong>：按需调用的任务指令</li>
+</ul>
+<h3 id="4-3-示例：长时间运行-Agent-循环"><a href="#4-3-示例：长时间运行-Agent-循环" class="headerlink" title="4.3 示例：长时间运行 Agent 循环"></a>4.3 示例：长时间运行 Agent 循环</h3><p>用 Hooks 让 Agent 持续迭代直到达成目标（如测试全通过）。</p>
+<p><strong><code>.cursor/hooks.json</code></strong>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;hooks&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;stop&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;bun run .cursor/hooks/grind.ts&quot;</span> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong><code>.cursor/hooks/grind.ts</code></strong>（从 stdin 接收上下文，返回 <code>followup_message</code> 驱动下一轮）：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123; readFileSync, existsSync &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;fs&quot;</span>;<br><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">StopHookInput</span> &#123;<br>  <span class="hljs-attr">conversation_id</span>: <span class="hljs-built_in">string</span>;<br>  <span class="hljs-attr">status</span>: <span class="hljs-string">&quot;completed&quot;</span> | <span class="hljs-string">&quot;aborted&quot;</span> | <span class="hljs-string">&quot;error&quot;</span>;<br>  <span class="hljs-attr">loop_count</span>: <span class="hljs-built_in">number</span>;<br>&#125;<br><br><span class="hljs-keyword">const</span> <span class="hljs-attr">input</span>: <span class="hljs-title class_">StopHookInput</span> = <span class="hljs-keyword">await</span> <span class="hljs-title class_">Bun</span>.<span class="hljs-property">stdin</span>.<span class="hljs-title function_">json</span>();<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">MAX_ITERATIONS</span> = <span class="hljs-number">5</span>;<br><br><span class="hljs-keyword">if</span> (input.<span class="hljs-property">status</span> !== <span class="hljs-string">&quot;completed&quot;</span> || input.<span class="hljs-property">loop_count</span> &gt;= <span class="hljs-variable constant_">MAX_ITERATIONS</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;&#125;));<br>  process.<span class="hljs-title function_">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><br><span class="hljs-keyword">const</span> scratchpad = <span class="hljs-title function_">existsSync</span>(<span class="hljs-string">&quot;.cursor/scratchpad.md&quot;</span>)<br>  ? <span class="hljs-title function_">readFileSync</span>(<span class="hljs-string">&quot;.cursor/scratchpad.md&quot;</span>, <span class="hljs-string">&quot;utf-8&quot;</span>)<br>  : <span class="hljs-string">&quot;&quot;</span>;<br><br><span class="hljs-keyword">if</span> (scratchpad.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&quot;DONE&quot;</span>)) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;&#125;));<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>    <span class="hljs-attr">followup_message</span>: <span class="hljs-string">`[迭代 <span class="hljs-subst">$&#123;input.loop_count + <span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">$&#123;MAX_ITERATIONS&#125;</span>] 继续工作。完成后在 .cursor/scratchpad.md 中更新为 DONE。`</span><br>  &#125;));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>适用于：一直运行直到测试通过、反复迭代 UI 直到与设计稿一致、任何目标可验证的任务。</p>
+<hr>
+<h2 id="五、常见工作流"><a href="#五、常见工作流" class="headerlink" title="五、常见工作流"></a>五、常见工作流</h2><h3 id="5-1-测试驱动开发（TDD）"><a href="#5-1-测试驱动开发（TDD）" class="headerlink" title="5.1 测试驱动开发（TDD）"></a>5.1 测试驱动开发（TDD）</h3><ol>
+<li>让 Agent 根据<strong>预期输入&#x2F;输出</strong>编写测试（明确说明在做 TDD，避免 mock 实现）  </li>
+<li>运行测试，<strong>确认失败</strong>（此阶段不写实现）  </li>
+<li>提交测试  </li>
+<li>让 Agent 编写能通过测试的代码，<strong>不修改测试</strong>，持续迭代直到全部通过  </li>
+<li>提交实现</li>
+</ol>
+<p>Agent 有清晰迭代目标时表现最好，测试让它能不断评估结果并改进。</p>
+<h3 id="5-2-理解代码库"><a href="#5-2-理解代码库" class="headerlink" title="5.2 理解代码库"></a>5.2 理解代码库</h3><p>像向同事请教一样提问，Agent 会 grep + 语义搜索查找答案。例如：</p>
+<ul>
+<li>“这个项目里的日志是如何运作的？”  </li>
+<li>“我该如何添加一个新的 API endpoint？”  </li>
+<li>“<code>CustomerOnboardingFlow</code> 处理了哪些边界情况？”  </li>
+<li>“为什么第 1738 行用的是 <code>setUser()</code> 而不是 <code>createUser()</code>？”</li>
+</ul>
+<h3 id="5-3-Git-工作流：自定义命令"><a href="#5-3-Git-工作流：自定义命令" class="headerlink" title="5.3 Git 工作流：自定义命令"></a>5.3 Git 工作流：自定义命令</h3><p>将常用流程写成命令，放在 <code>.cursor/commands/</code>，用 <code>/</code> 触发。</p>
+<p><strong><code>/pr</code> 示例</strong>：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs markdown">为当前更改创建 Pull Request。<br><br><span class="hljs-bullet">1.</span> 使用 <span class="hljs-code">`git diff`</span> 查看已暂存和未暂存的更改<br><span class="hljs-bullet">2.</span> 根据更改内容编写清晰的提交信息<br><span class="hljs-bullet">3.</span> 提交并推送到当前分支<br><span class="hljs-bullet">4.</span> 使用 <span class="hljs-code">`gh pr create`</span> 创建 Pull Request，并提供标题和描述<br><span class="hljs-bullet">5.</span> 完成后返回 PR URL<br></code></pre></td></tr></table></figure>
+
+<p><strong>其他常用命令</strong>：</p>
+<ul>
+<li><code>/fix-issue [number]</code>：获取 issue 详情、查找相关代码、修复并开 PR  </li>
+<li><code>/review</code>：运行 linter，检查常见问题，总结需关注内容  </li>
+<li><code>/update-deps</code>：检查过时依赖，逐个更新，每次更新后跑测试</li>
+</ul>
+<hr>
+<h2 id="六、其他能力"><a href="#六、其他能力" class="headerlink" title="六、其他能力"></a>六、其他能力</h2><h3 id="6-1-包含图片"><a href="#6-1-包含图片" class="headerlink" title="6.1 包含图片"></a>6.1 包含图片</h3><ul>
+<li><strong>从设计到代码</strong>：粘贴设计稿，Agent 能识别布局、颜色、间距；可用 Figma MCP  </li>
+<li><strong>可视化调试</strong>：对错误或异常 UI 截图，比文字描述更高效  </li>
+<li><strong>浏览器</strong>：Agent 可控制浏览器截屏、测试应用、验证界面变化</li>
+</ul>
+<h3 id="6-2-代码审查"><a href="#6-2-代码审查" class="headerlink" title="6.2 代码审查"></a>6.2 代码审查</h3><ul>
+<li><strong>生成中</strong>：实时看 Diff，方向不对按 <strong>Escape</strong> 中断  </li>
+<li><strong>Agent Review</strong>：完成后点击 Review → Find Issues，逐行分析、标记潜在问题  </li>
+<li><strong>Bugbot</strong>：推送后为 PR 自动做代码审查  </li>
+<li><strong>架构图</strong>：提示 “Create a Mermaid diagram showing the data flow for our authentication system, including OAuth providers, session management, and token refresh.”</li>
+</ul>
+<h3 id="6-3-并行运行-Agent"><a href="#6-3-并行运行-Agent" class="headerlink" title="6.3 并行运行 Agent"></a>6.3 并行运行 Agent</h3><ul>
+<li>Cursor 会为并行 agent 自动创建 <strong>git worktrees</strong>，各 agent 隔离运行  </li>
+<li>同一提示可<strong>同时跑多个模型</strong>，对比结果，挑选最优  </li>
+<li>适合：棘手问题、比较不同模型、发现边缘情况</li>
+</ul>
+<p><img src="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/changelog/changelog-2-2-judge.jpg&w=1920&q=70" srcset="/img/loading.gif" lazyload alt="多代理评估会显示 Cursor 推荐的解决方案"></p>
+<h3 id="6-4-云端-Agent"><a href="#6-4-云端-Agent" class="headerlink" title="6.4 云端 Agent"></a>6.4 云端 Agent</h3><p>适合「丢进待办」的任务：bug 修复、重构、补测试、文档更新。可从 cursor.com&#x2F;agents、编辑器或手机启动，在远程沙箱运行，完成后开 PR、发通知。</p>
+<p><strong>流程</strong>：描述任务 → Agent 克隆仓库并建分支 → 自主工作 → 完成后开 PR → 审查并合并。</p>
+<p><img src="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/blog/web-and-mobile.jpg&w=1920&q=70" srcset="/img/loading.gif" lazyload alt="Cursor Agents 执行编码和调研任务的看板视图"></p>
+<h3 id="6-5-Debug-模式"><a href="#6-5-Debug-模式" class="headerlink" title="6.5 Debug 模式"></a>6.5 Debug 模式</h3><p>针对难以定位的 bug，Debug 模式会：</p>
+<ol>
+<li>生成多个可能出错原因的假设  </li>
+<li>用日志语句埋点  </li>
+<li>要求你在收集数据时复现 bug  </li>
+<li>分析实际行为定位根因  </li>
+<li>基于证据做针对性修复</li>
+</ol>
+<p><strong>适合</strong>：能复现但搞不清原因、竞争条件、性能问题、回归 bug。你描述得越具体，Agent 添加的埋点越有价值。</p>
+<p><img src="https://cursor.com/marketing-static/_next/image?url=https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/changelog/changelog-2-2-debug-dropdown.jpg&w=1920&q=70" srcset="/img/loading.gif" lazyload alt="Agent 下拉菜单中的 Debug Mode"></p>
+<hr>
+<h2 id="七、打造你的工作流"><a href="#七、打造你的工作流" class="headerlink" title="七、打造你的工作流"></a>七、打造你的工作流</h2><h3 id="7-1-写具体的提示"><a href="#7-1-写具体的提示" class="headerlink" title="7.1 写具体的提示"></a>7.1 写具体的提示</h3><p>指令越具体，成功率越高。</p>
+<p><strong>对比</strong>：</p>
+<ul>
+<li>❌ “add tests for auth.ts”  </li>
+<li>✅ “Write a test case for auth.ts covering the logout edge case, using the patterns in <code>__tests__/</code> and avoiding mocks.”</li>
+</ul>
+<h3 id="7-2-推荐与避免"><a href="#7-2-推荐与避免" class="headerlink" title="7.2 推荐与避免"></a>7.2 推荐与避免</h3><p><strong>✅ 推荐</strong></p>
+<ul>
+<li>规划优先、写具体提示、认真 Review  </li>
+<li>提供可验证目标：强类型、linter、测试  </li>
+<li>把 Agent 当有能力的协作者：要计划、要解释、敢于质疑</li>
+</ul>
+<p><strong>❌ 避免</strong></p>
+<ul>
+<li>一次性塞入过多复杂需求  </li>
+<li>缺少项目背景和上下文  </li>
+<li>期望 AI 理解所有业务细节  </li>
+<li>在效果下降时仍坚持长对话修补  </li>
+<li>在真正理解自己的模式之前过度优化规则</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/AI/" class="print-no-link">#AI</a>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0/" class="print-no-link">#学习</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/02/09/%E6%8E%A2%E7%B4%A2%E8%AE%A9ai%E5%AE%8C%E6%88%90%E5%A4%A7%E5%9E%8B%E9%A1%B9%E7%9B%AE/" title="Cursor 多 Agent 自主编码研究读后总结">
+                        <span class="hidden-mobile">Cursor 多 Agent 自主编码研究读后总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Powered by Hexo</span></a> <i class="iconfont icon-love"></i> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
