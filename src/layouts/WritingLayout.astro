@@ -1,0 +1,431 @@
+---
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3 } from 'lucide-astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate, type Writing } from '@/lib/content';
+
+interface Props {
+  article: Writing;
+  headings: { depth: number; slug: string; text: string }[];
+  previous?: Writing;
+  next?: Writing;
+}
+const { article, headings, previous, next } = Astro.props;
+const toc = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+---
+
+<BaseLayout
+  title={article.data.title}
+  description={article.data.description}
+  type="article"
+>
+  <article class="writing-shell" data-pagefind-body>
+    <header class="writing-header container">
+      <a class="back-link" href="/writing"
+        ><ArrowLeft size={15} /> 返回文章列表</a
+      >
+      <p class="eyebrow">{article.data.category}</p>
+      <h1 data-pagefind-meta="title">{article.data.title}</h1>
+      <p class="description">{article.data.description}</p>
+      <div class="post-meta">
+        <span
+          ><CalendarDays size={15} />
+          <time datetime={article.data.publishDate.toISOString()}
+            >{formatDate(article.data.publishDate)}</time
+          ></span
+        >{
+          article.data.updatedDate && (
+            <span>更新于 {formatDate(article.data.updatedDate)}</span>
+          )
+        }<span><Clock3 size={15} /> {article.data.readingTime} 分钟阅读</span>
+      </div>
+      <div class="tag-list">
+        {
+          article.data.tags.map((tag) => (
+            <a href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}>
+              #{tag}
+            </a>
+          ))
+        }
+      </div>
+    </header>
+    {
+      toc.length > 0 && (
+        <details class="mobile-toc container">
+          <>
+            <summary>文章目录</summary>
+            <nav aria-label="文章目录">
+              {toc.map((heading) => (
+                <a class={`depth-${heading.depth}`} href={`#${heading.slug}`}>
+                  {heading.text}
+                </a>
+              ))}
+            </nav>
+          </>
+        </details>
+      )
+    }
+    <div class="writing-grid container">
+      <div class="prose"><slot /></div>
+      {
+        toc.length > 0 && (
+          <aside class="desktop-toc">
+            <>
+              <p>目录</p>
+              <nav aria-label="文章目录">
+                {toc.map((heading) => (
+                  <a class={`depth-${heading.depth}`} href={`#${heading.slug}`}>
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            </>
+          </aside>
+        )
+      }
+    </div>
+    <nav class="post-navigation container" aria-label="相邻文章">
+      {
+        previous ? (
+          <a href={`/writing/${previous.id}`}>
+            <>
+              <span>
+                <ArrowLeft size={14} />
+                上一篇
+              </span>
+              <strong>{previous.data.title}</strong>
+            </>
+          </a>
+        ) : (
+          <span />
+        )
+      }{
+        next && (
+          <a class="next" href={`/writing/${next.id}`}>
+            <>
+              <span>
+                下一篇
+                <ArrowRight size={14} />
+              </span>
+              <strong>{next.data.title}</strong>
+            </>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</BaseLayout>
+<script>
+  document.querySelectorAll<HTMLElement>('.prose pre').forEach((pre) => {
+    const button = document.createElement('button');
+    button.className = 'copy-code';
+    button.type = 'button';
+    button.setAttribute('aria-label', '复制代码');
+    button.innerHTML = '<span>复制</span>';
+    button.addEventListener('click', async () => {
+      const value = pre.querySelector('code')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        const textarea = document.createElement('textarea');
+        textarea.value = value;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.append(textarea);
+        textarea.select();
+        (
+          document as unknown as { execCommand(commandId: string): boolean }
+        ).execCommand('copy');
+        textarea.remove();
+      }
+      button.querySelector('span')!.textContent = '已复制';
+      setTimeout(() => {
+        button.querySelector('span')!.textContent = '复制';
+      }, 1800);
+    });
+    pre.append(button);
+  });
+  const links = [
+    ...document.querySelectorAll<HTMLAnchorElement>('.desktop-toc a'),
+  ];
+  const sections = links
+    .map((link) =>
+      document.getElementById(decodeURIComponent(link.hash.slice(1))),
+    )
+    .filter(Boolean);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          links.forEach((link) =>
+            link.classList.toggle(
+              'active',
+              link.hash === `#${entry.target.id}`,
+            ),
+          );
+        }
+      });
+    },
+    { rootMargin: '-15% 0px -75%' },
+  );
+  sections.forEach((section) => observer.observe(section!));
+</script>
+<style is:global>
+  .writing-header {
+    max-width: 860px;
+    padding-top: clamp(4rem, 9vw, 7rem);
+    padding-bottom: 3.5rem;
+    text-align: center;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 2.5rem;
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+  .writing-header h1 {
+    max-width: 850px;
+    margin: 0.75rem auto 1.25rem;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+  .writing-header .description {
+    max-width: 680px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 1.5rem 0 0.8rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .post-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .writing-header .tag-list {
+    justify-content: center;
+  }
+  .writing-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 760px) 220px;
+    justify-content: center;
+    gap: 4.5rem;
+    align-items: start;
+  }
+  .desktop-toc {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+  }
+  .desktop-toc > p {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .desktop-toc nav,
+  .mobile-toc nav {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .desktop-toc a,
+  .mobile-toc a {
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+  .desktop-toc a:hover,
+  .desktop-toc a.active {
+    color: var(--accent);
+  }
+  .desktop-toc .depth-3,
+  .mobile-toc .depth-3 {
+    padding-left: 0.75rem;
+  }
+  .mobile-toc {
+    display: none;
+  }
+  .prose {
+    min-width: 0;
+    font-size: 1.04rem;
+    line-height: 1.88;
+  }
+  .prose h2,
+  .prose h3 {
+    scroll-margin-top: 6rem;
+    line-height: 1.35;
+    letter-spacing: -0.025em;
+  }
+  .prose h2 {
+    margin: 3.2rem 0 1rem;
+    padding-top: 0.8rem;
+    font-size: 1.75rem;
+  }
+  .prose h3 {
+    margin: 2.3rem 0 0.8rem;
+    font-size: 1.3rem;
+  }
+  .prose p,
+  .prose li {
+    color: color-mix(in srgb, var(--text) 88%, var(--muted));
+  }
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    text-underline-offset: 3px;
+  }
+  .prose blockquote {
+    margin: 1.7rem 0;
+    padding: 0.8rem 1.2rem;
+    border-left: 3px solid var(--accent);
+    background: var(--surface-2);
+    border-radius: 0 10px 10px 0;
+  }
+  .prose blockquote p {
+    margin: 0;
+  }
+  .prose pre {
+    position: relative;
+    margin: 1.7rem 0;
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 0.86rem;
+    box-shadow: none;
+  }
+  .prose :not(pre) > code {
+    padding: 0.15em 0.35em;
+    background: var(--code);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    font-size: 0.88em;
+  }
+  .copy-code {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .prose pre:hover .copy-code,
+  .copy-code:focus-visible {
+    opacity: 1;
+  }
+  .prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .prose th,
+  .prose td {
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--line);
+    text-align: left;
+  }
+  .prose th {
+    background: var(--surface-2);
+  }
+  .prose img {
+    display: block;
+    margin: 1.8rem auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .post-navigation {
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 5rem;
+  }
+  .post-navigation > a {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .post-navigation span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  .post-navigation strong {
+    margin-top: 0.3rem;
+    font-size: 0.88rem;
+  }
+  .post-navigation .next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  @media (max-width: 960px) {
+    .writing-grid {
+      grid-template-columns: minmax(0, 760px);
+    }
+    .desktop-toc {
+      display: none;
+    }
+    .mobile-toc {
+      display: block;
+      max-width: 760px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+    }
+    .mobile-toc summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .mobile-toc nav {
+      padding-top: 0.8rem;
+    }
+  }
+  @media (max-width: 600px) {
+    .writing-header {
+      text-align: left;
+    }
+    .writing-header .description {
+      margin: 0;
+    }
+    .post-meta,
+    .writing-header .tag-list {
+      justify-content: flex-start;
+    }
+    .copy-code {
+      opacity: 1;
+    }
+    .post-navigation {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

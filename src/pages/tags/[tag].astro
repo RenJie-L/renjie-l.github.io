@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '@/components/ArticleCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { byNewest, publishedOnly } from '@/lib/content';
+
+export async function getStaticPaths() {
+  const articles = (await getCollection('writing')).filter(publishedOnly);
+  const tags = [...new Set(articles.flatMap((article) => article.data.tags))];
+  return tags.map((tag) => ({
+    params: { tag: tag.toLowerCase() },
+    props: {
+      tag,
+      articles: articles
+        .filter((article) => article.data.tags.includes(tag))
+        .sort(byNewest),
+    },
+  }));
+}
+const { tag, articles } = Astro.props;
+---
+
+<BaseLayout title={`标签：${tag}`} description={`所有带有 ${tag} 标签的文章。`}>
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Tag</p><h1>#{tag}</h1><p>
+        {articles.length} 篇相关文章
+      </p>
+    </div>
+  </div>
+  <section class="tag-results container">
+    <div class="article-list">
+      {articles.map((article) => <ArticleCard article={article} />)}
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .tag-results {
+    max-width: 850px;
+    padding-top: 3rem;
+  }
+</style>

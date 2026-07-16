@@ -1,0 +1,86 @@
+---
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import SearchDialog from '@/components/SearchDialog.astro';
+import '@/styles/global.css';
+import '@pagefind/default-ui/css/ui.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+const {
+  title = 'Renjie — Frontend & AI Engineering',
+  description = '前端开发者，关注 AI 编程、Web 工程化与智能应用。分享技术实践、学习笔记和正在构建的项目。',
+  image = '/og.png',
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const fullTitle = title.includes('Renjie') ? title : `${title} — Renjie`;
+const imageUrl = image ? new URL(image, Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/img/avatar.png" type="image/png" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Renjie Writing"
+      href="/rss.xml"
+    />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+    <title>{fullTitle}</title>
+    <script is:inline>
+      (() => {
+        const saved = localStorage.getItem('theme');
+        const dark =
+          saved === 'dark' ||
+          (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <Header />
+    <main id="main-content"><slot /></main>
+    <Footer />
+    <SearchDialog />
+    <script is:inline>
+      const themeButton = document.querySelector('.theme-toggle');
+      themeButton?.addEventListener('click', () => {
+        const next =
+          document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('theme', next);
+      });
+      const menuButton = document.querySelector('.menu-toggle');
+      const menu = document.querySelector('#mobile-menu');
+      menuButton?.addEventListener('click', () => {
+        const open = menuButton.getAttribute('aria-expanded') !== 'true';
+        menuButton.setAttribute('aria-expanded', String(open));
+        menuButton.setAttribute('aria-label', open ? '关闭导航' : '打开导航');
+        menu.toggleAttribute('hidden', !open);
+      });
+    </script>
+  </body>
+</html>

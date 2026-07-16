@@ -1,0 +1,378 @@
+---
+import {
+  ArrowRight,
+  Bot,
+  Braces,
+  Github,
+  Sparkles,
+  Wrench,
+} from 'lucide-astro';
+import { getCollection } from 'astro:content';
+import ArticleCard from '@/components/ArticleCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { byNewest, publishedOnly } from '@/lib/content';
+
+const articles = (await getCollection('writing'))
+  .filter(publishedOnly)
+  .sort(byNewest);
+const featured = articles
+  .filter((article) => article.data.featured)
+  .slice(0, 3);
+const projects = (await getCollection('projects')).filter(
+  (project) => project.data.featured,
+);
+const directions = [
+  {
+    icon: Braces,
+    title: 'Frontend Engineering',
+    text: 'React、TypeScript 与可持续演进的 Web 架构。',
+  },
+  {
+    icon: Bot,
+    title: 'AI Agent Engineering',
+    text: 'Agent 工作流、上下文工程与智能应用构建。',
+  },
+  {
+    icon: Wrench,
+    title: 'Developer Experience',
+    text: '让工程工具、流程和协作体验变得更顺畅。',
+  },
+];
+---
+
+<BaseLayout>
+  <section class="hero container">
+    <div class="hero-copy">
+      <p class="availability">
+        <span></span> Currently exploring AI Agent Engineering
+      </p>
+      <h1>Hi, I'm Renjie.</h1>
+      <p class="hero-lede">
+        前端开发者，关注 AI 编程、Web 工程化与智能应用。<br
+        />我在这里分享技术实践、学习笔记和正在构建的项目。
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="/writing"
+          >查看文章 <ArrowRight size={16} /></a
+        ><a class="button" href="/about">了解我</a><a
+          class="button"
+          href="https://github.com/RenJie-L"
+          target="_blank"
+          rel="noreferrer"><Github size={16} /> GitHub</a
+        >
+      </div>
+    </div>
+    <div class="hero-signal" aria-hidden="true">
+      <span class="signal-label">Current stack</span><div class="signal-row">
+        <span>React</span><span>TypeScript</span><span>Astro</span>
+      </div><div class="signal-row offset">
+        <span>Agent</span><span>RL</span><span>DX</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="focus-strip">
+    <div class="focus-inner container">
+      <div><p class="eyebrow">Now</p><h2>当前关注方向</h2></div><p>
+        探索 AI Agent
+        如何参与大型项目的理解、规划与交付，并把这些经验沉淀为可复用的工程方法。
+      </p><Sparkles size={22} />
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div><p class="eyebrow">Selected writing</p><h2>精选文章</h2></div><a
+        class="text-link"
+        href="/writing">查看全部 <ArrowRight size={15} /></a
+      >
+    </div>
+    <div class="article-grid">
+      {featured.map((article) => <ArticleCard article={article} />)}
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div><p class="eyebrow">What I work on</p><h2>技术方向</h2></div>
+    </div>
+    <div class="direction-grid">
+      {
+        directions.map(({ icon: Icon, title, text }) => (
+          <article class="direction-card">
+            <>
+              <div class="direction-icon">
+                <Icon size={21} />
+              </div>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div><p class="eyebrow">Selected projects</p><h2>精选项目</h2></div><a
+        class="text-link"
+        href="/projects">全部项目 <ArrowRight size={15} /></a
+      >
+    </div>
+    <div class="project-feature-list">
+      {
+        projects.map((project) => (
+          <article class="project-feature">
+            <>
+              <div>
+                <>
+                  <span class="project-period">{project.data.period}</span>
+                  <h3>{project.data.title}</h3>
+                  <p>{project.data.description}</p>
+                </>
+              </div>
+              <div class="tech-list">
+                {project.data.technologies.map((item) => (
+                  <span>{item}</span>
+                ))}
+              </div>
+            </>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section recent-section container">
+    <div class="section-heading">
+      <div><p class="eyebrow">Latest</p><h2>最近文章</h2></div>
+    </div>
+    <div class="article-list">
+      {
+        articles
+          .slice(0, 5)
+          .map((article) => <ArticleCard article={article} compact />)
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    min-height: 650px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+    gap: 4rem;
+    align-items: center;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  .hero h1 {
+    margin: 0.7rem 0 1.3rem;
+    font-size: clamp(3.2rem, 9vw, 6.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.065em;
+  }
+  .hero-lede {
+    max-width: 710px;
+    color: var(--muted);
+    font-size: clamp(1.05rem, 2.1vw, 1.35rem);
+    line-height: 1.7;
+  }
+  .availability {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+  .availability span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #35a66f;
+    box-shadow: 0 0 0 4px color-mix(in srgb, #35a66f 15%, transparent);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 2rem;
+  }
+  .hero-signal {
+    position: relative;
+    overflow: hidden;
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 16px;
+    transform: rotate(-2deg);
+    box-shadow: var(--shadow);
+  }
+  .hero-signal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .signal-label {
+    position: relative;
+    z-index: 1;
+    display: block;
+    margin-bottom: 1.2rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .signal-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+  }
+  .signal-row.offset {
+    margin-left: 1.6rem;
+  }
+  .signal-row span {
+    padding: 0.42rem 0.65rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 8px;
+    font:
+      600 0.74rem ui-monospace,
+      monospace;
+  }
+  .focus-strip {
+    border-block: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .focus-inner {
+    display: grid;
+    grid-template-columns: 220px 1fr auto;
+    align-items: center;
+    gap: 2rem;
+    padding-block: 1.6rem;
+  }
+  .focus-inner h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+  .focus-inner .eyebrow {
+    margin: 0;
+  }
+  .focus-inner p:nth-child(2) {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.92rem;
+  }
+  .focus-inner svg {
+    color: var(--accent);
+  }
+  .direction-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .direction-card {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .direction-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    border-radius: 10px;
+    color: var(--accent);
+  }
+  .direction-card h3 {
+    margin: 2rem 0 0.5rem;
+    font-size: 1rem;
+  }
+  .direction-card p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  .project-feature-list {
+    border-top: 1px solid var(--line);
+  }
+  .project-feature {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: end;
+    padding: 1.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .project-feature h3 {
+    font-size: 1.3rem;
+    margin: 0.3rem 0;
+  }
+  .project-feature p {
+    max-width: 680px;
+    color: var(--muted);
+    margin: 0;
+  }
+  .project-period {
+    color: var(--accent);
+    font:
+      600 0.75rem ui-monospace,
+      monospace;
+  }
+  .tech-list {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .tech-list span {
+    padding: 0.22rem 0.55rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+  .recent-section {
+    max-width: 850px;
+  }
+  @media (max-width: 760px) {
+    .hero {
+      min-height: auto;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding-top: 5rem;
+    }
+    .hero-signal {
+      display: none;
+    }
+    .focus-inner {
+      grid-template-columns: 1fr auto;
+    }
+    .focus-inner p:nth-child(2) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .direction-grid {
+      grid-template-columns: 1fr;
+    }
+    .project-feature {
+      grid-template-columns: 1fr;
+    }
+    .tech-list {
+      justify-content: flex-start;
+    }
+  }
+</style>

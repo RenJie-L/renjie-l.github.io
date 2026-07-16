@@ -1,0 +1,121 @@
+---
+import { ExternalLink } from 'lucide-astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+const projects = await getCollection('projects');
+---
+
+<BaseLayout title="项目" description="Renjie 的工程与研究项目。">
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Projects</p><h1>项目</h1><p>
+        从研究问题到工程落地：关注技术怎样变成可验证、可维护的真实成果。
+      </p>
+    </div>
+  </div>
+  <section class="project-list container">
+    {
+      projects.map((project) => (
+        <article class="project-card">
+          <>
+            <div class="project-head">
+              <>
+                <div>
+                  <>
+                    <span>
+                      {project.data.period} · {project.data.role}
+                    </span>
+                    <h2>{project.data.title}</h2>
+                    <p>{project.data.description}</p>
+                  </>
+                </div>
+                <div class="project-links">
+                  {project.data.links.map((link) => (
+                    <a
+                      class="button"
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {link.label}
+                      <ExternalLink size={14} />
+                    </a>
+                  ))}
+                </div>
+              </>
+            </div>
+            <ul>
+              {project.data.highlights.map((highlight) => (
+                <li>{highlight}</li>
+              ))}
+            </ul>
+            <div class="technologies">
+              {project.data.technologies.map((item) => (
+                <span>{item}</span>
+              ))}
+            </div>
+          </>
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>
+<style>
+  .project-list {
+    display: grid;
+    gap: 1.25rem;
+    padding-top: 3rem;
+  }
+  .project-card {
+    padding: clamp(1.4rem, 4vw, 2.2rem);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+  .project-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .project-head span {
+    color: var(--accent);
+    font:
+      600 0.78rem ui-monospace,
+      monospace;
+  }
+  .project-card h2 {
+    margin: 0.45rem 0;
+    font-size: 1.45rem;
+    letter-spacing: -0.025em;
+  }
+  .project-card p {
+    max-width: 700px;
+    color: var(--muted);
+    margin: 0;
+  }
+  .project-card ul {
+    padding-left: 1.25rem;
+    margin: 1.7rem 0;
+    color: var(--muted);
+  }
+  .technologies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+  }
+  .technologies span {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .technologies span:not(:last-child)::after {
+    content: ' /';
+    color: var(--line);
+  }
+  @media (max-width: 640px) {
+    .project-head {
+      flex-direction: column;
+    }
+  }
+</style>

@@ -1,0 +1,69 @@
+---
+import { Github, Menu, Moon, Search, Sun, X } from 'lucide-astro';
+
+const pathname = Astro.url.pathname;
+const links = [
+  { href: '/writing', label: '文章' },
+  { href: '/projects', label: '项目' },
+  { href: '/archive', label: '归档' },
+  { href: '/about', label: '关于' },
+];
+---
+
+<header class="site-header">
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Renjie 首页">
+      <span class="brand-mark">R</span><span>Renjie</span>
+    </a>
+    <nav class="desktop-nav" aria-label="主导航">
+      {
+        links.map(({ href, label }) => (
+          <a
+            href={href}
+            aria-current={pathname.startsWith(href) ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="header-actions">
+      <button
+        class="icon-button search-trigger"
+        aria-label="搜索文章"
+        title="搜索（⌘ K）"><Search size={18} /></button
+      >
+      <button
+        class="icon-button theme-toggle"
+        aria-label="切换颜色主题"
+        title="切换颜色主题"
+      >
+        <Sun class="sun-icon" size={18} /><Moon class="moon-icon" size={18} />
+      </button>
+      <a
+        class="icon-button desktop-github"
+        href="https://github.com/RenJie-L"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="GitHub"><Github size={18} /></a
+      >
+      <button
+        class="icon-button menu-toggle"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="打开导航"
+        ><Menu class="menu-open-icon" size={20} /><X
+          class="menu-close-icon"
+          size={20}
+        /></button
+      >
+    </div>
+  </div>
+  <nav id="mobile-menu" class="mobile-menu" aria-label="移动端导航" hidden>
+    {links.map(({ href, label }) => <a href={href}>{label}</a>)}
+    <a href="https://github.com/RenJie-L" target="_blank" rel="noreferrer"
+      >GitHub</a
+    >
+  </nav>
+</header>

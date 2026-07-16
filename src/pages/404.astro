@@ -1,0 +1,38 @@
+---
+import { ArrowLeft } from 'lucide-astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="页面未找到" description="你访问的页面不存在。" noindex>
+  <section class="not-found container">
+    <p class="code">404</p><h1>这里暂时没有内容。</h1><p>
+      页面可能已经移动，或地址输入有误。你可以回到首页继续浏览。
+    </p><a class="button primary" href="/"><ArrowLeft size={16} /> 返回首页</a>
+  </section>
+</BaseLayout>
+<style>
+  .not-found {
+    min-height: 65vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .code {
+    margin: 0;
+    color: var(--accent);
+    font:
+      650 0.8rem ui-monospace,
+      monospace;
+    letter-spacing: 0.12em;
+  }
+  .not-found h1 {
+    margin: 0.5rem 0;
+    font-size: clamp(2.2rem, 7vw, 4.5rem);
+    letter-spacing: -0.05em;
+  }
+  .not-found > p:not(.code) {
+    color: var(--muted);
+    margin: 0 0 2rem;
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { byNewest, formatDate, publishedOnly } from '@/lib/content';
+const articles = (await getCollection('writing'))
+  .filter(publishedOnly)
+  .sort(byNewest);
+const years = [
+  ...new Set(articles.map((article) => article.data.publishDate.getFullYear())),
+];
+---
+
+<BaseLayout title="归档" description="Renjie 的技术文章时间归档。">
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Archive</p><h1>归档</h1><p>
+        {articles.length} 篇文章，按发布时间整理。
+      </p>
+    </div>
+  </div>
+  <div class="archive container">
+    {
+      years.map((year) => (
+        <section>
+          <>
+            <h2>{year}</h2>
+            <div>
+              {articles
+                .filter(
+                  (article) => article.data.publishDate.getFullYear() === year,
+                )
+                .map((article) => (
+                  <article>
+                    <time datetime={article.data.publishDate.toISOString()}>
+                      {formatDate(article.data.publishDate)}
+                    </time>
+                    <a href={`/writing/${article.id}`}>{article.data.title}</a>
+                    <span>{article.data.category}</span>
+                  </article>
+                ))}
+            </div>
+          </>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+<style>
+  .archive {
+    max-width: 850px;
+    padding-top: 3rem;
+  }
+  section {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  h2 {
+    margin: 0;
+    font:
+      650 1.5rem ui-monospace,
+      monospace;
+  }
+  article {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  article time,
+  article span {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  article a:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 700px) {
+    section {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    article {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    article span {
+      display: none;
+    }
+  }
+</style>

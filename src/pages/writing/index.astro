@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from '@/components/ArticleCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { byNewest, publishedOnly } from '@/lib/content';
+const articles = (await getCollection('writing'))
+  .filter(publishedOnly)
+  .sort(byNewest);
+const categories = [
+  ...new Set(articles.map((article) => article.data.category)),
+];
+---
+
+<BaseLayout
+  title="文章"
+  description="关于前端工程、AI 编程、智能体与强化学习的技术实践。"
+>
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Writing</p><h1>文章</h1><p>
+        记录理解技术的过程，也沉淀构建产品的方法。关注前端工程、AI-assisted
+        Development 与强化学习。
+      </p>
+    </div>
+  </div>
+  <section class="writing-layout container">
+    <aside>
+      <p>主题</p><button class="active filter" data-category="all"
+        >全部 <span>{articles.length}</span></button
+      >{
+        categories.map((category) => (
+          <button class="filter" data-category={category}>
+            {category}
+            <span>
+              {
+                articles.filter((article) => article.data.category === category)
+                  .length
+              }
+            </span>
+          </button>
+        ))
+      }
+    </aside>
+    <div class="article-list">
+      {
+        articles.map((article) => (
+          <div data-article-category={article.data.category}>
+            <ArticleCard article={article} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+<script>
+  const filters = [...document.querySelectorAll<HTMLButtonElement>('.filter')];
+  filters.forEach((button) =>
+    button.addEventListener('click', () => {
+      const category = button.dataset.category;
+      filters.forEach((item) =>
+        item.classList.toggle('active', item === button),
+      );
+      document
+        .querySelectorAll<HTMLElement>('[data-article-category]')
+        .forEach((article) => {
+          article.hidden =
+            category !== 'all' && article.dataset.articleCategory !== category;
+        });
+    }),
+  );
+</script>
+<style>
+  .writing-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 4rem;
+    padding-top: 3rem;
+  }
+  aside {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+    display: grid;
+    gap: 0.25rem;
+  }
+  aside > p {
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .filter {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 0;
+    background: transparent;
+    border-radius: 8px;
+    color: var(--muted);
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.86rem;
+  }
+  .filter:hover,
+  .filter.active {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .filter span {
+    font-size: 0.75rem;
+  }
+  @media (max-width: 760px) {
+    .writing-layout {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    aside {
+      position: static;
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    aside > p {
+      display: none;
+    }
+    .filter {
+      width: auto;
+      white-space: nowrap;
+    }
+  }
+</style>

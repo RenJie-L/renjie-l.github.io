@@ -1,0 +1,33 @@
+---
+import { ArrowUpRight } from 'lucide-astro';
+import type { Writing } from '@/lib/content';
+import { formatDate } from '@/lib/content';
+
+interface Props {
+  article: Writing;
+  compact?: boolean;
+}
+const { article, compact = false } = Astro.props;
+---
+
+<article class:list={['article-card', { compact }]}>
+  <div class="article-meta">
+    <span>{article.data.category}</span><span>·</span><time
+      datetime={article.data.publishDate.toISOString()}
+      >{formatDate(article.data.publishDate)}</time
+    ><span>·</span><span>{article.data.readingTime} 分钟</span>
+  </div>
+  <h3>
+    <a href={`/writing/${article.id}`}
+      >{article.data.title}<ArrowUpRight size={18} /></a
+    >
+  </h3>
+  {!compact && <p>{article.data.description}</p>}
+  <div class="tag-list" aria-label="文章标签">
+    {
+      article.data.tags.map((tag) => (
+        <a href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}>#{tag}</a>
+      ))
+    }
+  </div>
+</article>
