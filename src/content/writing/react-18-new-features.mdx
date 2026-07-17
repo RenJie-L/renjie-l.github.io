@@ -1,0 +1,81 @@
+---
+title: 'React 18 更新了啥'
+description: '梳理 React 18 的自动批处理、Suspense 与 Transition 更新，理解并发渲染带来的交互体验变化。'
+publishDate: 2022-05-09
+updatedDate: 2026-01-09
+tags: ['React', 'Frontend', 'JavaScript']
+category: 'Frontend Engineering'
+featured: false
+draft: false
+readingTime: 4
+language: 'zh-CN'
+legacyUrl: '/2022/05/09/react18更新了啥/'
+---
+
+## 新功能：自动批处理
+
+批处理是指 React 在一次重渲染中批量处理多个状态更新，以此优化性能。如果没有自动批处理，我们只能在 React 事件处理程序中批量更新。
+
+React 18 之前，Promise、`setTimeout`、原生事件处理程序以及其他事件中的更新默认不会被批量处理；React 18 开始，这些更新都会被自动批处理：
+
+```jsx
+// 以前：只有 React 事件会被批处理
+setTimeout(() => {
+  setCount((c) => c + 1);
+  setFlag((f) => !f);
+  // React 会渲染两次，每次更新一个状态
+}, 1000);
+
+// React 18：setTimeout、Promise、原生事件等都会被批处理
+setTimeout(() => {
+  setCount((c) => c + 1);
+  setFlag((f) => !f);
+  // React 最终只重新渲染一次
+}, 1000);
+```
+
+参考：[React 18 中能减少渲染次数的自动批处理机制](https://github.com/reactwg/react-18/discussions/21)
+
+## 新的 Suspense 特性
+
+Suspense 允许你声明式地为一部分尚未准备好展示的组件树指定加载状态：
+
+```jsx
+<Suspense fallback={<Spinner />}>
+  <Comments />
+</Suspense>
+```
+
+React 18 中的 Suspense 与 Transition API 结合时效果最好。如果在 Transition 期间挂起，React 不会让已经显示的内容被后备方案取代，而是会延迟渲染，直到有足够的数据，避免出现不必要的加载状态切换。
+
+## 新功能：过渡更新
+
+过渡（Transition）更新是 React 中的新概念，用于区分紧急和非紧急更新。
+
+- **紧急更新**：直接交互，例如输入、点击和按压
+- **过渡更新**：将 UI 从一个视图过渡到另一个视图
+
+输入、点击和按压等紧急更新需要立即响应，以符合用户对物理对象行为的预期。过渡更新则不同，用户并不期待看到屏幕上的每一个中间值。
+
+例如，在下拉菜单中选择过滤器时，过滤器按钮应该立即响应；结果列表则可以稍后平滑更新。如果渲染完成前再次改变过滤器，真正需要关注的只是最新结果。
+
+通常，为了获得更好的体验，一次用户输入会同时产生紧急更新和过渡更新。可以在输入事件中使用 `startTransition` 标记非紧急部分：
+
+```jsx
+import { startTransition } from 'react';
+
+// 紧急更新：显示输入内容
+setInputValue(input);
+
+// 将内部状态更新标记为过渡更新
+startTransition(() => {
+  setSearchQuery(input);
+});
+```
+
+被 `startTransition` 包裹的更新会被视为过渡更新。如果点击或按键等紧急更新出现，就会中断过渡更新。如果一个过渡被用户中断，例如快速输入多个字符，React 会丢弃未完成的渲染结果，只渲染最新内容。
+
+- `useTransition`：用于开启过渡更新，并跟踪待定状态的 Hook
+- `startTransition`：在 Hook 无法使用时开启过渡的方法
+
+并发渲染让过渡更新可以被中断，从而保证更重要的交互优先响应。

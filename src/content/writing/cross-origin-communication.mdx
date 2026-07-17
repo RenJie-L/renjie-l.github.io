@@ -1,0 +1,267 @@
+---
+title: '跨域通讯问题：iframe 与独立窗口之间如何通信'
+description: '分析多层 iframe 与 window.open 页面间 BroadcastChannel 失效的原因，并比较 postMessage 和 storage 事件两种解决方案。'
+publishDate: 2024-05-09
+updatedDate: 2026-01-09
+tags: ['Frontend', 'Browser', 'Web API']
+category: 'Frontend Engineering'
+featured: false
+draft: false
+readingTime: 8
+language: 'zh-CN'
+legacyUrl: '/2024/05/09/跨域通讯问题/'
+---
+
+## 问题背景
+
+API 客户在某些场景下，页面之间通讯异常。
+
+### 页面关系分析
+
+- **页面 A**：主页面 [https://domain-a.com](https://domain-a.com/)
+- **页面 B**：A 的子 iframe [https://domain-b.com](https://domain-b.com/)
+- **页面 C**：A 的子 iframe [https://domain-b.com/page](https://domain-b.com/page)
+- **页面 D**：由页面 C 通过 `window.open()` 打开的独立页面 [https://domain-b.com/preview](https://domain-b.com/preview)
+
+## 当前页面通讯方式
+
+当前使用的是 `BroadcastChannel`。
+
+### BroadcastChannel 通讯示例
+
+BroadcastChannel 允许同源页面之间进行简单高效的通讯。以下是在同源页面之间使用 BroadcastChannel 的示例。
+
+#### 页面 1（发送消息）
+
+```javascript
+// 创建一个 BroadcastChannel 实例，指定频道名称
+const channel = new BroadcastChannel('pageCommunication');
+
+// 发送消息
+function sendMessage(message) {
+  channel.postMessage({
+    sender: 'page1',
+    content: message,
+    timestamp: Date.now(),
+  });
+  console.log('消息已发送:', message);
+}
+
+sendMessage('Hello from Page 1!');
+
+// 监听来自其他页面的消息
+channel.addEventListener('message', function (event) {
+  console.log('页面 1 收到消息:', event.data);
+});
+
+// 关闭频道（可选，在页面卸载时调用）
+window.addEventListener('beforeunload', function () {
+  channel.close();
+});
+```
+
+#### 页面 2（接收消息）
+
+```javascript
+// 创建相同名称的 BroadcastChannel 实例，加入同一个频道
+const channel = new BroadcastChannel('pageCommunication');
+
+// 监听消息
+channel.addEventListener('message', function (event) {
+  console.log('页面 2 收到消息:', event.data);
+
+  // 回复消息
+  if (event.data.sender === 'page1') {
+    channel.postMessage({
+      sender: 'page2',
+      content: '收到来自页面 1 的消息，已处理！',
+      timestamp: Date.now(),
+    });
+  }
+});
+
+// 发送消息到频道
+function sendToChannel(message) {
+  channel.postMessage({
+    sender: 'page2',
+    content: message,
+    timestamp: Date.now(),
+  });
+}
+
+window.addEventListener('beforeunload', function () {
+  channel.close();
+});
+```
+
+### BroadcastChannel 特性说明
+
+- **同源限制**：BroadcastChannel 只能在同源页面之间工作
+- **简单易用**：API 简洁，只需创建实例并监听消息
+- **自动广播**：消息会自动发送到所有加入同一频道的页面
+- **无需显式连接**：不需要建立连接或维护连接状态
+
+## 加载失败原因分析
+
+[https://domain-a.com](https://domain-a.com/) 与 [https://domain-b.com](https://domain-b.com/) 并非同源页面。
+
+BroadcastChannel 只能在**同源**页面之间通讯，同源意味着同时满足：
+
+- 相同的协议（protocol）
+- 相同的域名（domain）
+- 相同的端口（port）
+
+页面 D 和页面 C 虽然都在 `domain-b.com` 下，但页面 B 是通过 iframe 嵌入页面 A 的，而页面 A 使用 `domain-a.com`，这就形成了跨域 iframe 环境。
+
+## 解决办法
+
+### 1. window.opener + postMessage（首选）
+
+在跨域环境下，`window.opener + postMessage` 是一种可靠的页面通讯方式，特别适用于由 `window.open()` 打开的窗口与父窗口之间的通讯。
+
+#### 页面 C（打开窗口的页面）
+
+```javascript
+function openPageD() {
+  const pageD = window.open('https://domain-b.com/preview', '_blank');
+
+  // 监听来自页面 D 的消息
+  window.addEventListener('message', function (event) {
+    // 验证消息来源（重要的安全措施）
+    if (event.origin === 'https://domain-b.com') {
+      console.log('页面 C 收到来自页面 D 的消息:', event.data);
+
+      if (event.data.type === 'statusUpdate') {
+        console.log('页面 D 状态更新:', event.data.status);
+      }
+    }
+  });
+
+  // 向页面 D 发送消息（确保页面 D 已加载完成）
+  setTimeout(function () {
+    if (pageD) {
+      pageD.postMessage(
+        {
+          type: 'init',
+          data: '初始化数据',
+          timestamp: Date.now(),
+        },
+        'https://domain-b.com',
+      );
+      console.log('页面 C 已发送初始化消息到页面 D');
+    }
+  }, 1000);
+}
+
+openPageD();
+```
+
+#### 页面 D（被打开的页面）
+
+```javascript
+if (window.opener) {
+  console.log('页面 D 检测到父窗口');
+
+  // 监听来自页面 C 的消息
+  window.addEventListener('message', function (event) {
+    // 验证消息来源（重要的安全措施）
+    if (event.origin === 'https://domain-b.com') {
+      console.log('页面 D 收到来自页面 C 的消息:', event.data);
+
+      if (event.data.type === 'init') {
+        console.log('收到初始化数据:', event.data.data);
+
+        // 回复父窗口
+        window.opener.postMessage(
+          {
+            type: 'statusUpdate',
+            status: '已初始化完成',
+            timestamp: Date.now(),
+          },
+          'https://domain-b.com',
+        );
+      }
+    }
+  });
+
+  function sendStatusToParent(status) {
+    if (window.opener) {
+      window.opener.postMessage(
+        {
+          type: 'statusUpdate',
+          status,
+          timestamp: Date.now(),
+        },
+        'https://domain-b.com',
+      );
+    }
+  }
+
+  window.addEventListener('load', function () {
+    sendStatusToParent('页面已完全加载');
+  });
+}
+```
+
+### postMessage 安全注意事项
+
+- **验证消息来源**：始终在 `message` 事件处理函数中检查 `event.origin`，确保只处理来自可信域名的消息
+- **指定目标源**：调用 `postMessage` 时始终指定目标域名作为第二个参数，避免消息被恶意站点截获
+- **消息格式规范**：使用包含 `type` 字段的结构化消息，便于分类和处理
+- **敏感数据保护**：避免通过 `postMessage` 传输密码、令牌等敏感数据
+
+### 2. localStorage + storage 事件（备选）
+
+#### 实时渲染页面（页面 C）
+
+```javascript
+function openPageD() {
+  window.open('https://domain-b.com/preview', '_blank');
+
+  window.addEventListener('storage', function (event) {
+    if (event.key === 'pageCDCommunication' && event.newValue) {
+      console.log('页面 C 收到存储事件:', event.newValue);
+
+      const data = JSON.parse(event.newValue);
+      if (data.sender === 'pageD') {
+        console.log('来自页面 D 的消息:', data.message);
+      }
+    }
+  });
+}
+
+function sendToStorage(message) {
+  localStorage.setItem(
+    'pageCDCommunication',
+    JSON.stringify({
+      sender: 'pageC',
+      message,
+      timestamp: Date.now(),
+    }),
+  );
+}
+```
+
+#### 单独查看页（页面 D）
+
+```javascript
+window.addEventListener('storage', function (event) {
+  if (event.key === 'pageCDCommunication' && event.newValue) {
+    const data = JSON.parse(event.newValue);
+    if (data.sender === 'pageC') {
+      console.log('页面 D 收到来自页面 C 的消息:', data.message);
+
+      localStorage.setItem(
+        'pageCDCommunication',
+        JSON.stringify({
+          sender: 'pageD',
+          message: '收到消息，正在处理...',
+          timestamp: Date.now(),
+        }),
+      );
+    }
+  }
+});
+```
+
+`storage` 事件同样受同源策略约束，因此它只适合作为页面 C 与页面 D 确认同源时的备选方案。
