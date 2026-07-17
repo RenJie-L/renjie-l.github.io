@@ -1,0 +1,112 @@
+---
+import { ExternalLink } from 'lucide-astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  locale="en"
+  hasTranslation
+  title="Projects"
+  description="Selected engineering and research projects by Renjie."
+>
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Projects</p><h1>Projects</h1><p>
+        Turning research questions and engineering ideas into verifiable,
+        maintainable outcomes.
+      </p>
+    </div>
+  </div>
+  <section class="project-list container">
+    <article class="project-card">
+      <div class="project-head">
+        <div>
+          <span>2022.03 — 2023.06 · Researcher / Engineer</span><h2>
+            Reinforcement Learning for Swing-Free UAV Trajectories
+          </h2><p>
+            A deep reinforcement learning approach to generate trajectories that
+            reduce suspended-load swing, validated on a physical UAV system.
+          </p>
+        </div>
+        <a
+          class="button"
+          href="https://ieeexplore.ieee.org/"
+          target="_blank"
+          rel="noreferrer">Publication <ExternalLink size={14} /></a
+        >
+      </div>
+      <ul>
+        <li>Modeled trajectory planning for a UAV with a suspended load.</li><li
+        >
+          Explored swing-free trajectory generation with deep reinforcement
+          learning.
+        </li><li>Validated the approach on a physical UAV system.</li>
+      </ul>
+      <div class="technologies">
+        <span>Reinforcement Learning</span><span>Trajectory Planning</span><span
+          >UAV</span
+        ><span>Python</span>
+      </div>
+    </article>
+  </section>
+</BaseLayout>
+
+<style>
+  .project-list {
+    padding-top: 3rem;
+  }
+  .project-card {
+    padding: clamp(1.4rem, 4vw, 2.2rem);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+  .project-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .project-head span {
+    color: var(--accent);
+    font:
+      600 0.78rem ui-monospace,
+      monospace;
+  }
+  .project-card h2 {
+    margin: 0.45rem 0;
+    font-size: 1.45rem;
+    letter-spacing: -0.025em;
+  }
+  .project-card p,
+  .project-card ul {
+    color: var(--muted);
+  }
+  .project-card p {
+    max-width: 700px;
+    margin: 0;
+  }
+  .project-card ul {
+    padding-left: 1.25rem;
+    margin: 1.7rem 0;
+  }
+  .technologies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+  }
+  .technologies span {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .technologies span:not(:last-child)::after {
+    content: ' /';
+    color: var(--line);
+  }
+  @media (max-width: 640px) {
+    .project-head {
+      flex-direction: column;
+    }
+  }
+</style>

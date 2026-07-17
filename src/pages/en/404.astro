@@ -4,17 +4,21 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="页面未找到"
-  description="你访问的页面不存在。"
-  noindex
+  locale="en"
   hasTranslation
+  title="Page not found"
+  description="The requested page could not be found."
+  noindex
 >
   <section class="not-found container">
-    <p class="code">404</p><h1>这里暂时没有内容。</h1><p>
-      页面可能已经移动，或地址输入有误。你可以回到首页继续浏览。
-    </p><a class="button primary" href="/"><ArrowLeft size={16} /> 返回首页</a>
+    <p class="code">404</p><h1>Nothing here yet.</h1><p>
+      The page may have moved, or the address may be incorrect.
+    </p><a class="button primary" href="/en/"
+      ><ArrowLeft size={16} /> Back home</a
+    >
   </section>
 </BaseLayout>
+
 <style>
   .not-found {
     min-height: 65vh;

@@ -1,0 +1,41 @@
+---
+import { ArrowRight } from 'lucide-astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  locale="en"
+  hasTranslation
+  title="Archive"
+  description="English writing archive by Renjie."
+>
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Archive</p><h1>Archive</h1><p>
+        English articles will appear here as they are published.
+      </p>
+    </div>
+  </div>
+  <section class="archive-empty container">
+    <h2>No English articles yet.</h2><p>
+      The complete archive is available in Chinese.
+    </p><a class="button" href="/archive" hreflang="zh-CN"
+      >View Chinese archive <ArrowRight size={15} /></a
+    >
+  </section>
+</BaseLayout>
+
+<style>
+  .archive-empty {
+    max-width: 850px;
+    padding-top: 4rem;
+  }
+  .archive-empty h2 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+  .archive-empty p {
+    color: var(--muted);
+    margin: 0.5rem 0 1.5rem;
+  }
+</style>

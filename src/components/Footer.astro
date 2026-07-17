@@ -1,12 +1,20 @@
 ---
+import { localizedPath, type Locale, ui } from '@/i18n/config';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
 const year = new Date().getFullYear();
+const t = ui[locale];
 ---
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <div><strong>Renjie</strong><p>持续学习，持续构建。</p></div>
+    <div><strong>Renjie</strong><p>{t.footerTagline}</p></div>
     <div class="footer-links">
-      <a href="/rss.xml">RSS</a><a href="mailto:renjie-l@foxmail.com">Email</a
+      <a href={localizedPath('/rss.xml', locale)}>RSS</a><a
+        href="mailto:renjie-l@foxmail.com">Email</a
       ><a href="https://github.com/RenJie-L" target="_blank" rel="noreferrer"
         >GitHub</a
       >

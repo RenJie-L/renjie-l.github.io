@@ -3,14 +3,20 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { byNewest, formatDate, publishedOnly } from '@/lib/content';
 const articles = (await getCollection('writing'))
-  .filter(publishedOnly)
+  .filter(
+    (article) => publishedOnly(article) && article.data.language === 'zh-CN',
+  )
   .sort(byNewest);
 const years = [
   ...new Set(articles.map((article) => article.data.publishDate.getFullYear())),
 ];
 ---
 
-<BaseLayout title="归档" description="Renjie 的技术文章时间归档。">
+<BaseLayout
+  title="归档"
+  description="Renjie 的技术文章时间归档。"
+  hasTranslation
+>
   <div class="page-intro">
     <div class="container">
       <p class="eyebrow">Archive</p><h1>归档</h1><p>

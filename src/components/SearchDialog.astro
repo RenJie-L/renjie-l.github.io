@@ -1,13 +1,29 @@
-<dialog class="search-dialog" aria-labelledby="search-title">
+---
+import { type Locale, ui } from '@/i18n/config';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = ui[locale];
+---
+
+<dialog
+  class="search-dialog"
+  aria-labelledby="search-title"
+  data-placeholder={t.searchPlaceholder}
+  data-empty={t.searchEmpty}
+  data-unavailable={t.searchUnavailable}
+>
   <div class="search-panel">
     <div class="search-heading">
-      <h2 id="search-title">搜索文章</h2><button
+      <h2 id="search-title">{t.search}</h2><button
         class="search-close"
-        aria-label="关闭搜索">Esc</button
+        aria-label={t.searchClose}>Esc</button
       >
     </div>
     <div id="search"></div>
-    <noscript>请启用 JavaScript 使用站内搜索。</noscript>
+    <noscript>{t.noScript}</noscript>
   </div>
 </dialog>
 
@@ -26,14 +42,14 @@
           showSubResults: true,
           showImages: false,
           translations: {
-            placeholder: '搜索标题、标签或正文…',
-            zero_results: '没有找到相关内容',
+            placeholder: dialog.dataset.placeholder ?? '',
+            zero_results: dialog.dataset.empty ?? '',
           },
         });
         initialized = true;
       } catch {
         document.querySelector('#search')!.textContent =
-          '搜索索引将在生产构建后可用。';
+          dialog.dataset.unavailable ?? '';
       }
     }
     setTimeout(

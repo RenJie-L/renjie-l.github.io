@@ -2,6 +2,7 @@
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import SearchDialog from '@/components/SearchDialog.astro';
+import { localeFromPath, localizedPath, type Locale } from '@/i18n/config';
 import '@/styles/global.css';
 import '@pagefind/default-ui/css/ui.css';
 
@@ -11,6 +12,8 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
+  locale?: Locale;
+  hasTranslation?: boolean;
 }
 const {
   title = 'Renjie — Frontend & AI Engineering',
@@ -18,14 +21,35 @@ const {
   image = '/og.png',
   type = 'website',
   noindex = false,
+  locale = localeFromPath(Astro.url.pathname),
+  hasTranslation = false,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title.includes('Renjie') ? title : `${title} — Renjie`;
 const imageUrl = image ? new URL(image, Astro.site) : undefined;
+const alternateLocale: Locale = locale === 'en' ? 'zh-CN' : 'en';
+const directAlternatePath = localizedPath(Astro.url.pathname, alternateLocale);
+const fallbackAlternatePath =
+  locale === 'en'
+    ? '/'
+    : Astro.url.pathname.startsWith('/writing')
+      ? '/en/writing'
+      : '/en/';
+const languageHref = hasTranslation
+  ? directAlternatePath
+  : fallbackAlternatePath;
+const zhUrl = new URL(
+  locale === 'zh-CN' ? Astro.url.pathname : directAlternatePath,
+  Astro.site,
+);
+const enUrl = new URL(
+  locale === 'en' ? Astro.url.pathname : directAlternatePath,
+  Astro.site,
+);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -33,17 +57,31 @@ const imageUrl = image ? new URL(image, Astro.site) : undefined;
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
+    {
+      hasTranslation && (
+        <>
+          <link rel="alternate" hreflang="zh-CN" href={zhUrl} />
+          <link rel="alternate" hreflang="en" href={enUrl} />
+          <link rel="alternate" hreflang="x-default" href={zhUrl} />
+        </>
+      )
+    }
     <link rel="icon" href="/img/avatar.png" type="image/png" />
     <link
       rel="alternate"
       type="application/rss+xml"
       title="Renjie Writing"
-      href="/rss.xml"
+      href={localizedPath('/rss.xml', locale)}
     />
     <meta property="og:type" content={type} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={locale === 'en' ? 'en_US' : 'zh_CN'} />
+    <meta
+      property="og:locale:alternate"
+      content={locale === 'en' ? 'zh_CN' : 'en_US'}
+    />
     {imageUrl && <meta property="og:image" content={imageUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
@@ -61,10 +99,10 @@ const imageUrl = image ? new URL(image, Astro.site) : undefined;
     </script>
   </head>
   <body>
-    <Header />
+    <Header {locale} {languageHref} />
     <main id="main-content"><slot /></main>
-    <Footer />
-    <SearchDialog />
+    <Footer {locale} />
+    <SearchDialog {locale} />
     <script is:inline>
       const themeButton = document.querySelector('.theme-toggle');
       themeButton?.addEventListener('click', () => {
@@ -78,7 +116,10 @@ const imageUrl = image ? new URL(image, Astro.site) : undefined;
       menuButton?.addEventListener('click', () => {
         const open = menuButton.getAttribute('aria-expanded') !== 'true';
         menuButton.setAttribute('aria-expanded', String(open));
-        menuButton.setAttribute('aria-label', open ? '关闭导航' : '打开导航');
+        menuButton.setAttribute(
+          'aria-label',
+          open ? menuButton.dataset.closeLabel : menuButton.dataset.openLabel,
+        );
         menu.toggleAttribute('hidden', !open);
       });
     </script>

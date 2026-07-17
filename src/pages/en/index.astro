@@ -7,42 +7,33 @@ import {
   Sparkles,
   Wrench,
 } from 'lucide-astro';
-import { getCollection } from 'astro:content';
-import ArticleCard from '@/components/ArticleCard.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { byNewest, publishedOnly } from '@/lib/content';
 
-const articles = (await getCollection('writing'))
-  .filter(
-    (article) => publishedOnly(article) && article.data.language === 'zh-CN',
-  )
-  .sort(byNewest);
-const featured = articles
-  .filter((article) => article.data.featured)
-  .slice(0, 3);
-const projects = (await getCollection('projects')).filter(
-  (project) => project.data.featured,
-);
 const directions = [
   {
     icon: Braces,
     title: 'Frontend Engineering',
-    text: 'React、TypeScript 与可持续演进的 Web 架构。',
+    text: 'React, TypeScript, and web architecture built to evolve.',
   },
   {
     icon: Bot,
     title: 'AI Agent Engineering',
-    text: 'Agent 工作流、上下文工程与智能应用构建。',
+    text: 'Agent workflows, context engineering, and intelligent applications.',
   },
   {
     icon: Wrench,
     title: 'Developer Experience',
-    text: '让工程工具、流程和协作体验变得更顺畅。',
+    text: 'Tools and workflows that help teams build with less friction.',
   },
 ];
 ---
 
-<BaseLayout hasTranslation>
+<BaseLayout
+  locale="en"
+  hasTranslation
+  title="Renjie — Frontend & AI Engineering"
+  description="Frontend engineer exploring AI-assisted development, web engineering, and intelligent applications."
+>
   <section class="hero container">
     <div class="hero-copy">
       <p class="availability">
@@ -50,13 +41,16 @@ const directions = [
       </p>
       <h1>Hi, I'm Renjie.</h1>
       <p class="hero-lede">
-        前端开发者，关注 AI 编程、Web 工程化与智能应用。<br
-        />我在这里分享技术实践、学习笔记和正在构建的项目。
+        Frontend engineer focused on AI-assisted development, web engineering,
+        and intelligent applications.<br />I share technical practice, learning
+        notes, and the projects I am building.
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="/writing"
-          >查看文章 <ArrowRight size={16} /></a
-        ><a class="button" href="/about">了解我</a><a
+        <a class="button primary" href="/en/writing"
+          >Explore writing <ArrowRight size={16} /></a
+        >
+        <a class="button" href="/en/about">About me</a>
+        <a
           class="button"
           href="https://github.com/RenJie-L"
           target="_blank"
@@ -65,9 +59,11 @@ const directions = [
       </div>
     </div>
     <div class="hero-signal" aria-hidden="true">
-      <span class="signal-label">Current stack</span><div class="signal-row">
+      <span class="signal-label">Current stack</span>
+      <div class="signal-row">
         <span>React</span><span>TypeScript</span><span>Astro</span>
-      </div><div class="signal-row offset">
+      </div>
+      <div class="signal-row offset">
         <span>Agent</span><span>RL</span><span>DX</span>
       </div>
     </div>
@@ -75,40 +71,29 @@ const directions = [
 
   <section class="focus-strip">
     <div class="focus-inner container">
-      <div><p class="eyebrow">Now</p><h2>当前关注方向</h2></div><p>
-        探索 AI Agent
-        如何参与大型项目的理解、规划与交付，并把这些经验沉淀为可复用的工程方法。
-      </p><Sparkles size={22} />
+      <div><p class="eyebrow">Now</p><h2>Current focus</h2></div>
+      <p>
+        Exploring how AI agents can understand, plan, and deliver in large
+        software projects—and turning those lessons into reusable engineering
+        practices.
+      </p>
+      <Sparkles size={22} />
     </div>
   </section>
 
   <section class="section container">
     <div class="section-heading">
-      <div><p class="eyebrow">Selected writing</p><h2>精选文章</h2></div><a
-        class="text-link"
-        href="/writing">查看全部 <ArrowRight size={15} /></a
-      >
-    </div>
-    <div class="article-grid">
-      {featured.map((article) => <ArticleCard article={article} />)}
-    </div>
-  </section>
-
-  <section class="section container">
-    <div class="section-heading">
-      <div><p class="eyebrow">What I work on</p><h2>技术方向</h2></div>
+      <div><p class="eyebrow">What I work on</p><h2>Technical focus</h2></div>
     </div>
     <div class="direction-grid">
       {
         directions.map(({ icon: Icon, title, text }) => (
           <article class="direction-card">
-            <>
-              <div class="direction-icon">
-                <Icon size={21} />
-              </div>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </>
+            <div class="direction-icon">
+              <Icon size={21} />
+            </div>
+            <h3>{title}</h3>
+            <p>{text}</p>
           </article>
         ))
       }
@@ -117,45 +102,38 @@ const directions = [
 
   <section class="section container">
     <div class="section-heading">
-      <div><p class="eyebrow">Selected projects</p><h2>精选项目</h2></div><a
-        class="text-link"
-        href="/projects">全部项目 <ArrowRight size={15} /></a
+      <div>
+        <p class="eyebrow">Selected project</p><h2>Research in practice</h2>
+      </div>
+      <a class="text-link" href="/en/projects"
+        >View projects <ArrowRight size={15} /></a
       >
     </div>
-    <div class="project-feature-list">
-      {
-        projects.map((project) => (
-          <article class="project-feature">
-            <>
-              <div>
-                <>
-                  <span class="project-period">{project.data.period}</span>
-                  <h3>{project.data.title}</h3>
-                  <p>{project.data.description}</p>
-                </>
-              </div>
-              <div class="tech-list">
-                {project.data.technologies.map((item) => (
-                  <span>{item}</span>
-                ))}
-              </div>
-            </>
-          </article>
-        ))
-      }
-    </div>
+    <article class="project-feature">
+      <div>
+        <span class="project-period">2022.03 — 2023.06</span>
+        <h3>Reinforcement Learning for Swing-Free UAV Trajectories</h3>
+        <p>
+          A deep reinforcement learning approach for planning trajectories that
+          reduce suspended-load swing, validated on a physical UAV system.
+        </p>
+      </div>
+      <div class="tech-list">
+        <span>RL</span><span>UAV</span><span>Python</span>
+      </div>
+    </article>
   </section>
 
-  <section class="section recent-section container">
-    <div class="section-heading">
-      <div><p class="eyebrow">Latest</p><h2>最近文章</h2></div>
-    </div>
-    <div class="article-list">
-      {
-        articles
-          .slice(0, 5)
-          .map((article) => <ArticleCard article={article} compact />)
-      }
+  <section class="section writing-cta container">
+    <p class="eyebrow">Writing</p>
+    <h2>English articles are on the way.</h2>
+    <p>
+      The site interface is now bilingual. English translations of selected
+      articles will be published gradually.
+    </p>
+    <div class="hero-actions">
+      <a class="button primary" href="/en/writing">English writing</a>
+      <a class="button" href="/writing" hreflang="zh-CN">Read in Chinese</a>
     </div>
   </section>
 </BaseLayout>
@@ -167,8 +145,7 @@ const directions = [
     grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
     gap: 4rem;
     align-items: center;
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-block: 4rem;
   }
   .hero h1 {
     margin: 0.7rem 0 1.3rem;
@@ -177,9 +154,9 @@ const directions = [
     letter-spacing: -0.065em;
   }
   .hero-lede {
-    max-width: 710px;
+    max-width: 750px;
     color: var(--muted);
-    font-size: clamp(1.05rem, 2.1vw, 1.35rem);
+    font-size: clamp(1.05rem, 2.1vw, 1.28rem);
     line-height: 1.7;
   }
   .availability {
@@ -263,14 +240,11 @@ const directions = [
     gap: 2rem;
     padding-block: 1.6rem;
   }
-  .focus-inner h2 {
-    margin: 0;
-    font-size: 1.05rem;
-  }
+  .focus-inner h2,
   .focus-inner .eyebrow {
     margin: 0;
   }
-  .focus-inner p:nth-child(2) {
+  .focus-inner > p {
     color: var(--muted);
     margin: 0;
     font-size: 0.92rem;
@@ -302,13 +276,11 @@ const directions = [
     margin: 2rem 0 0.5rem;
     font-size: 1rem;
   }
-  .direction-card p {
+  .direction-card p,
+  .project-feature p,
+  .writing-cta > p {
     color: var(--muted);
     margin: 0;
-    font-size: 0.9rem;
-  }
-  .project-feature-list {
-    border-top: 1px solid var(--line);
   }
   .project-feature {
     display: grid;
@@ -316,16 +288,11 @@ const directions = [
     gap: 2rem;
     align-items: end;
     padding: 1.7rem 0;
-    border-bottom: 1px solid var(--line);
+    border-block: 1px solid var(--line);
   }
   .project-feature h3 {
     font-size: 1.3rem;
     margin: 0.3rem 0;
-  }
-  .project-feature p {
-    max-width: 680px;
-    color: var(--muted);
-    margin: 0;
   }
   .project-period {
     color: var(--accent);
@@ -336,8 +303,6 @@ const directions = [
   .tech-list {
     display: flex;
     gap: 0.4rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
   }
   .tech-list span {
     padding: 0.22rem 0.55rem;
@@ -347,14 +312,18 @@ const directions = [
     color: var(--muted);
     font-size: 0.72rem;
   }
-  .recent-section {
-    max-width: 850px;
+  .writing-cta {
+    max-width: 800px;
+  }
+  .writing-cta h2 {
+    margin: 0.4rem 0 0.8rem;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
   }
   @media (max-width: 760px) {
     .hero {
       min-height: auto;
       grid-template-columns: 1fr;
-      gap: 1rem;
       padding-top: 5rem;
     }
     .hero-signal {
@@ -363,18 +332,13 @@ const directions = [
     .focus-inner {
       grid-template-columns: 1fr auto;
     }
-    .focus-inner p:nth-child(2) {
+    .focus-inner > p {
       grid-column: 1 / -1;
       grid-row: 2;
     }
-    .direction-grid {
-      grid-template-columns: 1fr;
-    }
+    .direction-grid,
     .project-feature {
       grid-template-columns: 1fr;
-    }
-    .tech-list {
-      justify-content: flex-start;
     }
   }
 </style>

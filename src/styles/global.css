@@ -147,6 +147,22 @@ img {
   gap: 0.25rem;
   align-items: center;
 }
+.language-switch {
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.45rem;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 680;
+  letter-spacing: 0.02em;
+}
+.language-switch:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
 .icon-button {
   display: grid;
   place-items: center;

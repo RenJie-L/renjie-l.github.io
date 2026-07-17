@@ -4,7 +4,9 @@ import { byNewest, publishedOnly } from '@/lib/content';
 
 export async function GET(context: { site?: URL }) {
   const articles = (await getCollection('writing'))
-    .filter(publishedOnly)
+    .filter(
+      (article) => publishedOnly(article) && article.data.language === 'zh-CN',
+    )
     .sort(byNewest);
   return rss({
     title: 'Renjie Writing',

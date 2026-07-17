@@ -1,0 +1,49 @@
+---
+import { ArrowRight } from 'lucide-astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  locale="en"
+  hasTranslation
+  title="Writing"
+  description="English writing on frontend engineering, AI-assisted development, agents, and reinforcement learning."
+>
+  <div class="page-intro">
+    <div class="container">
+      <p class="eyebrow">Writing</p><h1>Writing</h1>
+      <p>
+        Technical practice and notes on building software. English translations
+        are being prepared.
+      </p>
+    </div>
+  </div>
+  <section class="empty-writing container">
+    <p class="eyebrow">Coming soon</p>
+    <h2>English articles are on the way.</h2>
+    <p>
+      Selected articles will be translated gradually. The complete archive is
+      currently available in Chinese.
+    </p>
+    <a class="button primary" href="/writing" hreflang="zh-CN"
+      >Browse Chinese writing <ArrowRight size={15} /></a
+    >
+  </section>
+</BaseLayout>
+
+<style>
+  .empty-writing {
+    max-width: 760px;
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+  }
+  .empty-writing h2 {
+    margin: 0.4rem 0 0.7rem;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    letter-spacing: -0.04em;
+  }
+  .empty-writing > p:not(.eyebrow) {
+    color: var(--muted);
+    margin: 0 0 1.7rem;
+  }
+</style>

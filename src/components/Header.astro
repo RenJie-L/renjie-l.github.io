@@ -1,22 +1,29 @@
 ---
 import { Github, Menu, Moon, Search, Sun, X } from 'lucide-astro';
+import { localizedPath, type Locale, ui } from '@/i18n/config';
 
+interface Props {
+  locale: Locale;
+  languageHref: string;
+}
+const { locale, languageHref } = Astro.props;
 const pathname = Astro.url.pathname;
+const t = ui[locale];
 const links = [
-  { href: '/writing', label: '文章' },
-  { href: '/projects', label: '项目' },
-  { href: '/archive', label: '归档' },
-  { href: '/about', label: '关于' },
+  { href: localizedPath('/writing', locale), label: t.nav.writing },
+  { href: localizedPath('/projects', locale), label: t.nav.projects },
+  { href: localizedPath('/archive', locale), label: t.nav.archive },
+  { href: localizedPath('/about', locale), label: t.nav.about },
 ];
 ---
 
 <header class="site-header">
-  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <a class="skip-link" href="#main-content">{t.skip}</a>
   <div class="header-inner">
-    <a class="brand" href="/" aria-label="Renjie 首页">
+    <a class="brand" href={localizedPath('/', locale)} aria-label={t.home}>
       <span class="brand-mark">R</span><span>Renjie</span>
     </a>
-    <nav class="desktop-nav" aria-label="主导航">
+    <nav class="desktop-nav" aria-label={t.mainNav}>
       {
         links.map(({ href, label }) => (
           <a
@@ -31,16 +38,24 @@ const links = [
     <div class="header-actions">
       <button
         class="icon-button search-trigger"
-        aria-label="搜索文章"
-        title="搜索（⌘ K）"><Search size={18} /></button
+        aria-label={t.search}
+        title={t.searchShortcut}><Search size={18} /></button
       >
       <button
         class="icon-button theme-toggle"
-        aria-label="切换颜色主题"
-        title="切换颜色主题"
+        aria-label={t.theme}
+        title={t.theme}
       >
         <Sun class="sun-icon" size={18} /><Moon class="moon-icon" size={18} />
       </button>
+      <a
+        class="language-switch"
+        href={languageHref}
+        lang={locale === 'en' ? 'zh-CN' : 'en'}
+        hreflang={locale === 'en' ? 'zh-CN' : 'en'}
+        aria-label={t.language}
+        title={t.language}>{t.languageShort}</a
+      >
       <a
         class="icon-button desktop-github"
         href="https://github.com/RenJie-L"
@@ -52,7 +67,9 @@ const links = [
         class="icon-button menu-toggle"
         aria-expanded="false"
         aria-controls="mobile-menu"
-        aria-label="打开导航"
+        aria-label={t.menuOpen}
+        data-open-label={t.menuOpen}
+        data-close-label={t.menuClose}
         ><Menu class="menu-open-icon" size={20} /><X
           class="menu-close-icon"
           size={20}
@@ -60,10 +77,13 @@ const links = [
       >
     </div>
   </div>
-  <nav id="mobile-menu" class="mobile-menu" aria-label="移动端导航" hidden>
+  <nav id="mobile-menu" class="mobile-menu" aria-label={t.mobileNav} hidden>
     {links.map(({ href, label }) => <a href={href}>{label}</a>)}
     <a href="https://github.com/RenJie-L" target="_blank" rel="noreferrer"
       >GitHub</a
+    >
+    <a href={languageHref} lang={locale === 'en' ? 'zh-CN' : 'en'}
+      >{t.language}</a
     >
   </nav>
 </header>

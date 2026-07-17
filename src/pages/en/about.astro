@@ -4,20 +4,24 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="关于"
-  description="关于 Renjie：前端工程、AI Agent 与强化学习方向的开发者。"
+  locale="en"
   hasTranslation
+  title="About"
+  description="About Renjie, a frontend engineer exploring AI agents and reinforcement learning."
 >
   <div class="page-intro">
     <div class="container">
-      <p class="eyebrow">About</p><h1>用工程连接想法与现实。</h1>
+      <p class="eyebrow">About</p><h1>
+        Connecting ideas to reality through engineering.
+      </h1>
     </div>
   </div>
   <div class="about-layout container">
     <aside>
       <p class="about-lede">
-        我是 Renjie，一名前端开发者，也持续探索 AI 编程、Agent Engineering
-        与强化学习。喜欢把复杂问题拆解清楚，再做成可靠、好用的产品。
+        I'm Renjie, a frontend engineer exploring AI-assisted development, agent
+        engineering, and reinforcement learning. I enjoy breaking down complex
+        problems and turning them into reliable, useful products.
       </p><div class="contact-links">
         <a class="button" href="mailto:renjie-l@foxmail.com"
           ><Mail size={16} /> Email</a
@@ -31,7 +35,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     </aside>
     <div class="about-content">
       <section>
-        <p class="eyebrow">Focus</p><h2>关注方向</h2><div class="focus-tags">
+        <p class="eyebrow">Focus</p><h2>Areas of focus</h2><div
+          class="focus-tags"
+        >
           <span>Frontend Engineering</span><span>React / TypeScript</span><span
             >AI-assisted Development</span
           ><span>AI Agent Engineering</span><span>Developer Experience</span
@@ -39,10 +45,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         </div>
       </section>
       <section>
-        <p class="eyebrow">Education</p><h2>教育经历</h2><div class="timeline">
+        <p class="eyebrow">Education</p><h2>Education</h2><div class="timeline">
           <article>
-            <span>2020.09 — 2023.06</span><h3>杭州电子科技大学</h3><p>
-              硕士研究生 · 电子信息
+            <span>2020.09 — 2023.06</span><h3>Hangzhou Dianzi University</h3><p>
+              M.Eng. · Electronic Information
             </p>
           </article><article>
             <span>2020.09 — 2022.06</span><h3>ITMO University</h3><p>
@@ -52,18 +58,20 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         </div>
       </section>
       <section>
-        <p class="eyebrow">Research</p><h2>研究与实践</h2><article
+        <p class="eyebrow">Research</p><h2>Research & practice</h2><article
           class="detail-card"
         >
           <span>2022.03 — 2023.06</span><h3>
-            基于强化学习的无人机负载无摆动轨迹生成
+            Swing-Free Trajectory Generation for UAV Suspended Loads
           </h3><p>
-            浙江省新苗人才计划项目。针对无人机悬挂负载易摆动的问题，通过强化学习算法生成无摆动飞行轨迹，并在实际无人机系统中验证有效性。
+            A research project using reinforcement learning to generate
+            swing-free flight trajectories and validate them on a physical UAV
+            platform.
           </p>
         </article>
       </section>
       <section>
-        <p class="eyebrow">Publication</p><h2>学术论文</h2><p
+        <p class="eyebrow">Publication</p><h2>Publication</h2><p
           class="publication"
         >
           Renjie, L., & Fan, Y. (2022). Deep Reinforcement Learning-based
@@ -71,18 +79,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
           Load. <em>China Automation Congress 2022.</em>
         </p>
       </section>
-      <section>
-        <p class="eyebrow">Awards</p><h2>竞赛与奖项</h2><ul class="awards">
-          <li><time>2022</time>第八届浙江省“互联网+”创新创业大赛 银奖</li><li>
-            <time>2021</time>第十六届中国研究生电子设计竞赛 华东赛区一等奖
-          </li><li><time>2021</time>研究生学业奖学金（前 10%）</li><li>
-            <time>2020</time>研究生学业奖学金（前 20%）
-          </li>
-        </ul>
-      </section>
     </div>
   </div>
 </BaseLayout>
+
 <style>
   .about-layout {
     display: grid;
@@ -167,24 +167,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     border: 1px solid var(--line);
     border-radius: 14px;
     background: var(--surface);
-  }
-  .awards {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-  }
-  .awards li {
-    display: grid;
-    grid-template-columns: 60px 1fr;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .awards time {
-    color: var(--muted);
-    font:
-      0.82rem ui-monospace,
-      monospace;
   }
   @media (max-width: 760px) {
     .about-layout {
