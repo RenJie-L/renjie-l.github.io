@@ -1,0 +1,15 @@
+---
+import GaussianSplatExperience from '@/components/experiments/GaussianSplatExperience.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  immersive
+  hasTranslation
+  locale="en"
+  pageClass="gaussian-splat-page"
+  title="3D Gaussian Splat Spatial Scene"
+  description="Load and explore an SPZ 3D Gaussian Splatting scene in real time in the browser."
+>
+  <GaussianSplatExperience locale="en" />
+</BaseLayout>

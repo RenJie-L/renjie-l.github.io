@@ -1,0 +1,497 @@
+---
+import {
+  ArrowLeft,
+  Expand,
+  Languages,
+  Move3D,
+  Pause,
+  Play,
+  RotateCcw,
+} from 'lucide-astro';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'zh-CN' } = Astro.props;
+const isEnglish = locale === 'en';
+const copy = isEnglish
+  ? {
+      back: 'Back to projects',
+      language: '查看中文版本',
+      eyebrow: 'Spatial Computing Experiment · 02',
+      title: 'Gaussian Splat',
+      description:
+        'Explore a captured space reconstructed as millions of translucent 3D Gaussians.',
+      enter: 'Load 3D scene',
+      note: 'SPZ · Spark · Three.js · 7.6 MB',
+      loading: 'Loading spatial scene',
+      interaction: 'Drag to look around · Scroll to adjust distance',
+      reset: 'Reset view',
+      pause: 'Pause rotation',
+      play: 'Auto rotate',
+      fullscreen: 'Fullscreen',
+      failed:
+        'The scene could not be loaded. Check WebGL support and try again.',
+    }
+  : {
+      back: '返回项目',
+      language: 'View in English',
+      eyebrow: '空间计算实验 · 02',
+      title: 'Gaussian Splat',
+      description: '探索由数百万半透明三维高斯重建而成的真实空间。',
+      enter: '加载 3D 场景',
+      note: 'SPZ · Spark · Three.js · 7.6 MB',
+      loading: '正在加载空间场景',
+      interaction: '拖动环视 · 滚轮微调距离',
+      reset: '重置视角',
+      pause: '暂停旋转',
+      play: '自动旋转',
+      fullscreen: '全屏',
+      failed: '场景加载失败，请检查浏览器 WebGL 支持后重试。',
+    };
+---
+
+<section
+  class="splat-experience"
+  data-splat-root
+  data-state="intro"
+  aria-labelledby="splat-title"
+>
+  <canvas data-splat-canvas aria-label={copy.title}></canvas>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <nav
+    class="experience-nav"
+    aria-label={isEnglish ? 'Experience navigation' : '体验页导航'}
+  >
+    <a class="nav-pill" href={isEnglish ? '/en/projects' : '/projects'}>
+      <ArrowLeft size={16} /><span>{copy.back}</span>
+    </a>
+    <a
+      class="nav-pill"
+      href={isEnglish
+        ? '/experiments/gaussian-splat'
+        : '/en/experiments/gaussian-splat'}
+      hreflang={isEnglish ? 'zh-CN' : 'en'}
+    >
+      <Languages size={16} /><span>{copy.language}</span>
+    </a>
+  </nav>
+
+  <div class="intro-panel" data-splat-intro>
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 id="splat-title">{copy.title}</h1>
+    <p class="description">{copy.description}</p>
+    <button class="enter-button" type="button" data-load-splat>
+      <Play size={17} fill="currentColor" />{copy.enter}
+    </button>
+    <p class="tech-note">{copy.note}</p>
+  </div>
+
+  <div class="loader" data-splat-loader hidden aria-live="polite">
+    <span class="loader-mark" aria-hidden="true"></span>
+    <strong>{copy.loading}</strong>
+    <span data-load-status>Preparing renderer…</span>
+    <div class="load-track" aria-hidden="true"><span data-load-bar></span></div>
+    <span data-load-value>0%</span>
+  </div>
+
+  <div class="viewer-hud" data-splat-hud hidden>
+    <p><Move3D size={15} />{copy.interaction}</p>
+    <div class="viewer-actions">
+      <button type="button" data-reset-view title={copy.reset}>
+        <RotateCcw size={16} /><span>{copy.reset}</span>
+      </button>
+      <button
+        type="button"
+        data-toggle-rotation
+        data-playing="true"
+        data-play-label={copy.play}
+        data-pause-label={copy.pause}
+        title={copy.pause}
+      >
+        <Pause class="pause-icon" size={16} />
+        <Play class="play-icon" size={16} />
+        <span data-rotation-label>{copy.pause}</span>
+      </button>
+      <button type="button" data-fullscreen title={copy.fullscreen}>
+        <Expand size={16} /><span>{copy.fullscreen}</span>
+      </button>
+    </div>
+  </div>
+
+  <p class="error-message" data-splat-error hidden role="alert">
+    {copy.failed}
+  </p>
+  <noscript
+    ><p class="error-message">This viewer requires JavaScript.</p></noscript
+  >
+</section>
+
+<script>
+  import type { GaussianSplatScene } from '@/scripts/gaussian-splat/GaussianSplatScene';
+
+  let splatScene: GaussianSplatScene | undefined;
+
+  function setupSplatExperience() {
+    const root = document.querySelector<HTMLElement>('[data-splat-root]');
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+    const loadButton =
+      root.querySelector<HTMLButtonElement>('[data-load-splat]');
+    const intro = root.querySelector<HTMLElement>('[data-splat-intro]');
+    const loader = root.querySelector<HTMLElement>('[data-splat-loader]');
+    const hud = root.querySelector<HTMLElement>('[data-splat-hud]');
+    const errorMessage = root.querySelector<HTMLElement>('[data-splat-error]');
+    const loadBar = root.querySelector<HTMLElement>('[data-load-bar]');
+    const loadValue = root.querySelector<HTMLElement>('[data-load-value]');
+    const loadStatus = root.querySelector<HTMLElement>('[data-load-status]');
+
+    loadButton?.addEventListener('click', async () => {
+      loadButton.disabled = true;
+      root.dataset.state = 'loading';
+      loader?.removeAttribute('hidden');
+      try {
+        const { GaussianSplatScene } =
+          await import('@/scripts/gaussian-splat/GaussianSplatScene');
+        splatScene = new GaussianSplatScene(root);
+        await splatScene.init((progress, status) => {
+          if (loadBar) loadBar.style.width = `${progress}%`;
+          if (loadValue) loadValue.textContent = `${progress}%`;
+          if (loadStatus) loadStatus.textContent = status;
+        });
+        root.dataset.state = 'active';
+        intro?.setAttribute('hidden', '');
+        loader?.setAttribute('hidden', '');
+        hud?.removeAttribute('hidden');
+        splatScene.start();
+      } catch (error) {
+        console.warn('Unable to load Gaussian splat scene.', error);
+        root.dataset.state = 'error';
+        loader?.setAttribute('hidden', '');
+        errorMessage?.removeAttribute('hidden');
+        loadButton.disabled = false;
+      }
+    });
+
+    root.querySelector('[data-reset-view]')?.addEventListener('click', () => {
+      splatScene?.resetView();
+    });
+    root
+      .querySelector('[data-toggle-rotation]')
+      ?.addEventListener('click', (event) => {
+        const button = event.currentTarget as HTMLButtonElement;
+        const playing = splatScene?.toggleAutoRotate() ?? false;
+        const playLabel = button.dataset.playLabel ?? 'Auto rotate';
+        const pauseLabel = button.dataset.pauseLabel ?? 'Pause rotation';
+        button.dataset.playing = String(playing);
+        button.title = playing ? pauseLabel : playLabel;
+        const label = button.querySelector('[data-rotation-label]');
+        if (label) label.textContent = playing ? pauseLabel : playLabel;
+      });
+    root.querySelector('[data-fullscreen]')?.addEventListener('click', () => {
+      if (document.fullscreenElement) void document.exitFullscreen();
+      else void root.requestFullscreen();
+    });
+  }
+
+  function destroySplatExperience() {
+    splatScene?.destroy();
+    splatScene = undefined;
+  }
+
+  document.addEventListener('astro:page-load', setupSplatExperience);
+  document.addEventListener('astro:before-swap', destroySplatExperience);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSplatExperience, {
+      once: true,
+    });
+  } else {
+    setupSplatExperience();
+  }
+</script>
+
+<style>
+  :global(.gaussian-splat-page) {
+    overflow: hidden;
+    background: #090b0f;
+  }
+  :global(.gaussian-splat-page main) {
+    min-height: 100svh;
+  }
+  .splat-experience {
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    overflow: hidden;
+    color: #f5f4ef;
+    background: #090b0f;
+  }
+  [data-splat-canvas],
+  .ambient {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  [data-splat-canvas] {
+    z-index: -2;
+    opacity: 0;
+    touch-action: none;
+    transition: opacity 0.8s ease;
+  }
+  [data-state='active'] [data-splat-canvas] {
+    opacity: 1;
+  }
+  .ambient {
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        circle at 72% 22%,
+        rgb(76 107 113 / 16%),
+        transparent 38%
+      ),
+      linear-gradient(
+        90deg,
+        rgb(9 11 15 / 96%) 0%,
+        rgb(9 11 15 / 58%) 52%,
+        transparent 78%
+      );
+  }
+  [data-state='active'] .ambient {
+    background: linear-gradient(
+      180deg,
+      rgb(9 11 15 / 34%),
+      transparent 28% 72%,
+      rgb(9 11 15 / 48%)
+    );
+  }
+  .experience-nav {
+    position: absolute;
+    z-index: 4;
+    top: max(1.2rem, env(safe-area-inset-top));
+    left: max(1.2rem, env(safe-area-inset-left));
+    right: max(1.2rem, env(safe-area-inset-right));
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .nav-pill,
+  .viewer-actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 42px;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 999px;
+    color: #f5f4ef;
+    background: rgb(12 15 20 / 74%);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 20%);
+    backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    pointer-events: auto;
+  }
+  .nav-pill:hover,
+  .viewer-actions button:hover {
+    border-color: rgb(255 255 255 / 34%);
+    background: rgb(25 30 37 / 86%);
+  }
+  .intro-panel {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: max(7vw, 1.5rem);
+    width: min(560px, calc(100% - 3rem));
+    transform: translateY(-46%);
+  }
+  .eyebrow {
+    color: #7fc7ca;
+    font:
+      650 0.72rem ui-monospace,
+      monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0.65rem 0 1rem;
+    font-size: clamp(3.8rem, 10vw, 8.5rem);
+    line-height: 0.85;
+    letter-spacing: -0.075em;
+  }
+  .description {
+    max-width: 510px;
+    color: rgb(245 244 239 / 68%);
+    font-size: clamp(1rem, 2vw, 1.25rem);
+  }
+  .enter-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.5rem;
+    padding: 0.85rem 1.15rem;
+    border: 0;
+    border-radius: 12px;
+    color: #081012;
+    background: #a7e3df;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .enter-button:hover {
+    background: #c3f2ed;
+    transform: translateY(-1px);
+  }
+  .enter-button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+  }
+  .tech-note {
+    color: rgb(245 244 239 / 42%);
+    font:
+      0.72rem ui-monospace,
+      monospace;
+  }
+  .loader {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    justify-items: center;
+    gap: 0.65rem;
+    width: min(320px, calc(100% - 3rem));
+    padding: 1.4rem;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 16px;
+    background: rgb(12 15 20 / 84%);
+    backdrop-filter: blur(18px);
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .loader-mark {
+    width: 34px;
+    height: 34px;
+    border: 2px solid rgb(167 227 223 / 20%);
+    border-top-color: #a7e3df;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  .loader > span:not(.loader-mark) {
+    color: rgb(245 244 239 / 56%);
+    font-size: 0.75rem;
+  }
+  .load-track {
+    overflow: hidden;
+    width: 100%;
+    height: 3px;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 9%);
+  }
+  .load-track span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #a7e3df;
+    transition: width 0.18s ease;
+  }
+  .viewer-hud {
+    position: absolute;
+    z-index: 4;
+    right: max(1.2rem, env(safe-area-inset-right));
+    bottom: max(1.2rem, env(safe-area-inset-bottom));
+    left: max(1.2rem, env(safe-area-inset-left));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    pointer-events: none;
+  }
+  .viewer-hud > p {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    color: rgb(245 244 239 / 60%);
+    font-size: 0.75rem;
+    text-shadow: 0 1px 8px #000;
+  }
+  .viewer-actions {
+    display: flex;
+    gap: 0.45rem;
+  }
+  .viewer-actions button {
+    cursor: pointer;
+  }
+  [data-playing='true'] .play-icon,
+  [data-playing='false'] .pause-icon {
+    display: none;
+  }
+  .error-message {
+    position: absolute;
+    z-index: 5;
+    bottom: 2rem;
+    left: 50%;
+    width: min(520px, calc(100% - 3rem));
+    padding: 1rem;
+    border: 1px solid rgb(255 130 130 / 32%);
+    border-radius: 12px;
+    color: #ffd9d9;
+    background: rgb(45 12 16 / 88%);
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (max-width: 680px) {
+    .nav-pill {
+      width: 42px;
+      justify-content: center;
+      padding-inline: 0.75rem;
+    }
+    .nav-pill span {
+      display: none;
+    }
+    .intro-panel {
+      top: auto;
+      bottom: 8vh;
+      transform: none;
+    }
+    h1 {
+      font-size: clamp(3.4rem, 19vw, 5.6rem);
+    }
+    .viewer-hud {
+      align-items: flex-end;
+    }
+    .viewer-hud > p {
+      max-width: 150px;
+    }
+    .viewer-actions button span {
+      display: none;
+    }
+    .viewer-actions button {
+      width: 42px;
+      justify-content: center;
+      padding: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-splat-canvas],
+    .load-track span,
+    .enter-button {
+      transition: none;
+    }
+    .loader-mark {
+      animation-duration: 1.8s;
+    }
+  }
+</style>

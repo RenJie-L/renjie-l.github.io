@@ -19,6 +19,32 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   </div>
   <section class="project-list container">
     <article class="project-card">
+      <div class="project-head">
+        <div>
+          <span>2026.07 — Present · Creative Developer</span>
+          <h2>3D Gaussian Splat Scene Viewer</h2>
+          <p>
+            A focused browser experiment for loading and exploring a compressed
+            SPZ spatial capture with Spark and Three.js.
+          </p>
+        </div>
+        <a class="button" href="/en/experiments/gaussian-splat">
+          Enter scene <ExternalLink size={14} />
+        </a>
+      </div>
+      <ul>
+        <li>Loads a remote 7.6 MB SPZ scene directly in the browser.</li>
+        <li>
+          Orbit, zoom, pan, auto-rotation, reset, and fullscreen controls.
+        </li>
+        <li>Viewer code and scene data are loaded only after user intent.</li>
+      </ul>
+      <div class="technologies">
+        <span>3DGS</span><span>SPZ</span><span>Spark</span><span>Three.js</span
+        ><span>Astro</span>
+      </div>
+    </article>
+    <article class="project-card">
       <a
         class="project-cover"
         href="/en/experiments/west-lake"

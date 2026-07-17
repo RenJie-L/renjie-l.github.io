@@ -1,0 +1,14 @@
+---
+import GaussianSplatExperience from '@/components/experiments/GaussianSplatExperience.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  immersive
+  hasTranslation
+  pageClass="gaussian-splat-page"
+  title="3D Gaussian Splat 空间场景"
+  description="在浏览器中实时加载和探索 SPZ 格式的 3D Gaussian Splatting 场景。"
+>
+  <GaussianSplatExperience />
+</BaseLayout>

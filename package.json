@@ -16,6 +16,7 @@
     "@astrojs/mdx": "^4.3.3",
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.4.1",
+    "@sparkjsdev/spark": "^2.1.0",
     "@tailwindcss/vite": "^4.1.11",
     "astro": "^5.12.1",
     "gsap": "^3.15.0",
