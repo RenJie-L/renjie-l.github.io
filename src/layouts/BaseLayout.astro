@@ -16,6 +16,7 @@ interface Props {
   locale?: Locale;
   hasTranslation?: boolean;
   pageClass?: string;
+  immersive?: boolean;
 }
 const {
   title = 'Renjie — Frontend & AI Engineering',
@@ -26,6 +27,7 @@ const {
   locale = localeFromPath(Astro.url.pathname),
   hasTranslation = false,
   pageClass,
+  immersive = false,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title.includes('Renjie') ? title : `${title} — Renjie`;
@@ -103,10 +105,10 @@ const enUrl = new URL(
     </script>
   </head>
   <body class={pageClass}>
-    <Header {locale} {languageHref} />
+    {!immersive && <Header {locale} {languageHref} />}
     <main id="main-content"><slot /></main>
-    <Footer {locale} />
-    <SearchDialog {locale} />
+    {!immersive && <Footer {locale} />}
+    {!immersive && <SearchDialog {locale} />}
     <script is:inline>
       const themeButton = document.querySelector('.theme-toggle');
       themeButton?.addEventListener('click', () => {

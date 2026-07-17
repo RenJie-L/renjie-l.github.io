@@ -58,15 +58,18 @@ export const universeProjects: UniverseProject[] = [
     accent: '#f0ad5f',
   },
   {
-    slug: 'code-universe',
-    title: { 'zh-CN': 'Code Universe', en: 'Code Universe' },
+    slug: 'west-lake',
+    title: { 'zh-CN': '西湖数字场景', en: 'West Lake WebGL Experience' },
     description: {
-      'zh-CN': '以 Astro、Three.js 和渐进增强构建的个人知识宇宙。',
-      en: 'A personal knowledge universe built with Astro, Three.js, and progressive enhancement.',
+      'zh-CN': '以 Three.js、Shader 和水墨语言构建的原创西湖数字场景。',
+      en: 'An original West Lake scene shaped with Three.js, shaders, and digital ink wash.',
     },
     technologies: ['Astro', 'Three.js', 'GSAP'],
     status: 'experimental',
-    href: { 'zh-CN': '/about', en: '/en/about' },
+    href: {
+      'zh-CN': '/experiments/west-lake',
+      en: '/en/experiments/west-lake',
+    },
     planetSize: 0.3,
     position: [-2.65, -1.65, -0.8],
     orbitSpeed: 0.22,

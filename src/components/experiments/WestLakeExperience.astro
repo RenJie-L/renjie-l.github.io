@@ -1,0 +1,540 @@
+---
+import { ArrowLeft, Languages, Move, Play, SkipForward } from 'lucide-astro';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'zh-CN' } = Astro.props;
+const isEnglish = locale === 'en';
+const copy = isEnglish
+  ? {
+      back: 'Back to projects',
+      language: '查看中文版本',
+      eyebrow: 'Creative Coding Experiment · 01',
+      title: 'West Lake',
+      subtitle: 'A digital ink-wash journey',
+      description:
+        'An original real-time landscape shaped with procedural mountains, water shaders, mist, and restrained interaction.',
+      enter: 'Enter the landscape',
+      note: 'Three.js · GLSL · GSAP · No audio',
+      loading: 'Painting the scene…',
+      skip: 'Skip camera intro',
+      interact: 'Move to look · Click the lake to create ripples',
+      quality: 'Scene quality',
+      reduced: 'Reduced motion is enabled. The static ink-wash scene is shown.',
+    }
+  : {
+      back: '返回项目',
+      language: 'View in English',
+      eyebrow: '创意编程实验 · 01',
+      title: '西湖',
+      subtitle: '一段数字水墨旅程',
+      description:
+        '以程序化山峦、湖面 Shader、雾层和克制交互构建的原创实时数字山水。',
+      enter: '进入数字山水',
+      note: 'Three.js · GLSL · GSAP · 无音频',
+      loading: '正在绘制场景…',
+      skip: '跳过镜头动画',
+      interact: '移动视角 · 点击湖面产生涟漪',
+      quality: '场景质量',
+      reduced: '系统已开启减少动态效果，当前展示静态水墨场景。',
+    };
+---
+
+<section
+  class="west-lake"
+  data-west-lake-root
+  data-state="intro"
+  aria-labelledby="west-lake-title"
+>
+  <div class="poster" aria-hidden="true"></div>
+  <canvas data-west-lake-canvas aria-hidden="true"></canvas>
+  <div class="paper-grain" aria-hidden="true"></div>
+
+  <nav
+    class="experience-nav"
+    aria-label={isEnglish ? 'Experience navigation' : '体验页导航'}
+  >
+    <a class="nav-pill" href={isEnglish ? '/en/projects' : '/projects'}>
+      <ArrowLeft size={16} />{copy.back}
+    </a>
+    <a
+      class="nav-pill language-pill"
+      href={isEnglish ? '/experiments/west-lake' : '/en/experiments/west-lake'}
+      hreflang={isEnglish ? 'zh-CN' : 'en'}
+    >
+      <Languages size={16} />{copy.language}
+    </a>
+  </nav>
+
+  <div class="intro-panel" data-intro-panel>
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 id="west-lake-title">{copy.title}</h1>
+    <p class="subtitle">{copy.subtitle}</p>
+    <p class="description">{copy.description}</p>
+    <button class="enter-button" type="button" data-enter-scene>
+      <Play size={17} fill="currentColor" />{copy.enter}
+    </button>
+    <p class="tech-note">{copy.note}</p>
+  </div>
+
+  <div class="scene-loader" data-scene-loader hidden aria-live="polite">
+    <span class="ink-ring" aria-hidden="true"></span>
+    <strong>{copy.loading}</strong>
+    <span data-load-status>Preparing module…</span>
+    <div class="load-track" aria-hidden="true"><span data-load-bar></span></div>
+    <span data-load-value>0%</span>
+  </div>
+
+  <div class="scene-hud" data-scene-hud hidden>
+    <p><Move size={15} />{copy.interact}</p>
+    <div>
+      <span>{copy.quality}: <strong data-quality-value>—</strong></span>
+      <button type="button" data-skip-intro
+        ><SkipForward size={15} />{copy.skip}</button
+      >
+    </div>
+  </div>
+
+  <p class="reduced-message" data-reduced-message hidden>{copy.reduced}</p>
+  <noscript
+    ><p class="noscript-message">
+      This experience requires JavaScript. The static West Lake artwork remains
+      available.
+    </p></noscript
+  >
+</section>
+
+<script>
+  import type { WestLakeScene } from '@/scripts/west-lake/WestLakeScene';
+
+  let westLakeScene: WestLakeScene | undefined;
+
+  function setupWestLake() {
+    const root = document.querySelector<HTMLElement>('[data-west-lake-root]');
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+    const enter = root.querySelector<HTMLButtonElement>('[data-enter-scene]');
+    const intro = root.querySelector<HTMLElement>('[data-intro-panel]');
+    const loader = root.querySelector<HTMLElement>('[data-scene-loader]');
+    const hud = root.querySelector<HTMLElement>('[data-scene-hud]');
+    const loadBar = root.querySelector<HTMLElement>('[data-load-bar]');
+    const loadValue = root.querySelector<HTMLElement>('[data-load-value]');
+    const loadStatus = root.querySelector<HTMLElement>('[data-load-status]');
+    const quality = root.querySelector<HTMLElement>('[data-quality-value]');
+    const reducedMessage = root.querySelector<HTMLElement>(
+      '[data-reduced-message]',
+    );
+
+    enter?.addEventListener('click', async () => {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        root.dataset.state = 'static';
+        intro?.setAttribute('hidden', '');
+        reducedMessage?.removeAttribute('hidden');
+        return;
+      }
+      enter.disabled = true;
+      root.dataset.state = 'loading';
+      loader?.removeAttribute('hidden');
+      try {
+        const { WestLakeScene: Scene } =
+          await import('@/scripts/west-lake/WestLakeScene');
+        westLakeScene = new Scene(root);
+        westLakeScene.init((progress, status) => {
+          if (loadBar) loadBar.style.width = `${progress}%`;
+          if (loadValue) loadValue.textContent = `${progress}%`;
+          if (loadStatus) loadStatus.textContent = status;
+        });
+        root.dataset.state = 'active';
+        intro?.setAttribute('hidden', '');
+        loader?.setAttribute('hidden', '');
+        hud?.removeAttribute('hidden');
+        if (quality)
+          quality.textContent = root.dataset.quality?.toUpperCase() ?? 'FULL';
+        westLakeScene.start();
+      } catch (error) {
+        console.warn('West Lake scene switched to the static poster.', error);
+        root.dataset.state = 'static';
+        loader?.setAttribute('hidden', '');
+        reducedMessage?.removeAttribute('hidden');
+      }
+    });
+    root.querySelector('[data-skip-intro]')?.addEventListener('click', () => {
+      westLakeScene?.skipIntro();
+    });
+  }
+
+  function destroyWestLake() {
+    westLakeScene?.destroy();
+    westLakeScene = undefined;
+  }
+
+  document.addEventListener('astro:page-load', setupWestLake);
+  document.addEventListener('astro:before-swap', destroyWestLake);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupWestLake, {
+      once: true,
+    });
+  } else {
+    setupWestLake();
+  }
+</script>
+
+<style>
+  :global(.west-lake-page) {
+    overflow: hidden;
+    background: #dce4df;
+  }
+  :global(.west-lake-page main) {
+    min-height: 100svh;
+  }
+  .west-lake {
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    overflow: hidden;
+    color: #183236;
+    background: #dce4df;
+  }
+  .poster,
+  [data-west-lake-canvas],
+  .paper-grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .poster {
+    z-index: -3;
+    background:
+      linear-gradient(
+        90deg,
+        rgb(232 229 215 / 98%) 0%,
+        rgb(232 229 215 / 80%) 24%,
+        rgb(232 229 215 / 18%) 50%,
+        transparent 66%
+      ),
+      url('/experiments/west-lake/poster.png') center / cover no-repeat;
+    transition:
+      opacity 1.2s ease,
+      filter 1.2s ease,
+      transform 5s ease;
+  }
+  [data-state='active'] .poster {
+    opacity: 0;
+    transform: scale(1.025);
+  }
+  [data-west-lake-canvas] {
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+  }
+  [data-state='active'] [data-west-lake-canvas] {
+    opacity: 1;
+  }
+  .paper-grain {
+    z-index: 2;
+    opacity: 0.13;
+    background-image:
+      radial-gradient(
+        circle at 20% 30%,
+        rgb(24 50 54 / 18%) 0 0.6px,
+        transparent 0.8px
+      ),
+      radial-gradient(
+        circle at 75% 68%,
+        rgb(24 50 54 / 12%) 0 0.5px,
+        transparent 0.7px
+      );
+    background-size:
+      8px 9px,
+      11px 13px;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .experience-nav {
+    position: fixed;
+    z-index: 8;
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    pointer-events: none;
+  }
+  .nav-pill {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid rgb(31 60 63 / 16%);
+    border-radius: 999px;
+    color: #1d393c;
+    background: rgb(239 241 231 / 74%);
+    box-shadow: 0 8px 30px rgb(40 64 62 / 8%);
+    backdrop-filter: blur(14px);
+    font-size: 0.82rem;
+    font-weight: 650;
+    pointer-events: auto;
+  }
+  .nav-pill:hover {
+    border-color: rgb(31 60 63 / 38%);
+    background: rgb(242 243 234 / 92%);
+  }
+  .intro-panel {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: max(1.5rem, calc((100% - var(--max)) / 2));
+    width: min(500px, calc(100% - 3rem));
+    transform: translateY(-46%);
+    text-shadow: 0 1px 18px rgb(239 239 226 / 64%);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+  }
+  [data-state='loading'] .intro-panel {
+    opacity: 0.25;
+    transform: translateY(-42%);
+    pointer-events: none;
+  }
+  .intro-panel[hidden] {
+    display: none;
+  }
+  .eyebrow {
+    margin: 0 0 1rem;
+    color: #496c6c;
+    font:
+      700 0.7rem/1.2 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 0;
+    font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    font-size: clamp(5rem, 14vw, 10rem);
+    font-weight: 500;
+    line-height: 0.82;
+    letter-spacing: -0.08em;
+  }
+  .subtitle {
+    margin: 1.35rem 0 0;
+    color: #315357;
+    font:
+      650 clamp(0.88rem, 1.5vw, 1.05rem)/1.4 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .description {
+    max-width: 470px;
+    margin: 1rem 0 0;
+    color: #3f5b5d;
+    font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+    line-height: 1.75;
+  }
+  .enter-button {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.7rem;
+    padding: 0.7rem 1.15rem;
+    border: 1px solid #29494d;
+    border-radius: 999px;
+    color: #edf2e9;
+    background: #29494d;
+    box-shadow: 0 14px 38px rgb(28 55 57 / 20%);
+    font-weight: 680;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+  .enter-button:hover {
+    transform: translateY(-2px);
+    background: #1f3d41;
+  }
+  .enter-button:disabled {
+    cursor: wait;
+  }
+  .tech-note {
+    margin: 0.8rem 0 0;
+    color: #6e8584;
+    font:
+      600 0.65rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.05em;
+  }
+  .scene-loader {
+    position: absolute;
+    z-index: 6;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    width: min(320px, calc(100% - 3rem));
+    gap: 0.6rem;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .scene-loader[hidden],
+  .scene-hud[hidden],
+  .reduced-message[hidden] {
+    display: none;
+  }
+  .ink-ring {
+    justify-self: center;
+    width: 46px;
+    height: 46px;
+    border: 2px solid rgb(37 70 72 / 18%);
+    border-top-color: #29494d;
+    border-radius: 50%;
+    animation: ink-spin 1.1s linear infinite;
+  }
+  .scene-loader strong {
+    font-size: 0.86rem;
+    letter-spacing: 0.06em;
+  }
+  .scene-loader > span:not(.ink-ring) {
+    color: #607878;
+    font:
+      600 0.7rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+  }
+  .load-track {
+    height: 2px;
+    overflow: hidden;
+    background: rgb(41 73 77 / 15%);
+  }
+  .load-track span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #29494d;
+    transition: width 0.2s ease;
+  }
+  .scene-hud {
+    position: absolute;
+    z-index: 5;
+    right: 1.25rem;
+    bottom: 1rem;
+    left: 1.25rem;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    color: #36585a;
+    font:
+      600 0.68rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    pointer-events: none;
+  }
+  .scene-hud p,
+  .scene-hud > div,
+  .scene-hud button {
+    display: flex;
+    align-items: center;
+  }
+  .scene-hud p {
+    gap: 0.45rem;
+    margin: 0;
+  }
+  .scene-hud > div {
+    gap: 1rem;
+  }
+  .scene-hud button {
+    min-height: 38px;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid rgb(41 73 77 / 20%);
+    border-radius: 999px;
+    color: #29494d;
+    background: rgb(236 241 232 / 64%);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .reduced-message,
+  .noscript-message {
+    position: absolute;
+    z-index: 5;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: 420px;
+    margin: 0;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    color: #29494d;
+    background: rgb(239 241 231 / 84%);
+    font-size: 0.8rem;
+  }
+  @keyframes ink-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (max-width: 700px) {
+    .language-pill {
+      width: 42px;
+      overflow: hidden;
+      justify-content: center;
+      padding-inline: 0;
+      color: transparent;
+      gap: 0;
+    }
+    .language-pill svg {
+      flex: 0 0 auto;
+      color: #1d393c;
+    }
+    .intro-panel {
+      top: auto;
+      bottom: 5rem;
+      transform: none;
+    }
+    [data-state='loading'] .intro-panel {
+      transform: translateY(1rem);
+    }
+    h1 {
+      font-size: clamp(4.6rem, 24vw, 7rem);
+    }
+    .description {
+      max-width: 92%;
+      line-height: 1.62;
+    }
+    .scene-hud > div > span {
+      display: none;
+    }
+    .scene-hud p {
+      max-width: 55%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-west-lake-canvas],
+    .scene-loader {
+      display: none;
+    }
+    .poster,
+    .intro-panel,
+    .enter-button {
+      transition: none;
+    }
+    .ink-ring {
+      animation: none;
+    }
+  }
+</style>

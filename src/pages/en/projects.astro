@@ -19,6 +19,43 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   </div>
   <section class="project-list container">
     <article class="project-card">
+      <a
+        class="project-cover"
+        href="/en/experiments/west-lake"
+        aria-label="Enter West Lake WebGL Experience"
+      >
+        <img
+          src="/experiments/west-lake/poster.png"
+          alt="Ink-wash West Lake with a stone bridge, distant mountains, and a pagoda"
+          loading="lazy"
+        />
+      </a>
+      <div class="project-head">
+        <div>
+          <span>2026.07 — Present · Creative Developer</span>
+          <h2>West Lake: A Digital Ink-Wash WebGL Experience</h2>
+          <p>
+            An original real-time landscape built with procedural mountains,
+            water shaders, mist, and restrained interaction.
+          </p>
+        </div>
+        <a class="button" href="/en/experiments/west-lake">
+          Enter scene <ExternalLink size={14} />
+        </a>
+      </div>
+      <ul>
+        <li>
+          Procedural landscape, lake shader, atmospheric mist, and particles.
+        </li>
+        <li>Full, Lite, and reduced-motion presentation modes.</li>
+        <li>Loaded only after the visitor chooses to enter the experience.</li>
+      </ul>
+      <div class="technologies">
+        <span>Three.js</span><span>WebGL</span><span>GLSL</span><span>GSAP</span
+        ><span>Astro</span>
+      </div>
+    </article>
+    <article class="project-card">
       <div class="project-head">
         <div>
           <span>2022.03 — 2023.06 · Researcher / Engineer</span><h2>
@@ -53,13 +90,33 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
 <style>
   .project-list {
+    display: grid;
+    gap: 1.25rem;
     padding-top: 3rem;
   }
   .project-card {
+    overflow: hidden;
     padding: clamp(1.4rem, 4vw, 2.2rem);
     border: 1px solid var(--line);
     border-radius: 16px;
     background: var(--surface);
+  }
+  .project-cover {
+    display: block;
+    overflow: hidden;
+    margin: calc(clamp(1.4rem, 4vw, 2.2rem) * -1);
+    margin-bottom: clamp(1.4rem, 4vw, 2.2rem);
+    aspect-ratio: 1200 / 630;
+    background: var(--surface-2);
+  }
+  .project-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .project-cover:hover img {
+    transform: scale(1.025);
   }
   .project-head {
     display: flex;

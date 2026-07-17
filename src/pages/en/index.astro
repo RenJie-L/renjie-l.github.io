@@ -71,19 +71,38 @@ const directions = [
         >View projects <ArrowRight size={15} /></a
       >
     </div>
-    <article class="project-feature">
-      <div>
-        <span class="project-period">2022.03 — 2023.06</span>
-        <h3>Reinforcement Learning for Swing-Free UAV Trajectories</h3>
-        <p>
-          A deep reinforcement learning approach for planning trajectories that
-          reduce suspended-load swing, validated on a physical UAV system.
-        </p>
-      </div>
-      <div class="tech-list">
-        <span>RL</span><span>UAV</span><span>Python</span>
-      </div>
-    </article>
+    <div class="project-feature-list">
+      <article class="project-feature">
+        <div>
+          <span class="project-period">2026.07 — Present</span>
+          <h3>West Lake WebGL Experience</h3>
+          <p>
+            An original digital ink-wash landscape built with procedural
+            geometry and shaders.
+          </p>
+          <a class="project-entry" href="/en/experiments/west-lake">
+            Enter scene <ArrowRight size={14} />
+          </a>
+        </div>
+        <div class="tech-list">
+          <span>Three.js</span><span>GLSL</span><span>GSAP</span>
+        </div>
+      </article>
+      <article class="project-feature">
+        <div>
+          <span class="project-period">2022.03 — 2023.06</span>
+          <h3>Reinforcement Learning for Swing-Free UAV Trajectories</h3>
+          <p>
+            A deep reinforcement learning approach for planning trajectories
+            that reduce suspended-load swing, validated on a physical UAV
+            system.
+          </p>
+        </div>
+        <div class="tech-list">
+          <span>RL</span><span>UAV</span><span>Python</span>
+        </div>
+      </article>
+    </div>
   </section>
 
   <section class="section writing-cta container">
@@ -252,6 +271,12 @@ const directions = [
     padding: 1.7rem 0;
     border-block: 1px solid var(--line);
   }
+  .project-feature-list {
+    border-top: 1px solid var(--line);
+  }
+  .project-feature {
+    border-bottom: 1px solid var(--line);
+  }
   .project-feature h3 {
     font-size: 1.3rem;
     margin: 0.3rem 0;
@@ -261,6 +286,15 @@ const directions = [
     font:
       600 0.75rem ui-monospace,
       monospace;
+  }
+  .project-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 650;
   }
   .tech-list {
     display: flex;

@@ -98,6 +98,11 @@ const directions = [
                   <span class="project-period">{project.data.period}</span>
                   <h3>{project.data.title}</h3>
                   <p>{project.data.description}</p>
+                  {project.data.links[0] && (
+                    <a class="project-entry" href={project.data.links[0].url}>
+                      {project.data.links[0].label} <ArrowRight size={14} />
+                    </a>
+                  )}
                 </>
               </div>
               <div class="tech-list">
@@ -292,6 +297,15 @@ const directions = [
     max-width: 680px;
     color: var(--muted);
     margin: 0;
+  }
+  .project-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 650;
   }
   .project-period {
     color: var(--accent);

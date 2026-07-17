@@ -1,0 +1,16 @@
+---
+import WestLakeExperience from '@/components/experiments/WestLakeExperience.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  immersive
+  hasTranslation
+  locale="en"
+  pageClass="west-lake-page"
+  title="West Lake WebGL Experience"
+  description="An original digital ink-wash interpretation of West Lake built with Three.js, shaders, and procedural geometry."
+  image="/experiments/west-lake/poster.png"
+>
+  <WestLakeExperience locale="en" />
+</BaseLayout>

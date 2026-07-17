@@ -1,0 +1,15 @@
+---
+import WestLakeExperience from '@/components/experiments/WestLakeExperience.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  immersive
+  hasTranslation
+  pageClass="west-lake-page"
+  title="西湖数字场景"
+  description="以 Three.js、Shader 与程序化几何构建的原创西湖数字水墨体验。"
+  image="/experiments/west-lake/poster.png"
+>
+  <WestLakeExperience />
+</BaseLayout>

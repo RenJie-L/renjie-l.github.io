@@ -18,6 +18,19 @@ const projects = await getCollection('projects');
       projects.map((project) => (
         <article class="project-card">
           <>
+            {project.data.cover && (
+              <a
+                class="project-cover"
+                href={project.data.links[0]?.url}
+                aria-label={`进入${project.data.title}`}
+              >
+                <img
+                  src={project.data.cover.src}
+                  alt={project.data.cover.alt}
+                  loading="lazy"
+                />
+              </a>
+            )}
             <div class="project-head">
               <>
                 <div>
@@ -34,8 +47,12 @@ const projects = await getCollection('projects');
                     <a
                       class="button"
                       href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
+                      target={
+                        link.url.startsWith('http') ? '_blank' : undefined
+                      }
+                      rel={
+                        link.url.startsWith('http') ? 'noreferrer' : undefined
+                      }
                     >
                       {link.label}
                       <ExternalLink size={14} />
@@ -67,10 +84,28 @@ const projects = await getCollection('projects');
     padding-top: 3rem;
   }
   .project-card {
+    overflow: hidden;
     padding: clamp(1.4rem, 4vw, 2.2rem);
     border: 1px solid var(--line);
     border-radius: 16px;
     background: var(--surface);
+  }
+  .project-cover {
+    display: block;
+    overflow: hidden;
+    margin: calc(clamp(1.4rem, 4vw, 2.2rem) * -1);
+    margin-bottom: clamp(1.4rem, 4vw, 2.2rem);
+    aspect-ratio: 1200 / 630;
+    background: var(--surface-2);
+  }
+  .project-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .project-cover:hover img {
+    transform: scale(1.025);
   }
   .project-head {
     display: flex;

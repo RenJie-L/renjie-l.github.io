@@ -27,8 +27,24 @@ const projects = defineCollection({
     role: z.string(),
     technologies: z.array(z.string()),
     highlights: z.array(z.string()),
-    links: z.array(z.object({ label: z.string(), url: z.string().url() })),
+    links: z.array(
+      z.object({
+        label: z.string(),
+        url: z
+          .string()
+          .refine(
+            (value) => value.startsWith('/') || URL.canParse(value),
+            'Project links must be root-relative or absolute URLs.',
+          ),
+      }),
+    ),
     featured: z.boolean().default(false),
+    cover: z
+      .object({
+        src: z.string(),
+        alt: z.string(),
+      })
+      .optional(),
   }),
 });
 
