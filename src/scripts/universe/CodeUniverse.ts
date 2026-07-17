@@ -24,7 +24,10 @@ export class CodeUniverse {
       navigator.hardwareConcurrency <= 4);
   private pointer = new THREE.Vector2(8, 8);
   private pointerTarget = new THREE.Vector2();
+  private pointerInfluence = 0;
+  private pointerTargetInfluence = 0;
   private raycaster = new THREE.Raycaster();
+  private starMaterial?: THREE.ShaderMaterial;
   private planetMeshes: THREE.Mesh[] = [];
   private animatedObjects: THREE.Object3D[] = [];
   private hovered?: THREE.Mesh;
@@ -133,9 +136,9 @@ export class CodeUniverse {
     this.observer?.disconnect();
     removeEventListener('resize', this.resize);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
-    this.canvas.removeEventListener('pointermove', this.onPointerMove);
-    this.canvas.removeEventListener('pointerleave', this.onPointerLeave);
-    this.canvas.removeEventListener('click', this.onClick);
+    this.host.removeEventListener('pointermove', this.onPointerMove);
+    this.host.removeEventListener('pointerleave', this.onPointerLeave);
+    this.host.removeEventListener('click', this.onClick);
     this.scene.traverse((object) => {
       if (
         object instanceof THREE.Mesh ||
@@ -170,6 +173,7 @@ export class CodeUniverse {
       : universeConfig.particles.desktop;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
     const cool = new THREE.Color('#72cfff');
     const white = new THREE.Color('#f4f7ff');
     for (let index = 0; index < count; index += 1) {
@@ -183,20 +187,62 @@ export class CodeUniverse {
       colors[index * 3] = color.r;
       colors[index * 3 + 1] = color.g;
       colors[index * 3 + 2] = color.b;
+      sizes[index] = 0.75 + Math.random() * 1.35;
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    const points = new THREE.Points(
-      geometry,
-      new THREE.PointsMaterial({
-        size: this.liteMode ? 0.025 : 0.032,
-        transparent: true,
-        opacity: 0.7,
-        vertexColors: true,
-        sizeAttenuation: true,
-      }),
-    );
+    geometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    this.starMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      uniforms: {
+        uTime: { value: 0 },
+        uPointer: { value: new THREE.Vector2() },
+        uPointerStrength: { value: 0 },
+        uPixelRatio: { value: this.renderer?.getPixelRatio() ?? 1 },
+      },
+      vertexShader: `
+        attribute vec3 color;
+        attribute float aSize;
+        varying vec3 vColor;
+        uniform float uTime;
+        uniform vec2 uPointer;
+        uniform float uPointerStrength;
+        uniform float uPixelRatio;
+
+        void main() {
+          vColor = color;
+          vec3 transformed = position;
+          transformed.x += sin(uTime * 0.16 + position.z * 0.12) * 0.025;
+          transformed.y += cos(uTime * 0.13 + position.x * 0.1) * 0.02;
+
+          vec4 viewPosition = modelViewMatrix * vec4(transformed, 1.0);
+          vec4 projected = projectionMatrix * viewPosition;
+          vec2 screenPosition = projected.xy / projected.w;
+          vec2 delta = screenPosition - uPointer;
+          float pointerDistance = length(delta);
+          float repulsion = (1.0 - smoothstep(0.0, 0.2, pointerDistance)) * uPointerStrength;
+          vec2 direction = normalize(delta + vec2(0.0001));
+          viewPosition.xy += direction * repulsion * max(0.45, -viewPosition.z * 0.055);
+
+          gl_Position = projectionMatrix * viewPosition;
+          gl_PointSize = aSize * uPixelRatio * (28.0 / max(2.0, -viewPosition.z));
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+
+        void main() {
+          float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
+          float alpha = 1.0 - smoothstep(0.12, 0.5, distanceToCenter);
+          if (alpha < 0.01) discard;
+          gl_FragColor = vec4(vColor, alpha * 0.82);
+        }
+      `,
+    });
+    const points = new THREE.Points(geometry, this.starMaterial);
     points.name = 'star-field';
     this.scene.add(points);
     this.animatedObjects.push(points);
@@ -302,11 +348,11 @@ export class CodeUniverse {
   private bindEvents() {
     addEventListener('resize', this.resize, { passive: true });
     document.addEventListener('visibilitychange', this.onVisibilityChange);
-    this.canvas.addEventListener('pointermove', this.onPointerMove, {
+    this.host.addEventListener('pointermove', this.onPointerMove, {
       passive: true,
     });
-    this.canvas.addEventListener('pointerleave', this.onPointerLeave);
-    this.canvas.addEventListener('click', this.onClick);
+    this.host.addEventListener('pointerleave', this.onPointerLeave);
+    this.host.addEventListener('click', this.onClick);
     this.observer = new IntersectionObserver(
       ([entry]) => (entry?.isIntersecting ? this.resume() : this.pause()),
       { threshold: 0.02 },
@@ -340,6 +386,13 @@ export class CodeUniverse {
     this.pointer.y +=
       (this.pointerTarget.y - this.pointer.y) *
       universeConfig.motion.cameraLerp;
+    this.pointerInfluence +=
+      (this.pointerTargetInfluence - this.pointerInfluence) * 0.08;
+    if (this.starMaterial) {
+      this.starMaterial.uniforms.uTime.value = this.elapsed;
+      this.starMaterial.uniforms.uPointer.value.copy(this.pointerTarget);
+      this.starMaterial.uniforms.uPointerStrength.value = this.pointerInfluence;
+    }
     this.camera.position.x = this.pointer.x * 0.34;
     this.camera.position.y = this.pointer.y * 0.22;
     this.camera.lookAt(0, 0, 0);
@@ -360,6 +413,7 @@ export class CodeUniverse {
 
   private onPointerMove = (event: PointerEvent) => {
     const rect = this.canvas.getBoundingClientRect();
+    this.pointerTargetInfluence = 1;
     this.pointerTarget.set(
       ((event.clientX - rect.left) / rect.width) * 2 - 1,
       -(((event.clientY - rect.top) / rect.height) * 2 - 1),
@@ -388,13 +442,19 @@ export class CodeUniverse {
 
   private onPointerLeave = () => {
     this.pointerTarget.set(0, 0);
+    this.pointerTargetInfluence = 0;
     if (this.hovered)
       gsap.to(this.hovered.scale, { x: 1, y: 1, z: 1, duration: 0.25 });
     this.hovered = undefined;
     this.canvas.style.cursor = 'default';
   };
 
-  private onClick = () => {
+  private onClick = (event: MouseEvent) => {
+    if (
+      event.target instanceof Element &&
+      event.target.closest('a, button, .node-console, .project-panel')
+    )
+      return;
     if (!this.hovered) return;
     const slug = this.hovered.userData.slug as string;
     const { x, y, z } = this.hovered.position;
