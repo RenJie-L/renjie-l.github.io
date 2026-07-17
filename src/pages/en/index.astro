@@ -1,13 +1,7 @@
 ---
-import {
-  ArrowRight,
-  Bot,
-  Braces,
-  Github,
-  Sparkles,
-  Wrench,
-} from 'lucide-astro';
+import { ArrowRight, Bot, Braces, Sparkles, Wrench } from 'lucide-astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroUniverse from '@/components/home/HeroUniverse.astro';
 
 const directions = [
   {
@@ -31,45 +25,13 @@ const directions = [
 <BaseLayout
   locale="en"
   hasTranslation
+  pageClass="universe-home"
   title="Renjie — Frontend & AI Engineering"
   description="Frontend engineer exploring AI-assisted development, web engineering, and intelligent applications."
 >
-  <section class="hero container">
-    <div class="hero-copy">
-      <p class="availability">
-        <span></span> Currently exploring AI Agent Engineering
-      </p>
-      <h1>Hi, I'm Renjie.</h1>
-      <p class="hero-lede">
-        Frontend engineer focused on AI-assisted development, web engineering,
-        and intelligent applications.<br />I share technical practice, learning
-        notes, and the projects I am building.
-      </p>
-      <div class="hero-actions">
-        <a class="button primary" href="/en/writing"
-          >Explore writing <ArrowRight size={16} /></a
-        >
-        <a class="button" href="/en/about">About me</a>
-        <a
-          class="button"
-          href="https://github.com/RenJie-L"
-          target="_blank"
-          rel="noreferrer"><Github size={16} /> GitHub</a
-        >
-      </div>
-    </div>
-    <div class="hero-signal" aria-hidden="true">
-      <span class="signal-label">Current stack</span>
-      <div class="signal-row">
-        <span>React</span><span>TypeScript</span><span>Astro</span>
-      </div>
-      <div class="signal-row offset">
-        <span>Agent</span><span>RL</span><span>DX</span>
-      </div>
-    </div>
-  </section>
+  <HeroUniverse locale="en" />
 
-  <section class="focus-strip">
+  <section id="current-focus" class="focus-strip">
     <div class="focus-inner container">
       <div><p class="eyebrow">Now</p><h2>Current focus</h2></div>
       <p>

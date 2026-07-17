@@ -1,14 +1,8 @@
 ---
-import {
-  ArrowRight,
-  Bot,
-  Braces,
-  Github,
-  Sparkles,
-  Wrench,
-} from 'lucide-astro';
+import { ArrowRight, Bot, Braces, Sparkles, Wrench } from 'lucide-astro';
 import { getCollection } from 'astro:content';
 import ArticleCard from '@/components/ArticleCard.astro';
+import HeroUniverse from '@/components/home/HeroUniverse.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { byNewest, publishedOnly } from '@/lib/content';
 
@@ -42,38 +36,10 @@ const directions = [
 ];
 ---
 
-<BaseLayout hasTranslation>
-  <section class="hero container">
-    <div class="hero-copy">
-      <p class="availability">
-        <span></span> Currently exploring AI Agent Engineering
-      </p>
-      <h1>Hi, I'm Renjie.</h1>
-      <p class="hero-lede">
-        前端开发者，关注 AI 编程、Web 工程化与智能应用。<br
-        />我在这里分享技术实践、学习笔记和正在构建的项目。
-      </p>
-      <div class="hero-actions">
-        <a class="button primary" href="/writing"
-          >查看文章 <ArrowRight size={16} /></a
-        ><a class="button" href="/about">了解我</a><a
-          class="button"
-          href="https://github.com/RenJie-L"
-          target="_blank"
-          rel="noreferrer"><Github size={16} /> GitHub</a
-        >
-      </div>
-    </div>
-    <div class="hero-signal" aria-hidden="true">
-      <span class="signal-label">Current stack</span><div class="signal-row">
-        <span>React</span><span>TypeScript</span><span>Astro</span>
-      </div><div class="signal-row offset">
-        <span>Agent</span><span>RL</span><span>DX</span>
-      </div>
-    </div>
-  </section>
+<BaseLayout hasTranslation pageClass="universe-home">
+  <HeroUniverse />
 
-  <section class="focus-strip">
+  <section id="current-focus" class="focus-strip">
     <div class="focus-inner container">
       <div><p class="eyebrow">Now</p><h2>当前关注方向</h2></div><p>
         探索 AI Agent

@@ -96,6 +96,13 @@ img {
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(14px);
 }
+.universe-home .site-header {
+  border-bottom-color: rgb(125 191 226 / 16%);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+}
+.universe-home main {
+  overflow: clip;
+}
 .header-inner,
 .footer-inner,
 .copyright {

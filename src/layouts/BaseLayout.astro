@@ -2,6 +2,7 @@
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import SearchDialog from '@/components/SearchDialog.astro';
+import { ClientRouter } from 'astro:transitions';
 import { localeFromPath, localizedPath, type Locale } from '@/i18n/config';
 import '@/styles/global.css';
 import '@pagefind/default-ui/css/ui.css';
@@ -14,15 +15,17 @@ interface Props {
   noindex?: boolean;
   locale?: Locale;
   hasTranslation?: boolean;
+  pageClass?: string;
 }
 const {
   title = 'Renjie — Frontend & AI Engineering',
   description = '前端开发者，关注 AI 编程、Web 工程化与智能应用。分享技术实践、学习笔记和正在构建的项目。',
-  image = '/og.png',
+  image = '/og-code-universe.png',
   type = 'website',
   noindex = false,
   locale = localeFromPath(Astro.url.pathname),
   hasTranslation = false,
+  pageClass,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title.includes('Renjie') ? title : `${title} — Renjie`;
@@ -88,6 +91,7 @@ const enUrl = new URL(
     <meta name="twitter:description" content={description} />
     {imageUrl && <meta name="twitter:image" content={imageUrl} />}
     <title>{fullTitle}</title>
+    <ClientRouter />
     <script is:inline>
       (() => {
         const saved = localStorage.getItem('theme');
@@ -98,7 +102,7 @@ const enUrl = new URL(
       })();
     </script>
   </head>
-  <body>
+  <body class={pageClass}>
     <Header {locale} {languageHref} />
     <main id="main-content"><slot /></main>
     <Footer {locale} />

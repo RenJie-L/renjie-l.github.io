@@ -1,0 +1,757 @@
+---
+import { ArrowDown, ArrowRight, Github, X } from 'lucide-astro';
+import { universeProjects } from '@/data/universe';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'zh-CN' } = Astro.props;
+const isEnglish = locale === 'en';
+const projects = universeProjects.map((project) => ({
+  slug: project.slug,
+  title: project.title[locale],
+  description: project.description[locale],
+  technologies: project.technologies,
+  status: project.status,
+  href: project.href[locale],
+  accent: project.accent,
+}));
+const copy = isEnglish
+  ? {
+      kicker: 'CODE UNIVERSE / RENJIE',
+      title: "Hi, I'm Renjie.",
+      role: 'Developer · Researcher · Explorer',
+      lede: 'Building interfaces between code, data, and imagination.',
+      detail:
+        'Frontend engineer exploring AI-assisted development, web engineering, and intelligent applications.',
+      writing: 'Explore writing',
+      about: 'About me',
+      loading: 'INITIALIZING CODE UNIVERSE',
+      skip: 'Skip 3D intro',
+      explore: 'Explore project nodes',
+      selected: 'Selected node',
+      open: 'Open destination',
+      close: 'Close project details',
+      scroll: 'Scroll to enter',
+      status: {
+        active: 'ACTIVE',
+        completed: 'COMPLETED',
+        experimental: 'EXPERIMENTAL',
+      },
+    }
+  : {
+      kicker: '代码宇宙 / RENJIE',
+      title: "Hi, I'm Renjie.",
+      role: '开发者 · 研究者 · 探索者',
+      lede: '在代码、数据与想象力之间构建界面。',
+      detail: '前端开发者，关注 AI 编程、Web 工程化与智能应用。',
+      writing: '查看文章',
+      about: '了解我',
+      loading: '正在初始化代码宇宙',
+      skip: '跳过 3D 动画',
+      explore: '探索项目节点',
+      selected: '已选择节点',
+      open: '前往查看',
+      close: '关闭项目详情',
+      scroll: '滚动进入宇宙',
+      status: { active: '活跃', completed: '已完成', experimental: '实验中' },
+    };
+---
+
+<section
+  class="universe-hero"
+  data-universe-root
+  aria-labelledby="universe-title"
+>
+  <div class="universe-static" aria-hidden="true"></div>
+  <canvas data-universe-canvas aria-hidden="true"></canvas>
+  <div class="universe-grid" aria-hidden="true"></div>
+
+  <div class="universe-loader" data-universe-loader aria-live="polite">
+    <div class="loader-terminal">
+      <span class="loader-mark" aria-hidden="true">&gt;_</span>
+      <strong>{copy.loading}</strong>
+      <span data-loading-status>Loading module…</span>
+      <div class="loader-track" aria-hidden="true">
+        <span data-loading-bar></span>
+      </div>
+      <span class="loader-value" data-loading-value>0%</span>
+      <button type="button" data-skip-intro>{copy.skip}</button>
+    </div>
+  </div>
+
+  <div class="hero-content container">
+    <div class="hero-copy">
+      <p class="system-kicker"><span></span>{copy.kicker}</p>
+      <h1 id="universe-title">{copy.title}</h1>
+      <p class="hero-role">{copy.role}</p>
+      <p class="hero-lede">{copy.lede}</p>
+      <p class="hero-detail">{copy.detail}</p>
+      <div class="hero-actions">
+        <a
+          class="universe-button primary"
+          href={isEnglish ? '/en/writing' : '/writing'}
+        >
+          {copy.writing}<ArrowRight size={16} />
+        </a>
+        <a class="universe-button" href={isEnglish ? '/en/about' : '/about'}
+          >{copy.about}</a
+        >
+        <a
+          class="universe-button icon-only"
+          href="https://github.com/RenJie-L"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub"><Github size={17} /></a
+        >
+      </div>
+    </div>
+
+    <div class="node-console" aria-label={copy.explore}>
+      <div class="console-head">
+        <span>{copy.explore}</span><span data-active-node>04 NODES ONLINE</span>
+      </div>
+      <div class="node-list">
+        {
+          projects.map((project, index) => (
+            <button
+              type="button"
+              class="node-button"
+              data-project-node={project.slug}
+              style={`--node-accent:${project.accent}`}
+            >
+              <span class="node-index">0{index + 1}</span>
+              <span>
+                <strong>{project.title}</strong>
+                <small>{copy.status[project.status]}</small>
+              </span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <aside class="project-panel" data-project-panel hidden aria-live="polite">
+    <button
+      class="panel-close"
+      type="button"
+      data-panel-close
+      aria-label={copy.close}
+    >
+      <X size={17} />
+    </button>
+    <p>{copy.selected}</p>
+    <h2 data-panel-title></h2>
+    <span class="panel-status" data-panel-status></span>
+    <p class="panel-description" data-panel-description></p>
+    <div class="panel-tech" data-panel-tech></div>
+    <a class="universe-button primary" data-panel-link href="/projects">
+      {copy.open}<ArrowRight size={15} />
+    </a>
+  </aside>
+
+  <a class="scroll-signal" href="#current-focus">
+    <span>{copy.scroll}</span><ArrowDown size={16} />
+  </a>
+  <script
+    is:inline
+    type="application/json"
+    data-universe-projects
+    set:html={JSON.stringify({ projects, status: copy.status })}
+  />
+</section>
+
+<script>
+  import type { CodeUniverse } from '@/scripts/universe/CodeUniverse';
+
+  type LocalizedProject = {
+    slug: string;
+    title: string;
+    description: string;
+    technologies: string[];
+    status: 'active' | 'completed' | 'experimental';
+    href: string;
+    accent: string;
+  };
+
+  let universe: CodeUniverse | undefined;
+
+  function setupUniverse() {
+    const host = document.querySelector<HTMLElement>('[data-universe-root]');
+    if (!host || host.dataset.initialized === 'true') return;
+    host.dataset.initialized = 'true';
+
+    const dataNode = host.querySelector<HTMLScriptElement>(
+      '[data-universe-projects]',
+    );
+    const data = JSON.parse(dataNode?.textContent ?? '{"projects":[]}') as {
+      projects: LocalizedProject[];
+      status: Record<LocalizedProject['status'], string>;
+    };
+    const loader = host.querySelector<HTMLElement>('[data-universe-loader]');
+    const loadingBar = host.querySelector<HTMLElement>('[data-loading-bar]');
+    const loadingValue = host.querySelector<HTMLElement>(
+      '[data-loading-value]',
+    );
+    const loadingStatus = host.querySelector<HTMLElement>(
+      '[data-loading-status]',
+    );
+    const panel = host.querySelector<HTMLElement>('[data-project-panel]');
+
+    const showProject = (slug: string) => {
+      const project = data.projects.find((item) => item.slug === slug);
+      if (!project || !panel) return;
+      const title = panel.querySelector<HTMLElement>('[data-panel-title]');
+      const status = panel.querySelector<HTMLElement>('[data-panel-status]');
+      const description = panel.querySelector<HTMLElement>(
+        '[data-panel-description]',
+      );
+      const tech = panel.querySelector<HTMLElement>('[data-panel-tech]');
+      const link = panel.querySelector<HTMLAnchorElement>('[data-panel-link]');
+      if (title) title.textContent = project.title;
+      if (status) status.textContent = data.status[project.status];
+      if (description) description.textContent = project.description;
+      if (tech) {
+        tech.replaceChildren(
+          ...project.technologies.map((item) => {
+            const tag = document.createElement('span');
+            tag.textContent = item;
+            return tag;
+          }),
+        );
+      }
+      if (link) link.href = project.href;
+      panel.style.setProperty('--panel-accent', project.accent);
+      panel.hidden = false;
+      panel
+        .querySelector<HTMLElement>('[data-panel-close]')
+        ?.focus({ preventScroll: true });
+    };
+
+    host.addEventListener('universe:progress', ((
+      event: CustomEvent<{ progress: number; status: string }>,
+    ) => {
+      const { progress, status } = event.detail;
+      if (loadingBar) loadingBar.style.width = `${progress}%`;
+      if (loadingValue) loadingValue.textContent = `${progress}%`;
+      if (loadingStatus) loadingStatus.textContent = status;
+      if (progress === 100) loader?.classList.add('is-ready');
+    }) as EventListener);
+    host.addEventListener('universe:hover', ((
+      event: CustomEvent<{ slug: string | null }>,
+    ) => {
+      const label = host.querySelector<HTMLElement>('[data-active-node]');
+      const project = data.projects.find(
+        (item) => item.slug === event.detail.slug,
+      );
+      if (label) label.textContent = project?.title ?? '04 NODES ONLINE';
+    }) as EventListener);
+    host.addEventListener('universe:select', ((
+      event: CustomEvent<{ slug?: string }>,
+    ) => {
+      if (event.detail.slug) showProject(event.detail.slug);
+    }) as EventListener);
+    host
+      .querySelectorAll<HTMLButtonElement>('[data-project-node]')
+      .forEach((button) => {
+        button.addEventListener('click', () =>
+          showProject(button.dataset.projectNode ?? ''),
+        );
+      });
+    host.querySelector('[data-panel-close]')?.addEventListener('click', () => {
+      if (panel) panel.hidden = true;
+    });
+    host.querySelector('[data-skip-intro]')?.addEventListener('click', () => {
+      universe?.destroy();
+      host.dataset.mode = 'static';
+      loader?.classList.add('is-ready');
+    });
+
+    import('@/scripts/universe/CodeUniverse')
+      .then(({ CodeUniverse: Universe }) => {
+        universe = new Universe(host);
+        if (universe.init()) universe.start();
+      })
+      .catch((error: unknown) => {
+        console.warn('Unable to load Code Universe.', error);
+        host.dataset.mode = 'static';
+        loader?.classList.add('is-ready');
+      });
+  }
+
+  function destroyUniverse() {
+    universe?.destroy();
+    universe = undefined;
+  }
+
+  document.addEventListener('astro:page-load', setupUniverse);
+  document.addEventListener('astro:before-swap', destroyUniverse);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupUniverse, {
+      once: true,
+    });
+  } else {
+    setupUniverse();
+  }
+</script>
+
+<style>
+  .universe-hero {
+    position: relative;
+    isolation: isolate;
+    min-height: min(900px, calc(100svh - 64px));
+    overflow: clip;
+    color: #f4f7ff;
+    background: #03040a;
+  }
+  .universe-hero::before,
+  .universe-static {
+    position: absolute;
+    inset: 0;
+    content: '';
+    pointer-events: none;
+  }
+  .universe-hero::before {
+    z-index: -3;
+    background:
+      radial-gradient(circle at 52% 44%, rgb(24 91 148 / 30%), transparent 24%),
+      radial-gradient(circle at 75% 23%, rgb(78 67 152 / 18%), transparent 24%),
+      linear-gradient(145deg, #03040a 0%, #070b18 58%, #03040a 100%);
+  }
+  .universe-static {
+    z-index: -2;
+    opacity: 0.7;
+    background-image:
+      radial-gradient(circle at 18% 22%, #c9f0ff 0 1px, transparent 1.5px),
+      radial-gradient(circle at 76% 32%, #fff 0 1px, transparent 1.5px),
+      radial-gradient(circle at 62% 78%, #84cfff 0 1px, transparent 1.5px),
+      radial-gradient(circle at 32% 67%, #fff 0 1px, transparent 1.5px);
+    background-size:
+      190px 190px,
+      260px 260px,
+      330px 330px,
+      410px 410px;
+  }
+  [data-universe-canvas] {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease;
+  }
+  [data-mode='static'] [data-universe-canvas] {
+    display: none;
+  }
+  .universe-grid {
+    position: absolute;
+    z-index: -1;
+    inset: 50% -20% auto;
+    height: 70%;
+    opacity: 0.13;
+    transform: perspective(500px) rotateX(67deg);
+    transform-origin: top;
+    background-image:
+      linear-gradient(rgb(100 216 255 / 42%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(100 216 255 / 42%) 1px, transparent 1px);
+    background-size: 68px 68px;
+    mask-image: linear-gradient(to bottom, black, transparent 72%);
+    pointer-events: none;
+  }
+  .hero-content {
+    min-height: inherit;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.48fr);
+    align-items: center;
+    gap: clamp(2rem, 7vw, 7rem);
+    padding-block: clamp(6.5rem, 13vh, 9rem);
+  }
+  .hero-copy {
+    max-width: 760px;
+    text-shadow: 0 2px 30px #03040a;
+  }
+  .system-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    color: #8fdfff;
+    font:
+      650 0.72rem/1.2 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.16em;
+  }
+  .system-kicker span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #73e6bb;
+    box-shadow: 0 0 14px #73e6bb;
+  }
+  h1 {
+    margin: 1.15rem 0 0.7rem;
+    font-size: clamp(3.8rem, 10vw, 8.5rem);
+    line-height: 0.84;
+    letter-spacing: -0.075em;
+    text-wrap: balance;
+  }
+  .hero-role {
+    margin: 1.5rem 0 0;
+    color: #8fdfff;
+    font:
+      600 clamp(0.78rem, 1.5vw, 0.98rem)/1.4 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.06em;
+  }
+  .hero-lede {
+    max-width: 680px;
+    margin: 0.65rem 0 0;
+    color: #f4f7ff;
+    font-size: clamp(1.2rem, 2.5vw, 1.75rem);
+    line-height: 1.42;
+    letter-spacing: -0.025em;
+  }
+  .hero-detail {
+    max-width: 600px;
+    margin: 0.8rem 0 0;
+    color: #9eaec5;
+    font-size: clamp(0.94rem, 1.5vw, 1.06rem);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 2rem;
+  }
+  .universe-button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.58rem 1rem;
+    border: 1px solid rgb(154 205 235 / 24%);
+    border-radius: 10px;
+    color: #e9f2ff;
+    background: rgb(9 15 31 / 72%);
+    box-shadow: inset 0 1px rgb(255 255 255 / 5%);
+    font-size: 0.9rem;
+    font-weight: 650;
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+  .universe-button:hover {
+    transform: translateY(-2px);
+    border-color: rgb(119 216 255 / 58%);
+    background: rgb(18 36 64 / 88%);
+  }
+  .universe-button.primary {
+    border-color: #8addff;
+    color: #04101d;
+    background: #a4e6ff;
+  }
+  .universe-button.icon-only {
+    width: 44px;
+    padding-inline: 0;
+  }
+  .node-console {
+    align-self: end;
+    margin-bottom: 1.8rem;
+    border: 1px solid rgb(148 204 234 / 18%);
+    border-radius: 14px;
+    background: rgb(4 8 18 / 74%);
+    box-shadow: 0 28px 80px rgb(0 0 0 / 38%);
+    backdrop-filter: blur(10px);
+  }
+  .console-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0.9rem;
+    border-bottom: 1px solid rgb(148 204 234 / 14%);
+    color: #7e92ad;
+    font:
+      600 0.62rem/1.2 ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.09em;
+  }
+  .node-list {
+    display: grid;
+    padding: 0.35rem;
+  }
+  .node-button {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.55rem;
+    align-items: center;
+    width: 100%;
+    padding: 0.72rem 0.65rem;
+    border: 0;
+    border-radius: 9px;
+    color: #dce8f8;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+  }
+  .node-button:hover,
+  .node-button:focus-visible {
+    background: rgb(125 201 245 / 8%);
+  }
+  .node-index {
+    color: var(--node-accent);
+    font:
+      600 0.7rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+  }
+  .node-button strong,
+  .node-button small {
+    display: block;
+  }
+  .node-button strong {
+    font-size: 0.82rem;
+  }
+  .node-button small {
+    margin-top: 0.08rem;
+    color: #6f8199;
+    font:
+      600 0.58rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.08em;
+  }
+  .project-panel {
+    --panel-accent: #8addff;
+    position: absolute;
+    z-index: 7;
+    right: max(1rem, calc((100% - var(--max)) / 2));
+    top: 50%;
+    width: min(390px, calc(100% - 2rem));
+    padding: 1.35rem;
+    transform: translateY(-50%);
+    border: 1px solid color-mix(in srgb, var(--panel-accent), transparent 64%);
+    border-radius: 16px;
+    color: #f4f7ff;
+    background: rgb(5 9 20 / 94%);
+    box-shadow: 0 30px 90px #000;
+    backdrop-filter: blur(18px);
+  }
+  .project-panel[hidden] {
+    display: none;
+  }
+  .panel-close {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 9px;
+    color: #d9e7fa;
+    background: transparent;
+    cursor: pointer;
+  }
+  .project-panel > p:first-of-type {
+    margin: 0;
+    color: var(--panel-accent);
+    font:
+      650 0.65rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+  .project-panel h2 {
+    max-width: 90%;
+    margin: 0.75rem 0 0.35rem;
+    font-size: 1.45rem;
+    line-height: 1.15;
+  }
+  .panel-status {
+    color: #8fa2ba;
+    font:
+      600 0.64rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    text-transform: uppercase;
+  }
+  .panel-description {
+    margin: 1rem 0;
+    color: #aab9cc;
+    font-size: 0.9rem;
+  }
+  .panel-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+  }
+  .panel-tech span {
+    padding: 0.22rem 0.5rem;
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: 999px;
+    color: #b8c7dc;
+    font:
+      600 0.66rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+  }
+  .scroll-signal {
+    position: absolute;
+    bottom: 1.35rem;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    transform: translateX(-50%);
+    color: #7689a4;
+    font:
+      600 0.66rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .universe-loader {
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #dcecff;
+    background: #03040a;
+    transition:
+      visibility 0s linear 0.55s,
+      opacity 0.55s ease;
+  }
+  .universe-loader.is-ready {
+    visibility: hidden;
+    opacity: 0;
+  }
+  .loader-terminal {
+    display: grid;
+    width: min(390px, calc(100% - 2rem));
+    gap: 0.65rem;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+  .loader-mark {
+    color: #73e6bb;
+    font-size: 1.35rem;
+  }
+  .loader-terminal strong {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+  }
+  .loader-terminal > span:not(.loader-mark, .loader-value) {
+    color: #7487a0;
+    font-size: 0.72rem;
+  }
+  .loader-track {
+    height: 2px;
+    overflow: hidden;
+    background: #182235;
+  }
+  .loader-track span {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #87dcff;
+    box-shadow: 0 0 14px #6ed8ff;
+    transition: width 0.2s ease;
+  }
+  .loader-value {
+    color: #87dcff;
+    font-size: 0.68rem;
+    text-align: right;
+  }
+  .loader-terminal button {
+    justify-self: start;
+    padding: 0;
+    border: 0;
+    color: #7f93ad;
+    background: transparent;
+    font-size: 0.68rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  @media (max-width: 850px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      align-content: center;
+      gap: 2rem;
+    }
+    .node-console {
+      width: min(100%, 520px);
+      align-self: auto;
+      margin: 0;
+    }
+    .node-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 580px) {
+    .universe-hero {
+      min-height: 850px;
+    }
+    .hero-content {
+      align-content: start;
+      padding-block: 5.5rem 6rem;
+    }
+    h1 {
+      font-size: clamp(3.35rem, 18vw, 5.3rem);
+    }
+    .hero-role {
+      letter-spacing: 0.025em;
+    }
+    .node-list {
+      grid-template-columns: 1fr;
+    }
+    .project-panel {
+      position: fixed;
+      top: auto;
+      right: 1rem;
+      bottom: 1rem;
+      left: 1rem;
+      width: auto;
+      transform: none;
+    }
+    .scroll-signal {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-universe-canvas] {
+      display: none;
+    }
+    .universe-loader {
+      display: none;
+    }
+    .universe-button,
+    .loader-track span {
+      transition: none;
+    }
+    .universe-button:hover {
+      transform: none;
+    }
+  }
+</style>
