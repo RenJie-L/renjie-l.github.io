@@ -1,0 +1,60 @@
+---
+title: '洗牌算法（Fisher–Yates Shuffle / Knuth Shuffle）'
+description: '梳理 Fisher–Yates 洗牌算法的步骤、实现与等概率性，对比常见有偏差的写法。'
+publishDate: 2025-08-25
+updatedDate: 2026-01-09
+tags: ['Algorithm', 'JavaScript', 'TypeScript']
+category: 'Algorithm'
+featured: false
+draft: false
+readingTime: 2
+language: 'zh-CN'
+legacyUrl: '/2025/08/25/洗牌算法/'
+---
+
+## 1. 什么是洗牌算法
+
+洗牌算法的目标是：
+
+- 将一个序列随机打乱顺序
+- 保证所有排列出现的概率相等（等概率性）
+- 时间复杂度 O(n)，空间复杂度 O(1)
+
+常见错误写法（有概率偏差）：
+
+```ts
+arr.sort(() => Math.random() - 0.5); // ❌ 有概率偏差
+```
+
+## 2. Fisher–Yates Shuffle（从后往前）
+
+### 算法步骤：
+
+- 从最后一个元素索引 i = length-1 开始
+- 在 [0, i] 范围内随机取一个索引 j
+- 交换 arr[i] 和 arr[j]
+- 每轮固定一个元素，不再改动
+
+### 实现代码：
+
+```ts
+function shuffle(arr: number[]) {
+  const len = arr.length;
+  for (let i = len - 1; i >= 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+```
+
+## 3. Math.floor 作用
+
+Math.floor(x) → 返回小于或等于 x 的最大整数（向下取整）
+
+示例：
+
+```ts
+Math.floor(3.7); // 3
+Math.floor(3.1); // 3
+Math.floor(-3.1); // -4  注意负数
+```

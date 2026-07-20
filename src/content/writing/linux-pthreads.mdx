@@ -1,0 +1,331 @@
+---
+title: 'Unix/Linux 下的 Pthreads 线程编程详解'
+description: 'Pthreads 线程编程核心 API 与同步原语详解，覆盖线程创建、互斥锁、条件变量等。'
+publishDate: 2022-01-09
+tags: ['Linux', 'Pthreads', 'Multithreading', 'C']
+category: 'System Programming'
+featured: false
+draft: false
+readingTime: 15
+language: 'zh-CN'
+legacyUrl: '/2022/01/09/linux多线程/'
+---
+
+在传统 Unix 模型中，进程是资源分配和调度的基本单位。当一个进程需要并发执行任务时，通常会通过 `fork()` 派生子进程处理，但这种方式存在**开销大**（内存映像拷贝、描述符复制）和**通信复杂**（需依赖 IPC 机制）的问题。线程（Thread）作为"轻量级进程"，可有效解决这些痛点——同一进程内的线程共享大部分资源（如代码段、数据段、打开文件），创建速度比进程快 10~100 倍，且线程间通信无需额外机制。
+
+Linux 下的线程编程遵循 **POSIX.1 标准**，称为 **Pthreads**（POSIX Threads）。本文将从线程基础、核心操作、同步机制到线程属性，全面讲解 Pthreads 编程。
+
+## 一、Pthreads 基础：数据结构与核心函数
+
+Pthreads 提供了一套完整的 API 用于线程管理，核心可分为**线程操作函数**、**同步函数**和**属性函数**三类。
+
+### 1. 核心数据结构
+
+| 数据结构          | 用途说明                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `pthread_t`       | 线程 ID（TID），用于标识一个线程。注意：它可能是结构体（而非单纯整数），与实现相关。 |
+| `pthread_attr_t`  | 线程属性结构体，用于设置线程的优先级、分离状态、栈大小等（默认属性可满足多数场景）。 |
+| `pthread_mutex_t` | 互斥锁（Mutex），用于保证临界区资源的互斥访问。                                      |
+| `pthread_cond_t`  | 条件变量，用于线程间的"等待-通知"同步（需与互斥锁配合使用）。                        |
+| `pthread_key_t`   | 线程特有数据（Thread-Specific Data, TSD）的键，用于存储线程私有数据。                |
+| `sched_param`     | 线程调度参数结构体，主要用于设置线程优先级。                                         |
+
+### 2. 线程操作核心函数
+
+线程的生命周期管理（创建、退出、等待、取消）依赖以下核心函数：
+
+| 函数原型                                                                                               | 功能说明                                                                          |
+| ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `int pthread_create(pthread_t *tidp, const pthread_attr_t *attr, void*(*start_rtn)(void*), void *arg)` | 创建新线程。成功返回 0，失败返回非 0 错误码（Pthreads 不设置 `errno`）。          |
+| `void pthread_exit(void *rval_ptr)`                                                                    | 终止当前线程，`rval_ptr` 为线程退出状态（需指向全局/堆内存，避免栈地址）。        |
+| `int pthread_join(pthread_t tid, void **rval_ptr)`                                                     | 阻塞当前线程，等待 `tid` 线程终止，并通过 `rval_ptr` 获取其退出状态。             |
+| `int pthread_cancel(pthread_t tid)`                                                                    | 向 `tid` 线程发送"取消请求"（线程可选择忽略或自定义处理），非阻塞调用。           |
+| `pthread_t pthread_self(void)`                                                                         | 获取**当前线程**的 TID。                                                          |
+| `int pthread_equal(pthread_t tid1, pthread_t tid2)`                                                    | 比较两个线程 ID 是否相等（因 `pthread_t` 可能非整数，不能直接用 `==`）。          |
+| `int pthread_detach(pthread_t tid)`                                                                    | 将 `tid` 线程设置为"分离状态"（退出后资源立即回收，无法用 `pthread_join` 等待）。 |
+
+### 3. 线程同步核心函数
+
+当多个线程访问共享资源时，需通过**互斥锁**、**条件变量**或**读写锁**保证同步，避免数据竞争。
+
+#### （1）互斥锁（Mutex）函数
+
+| 函数原型                                                                          | 功能说明                                                         |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *attr)` | 初始化互斥锁（`attr` 为 `NULL` 时使用默认属性）。                |
+| `int pthread_mutex_destroy(pthread_mutex_t *mutex)`                               | 销毁互斥锁（释放资源，需确保锁未被占用）。                       |
+| `int pthread_mutex_lock(pthread_mutex_t *mutex)`                                  | 加锁：若锁已被占用，当前线程阻塞，直到锁被释放。                 |
+| `int pthread_mutex_trylock(pthread_mutex_t *mutex)`                               | 尝试加锁：若锁已被占用，立即返回 `EBUSY`（非阻塞），不阻塞线程。 |
+| `int pthread_mutex_unlock(pthread_mutex_t *mutex)`                                | 解锁：释放互斥锁，需由加锁线程调用（否则行为未定义）。           |
+
+#### （2）条件变量函数
+
+| 函数原型                                                                                                   | 功能说明                                                          |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr)`                              | 初始化条件变量（`attr` 为 `NULL` 时使用默认属性）。               |
+| `int pthread_cond_destroy(pthread_cond_t *cond)`                                                           | 销毁条件变量（需确保无线程在等待该变量）。                        |
+| `int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)`                                      | 等待条件满足：解锁 `mutex` 并阻塞线程，被唤醒后重新加锁 `mutex`。 |
+| `int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *timeout)` | 带超时的等待：超时后返回 `ETIMEDOUT`（`timeout` 为绝对时间）。    |
+| `int pthread_cond_signal(pthread_cond_t *cond)`                                                            | 唤醒**一个**等待该条件变量的线程（若有多个，唤醒优先级最高的）。  |
+| `int pthread_cond_broadcast(pthread_cond_t *cond)`                                                         | 唤醒**所有**等待该条件变量的线程。                                |
+
+#### （3）读写锁（Reader-Writer-Lock）函数
+
+读写锁适用于"读多写少"场景，允许多个线程同时读，但仅允许一个线程写（写操作独占）。
+
+| 函数原型                                                                              | 功能说明                                          |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `int pthread_rwlock_init(pthread_rwlock_t *rwlock, const pthread_rwlockattr_t *attr)` | 初始化读写锁。                                    |
+| `int pthread_rwlock_destroy(pthread_rwlock_t *rwlock)`                                | 销毁读写锁。                                      |
+| `int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)`                                 | 加读锁：若无写锁占用，可多个线程同时加锁。        |
+| `int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock)`                                 | 加写锁：若有读锁/写锁占用，线程阻塞，直到锁释放。 |
+| `int pthread_rwlock_unlock(pthread_rwlock_t *rwlock)`                                 | 释放锁（读锁/写锁通用）。                         |
+
+### 4. 线程特有数据（TSD）函数
+
+线程特有数据（TSD）允许每个线程拥有独立的私有数据（即使线程共享全局变量），通过 `pthread_key_t` 标识：
+
+| 函数原型                                                                | 功能说明                                                         |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))` | 创建 TSD 键，`destructor` 为数据销毁函数（线程退出时自动调用）。 |
+| `int pthread_setspecific(pthread_key_t key, const void *value)`         | 为当前线程的 `key` 绑定私有数据 `value`。                        |
+| `void *pthread_getspecific(pthread_key_t key)`                          | 获取当前线程 `key` 绑定的私有数据。                              |
+| `int pthread_key_delete(pthread_key_t key)`                             | 销毁 TSD 键（不调用销毁函数，需手动释放数据）。                  |
+
+## 二、Pthreads 核心概念与操作详解
+
+### 1. 线程 ID 与身份判断
+
+- **`pthread_t` 的局限性**：`pthread_t` 可能是结构体（如 Linux 下为 `unsigned long`，但标准未定义），因此不能直接用 `==` 比较两个线程 ID，必须使用 `pthread_equal(tid1, tid2)`。
+- **获取当前线程 ID**：通过 `pthread_self()` 获取，示例：
+
+  ```c
+  #include <pthread.h>
+  #include <stdio.h>
+
+  void *thread_func(void *arg) {
+      printf("当前线程 ID: %lu\n", (unsigned long)pthread_self());
+      return NULL;
+  }
+
+  int main() {
+      pthread_t tid;
+      pthread_create(&tid, NULL, thread_func, NULL);
+      pthread_join(tid, NULL); // 等待子线程结束
+      return 0;
+  }
+  ```
+
+### 2. 线程创建（`pthread_create`）
+
+`pthread_create` 是创建线程的核心函数，需重点理解其参数：
+
+- `tidp`：输出参数，指向存储新线程 ID 的 `pthread_t` 变量。
+- `attr`：线程属性（如分离状态、优先级），`NULL` 表示使用默认属性。
+- `start_rtn`：线程入口函数，类型为 `void* (*)(void*)`（接收 `void*` 参数，返回 `void*`）。
+- `arg`：传递给 `start_rtn` 的参数，若需传递多个参数，需封装为结构体指针。
+
+#### 示例：创建线程并传递参数
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+// 线程入口函数：接收整数参数，打印并返回
+void *print_num(void *arg) {
+    int num = *(int *)arg;
+    printf("线程接收的参数: %d\n", num);
+    free(arg); // 释放堆内存（避免内存泄漏）
+    return (void *)100; // 线程退出状态（返回 100）
+}
+
+int main() {
+    pthread_t tid;
+    int *arg = malloc(sizeof(int)); // 用堆内存传递参数（避免栈销毁问题）
+    *arg = 42;
+
+    // 创建线程：默认属性，传递 arg 作为参数
+    int ret = pthread_create(&tid, NULL, print_num, arg);
+    if (ret != 0) {
+        perror("pthread_create failed");
+        exit(1);
+    }
+
+    // 等待线程结束，并获取退出状态
+    void *rval_ptr;
+    pthread_join(tid, &rval_ptr);
+    printf("线程退出状态: %d\n", (int)rval_ptr); // 输出 100
+
+    return 0;
+}
+```
+
+#### 注意事项
+
+- **参数内存生命周期**：`arg` 不能指向主线程的栈内存（若主线程先退出，栈内存会被释放，子线程访问时会触发野指针），需用**全局变量**或**堆内存**（`malloc` 分配）。
+- **线程执行顺序**：无法假设主线程与子线程的执行顺序（取决于内核调度），需通过同步机制（如互斥锁、条件变量）控制。
+
+### 3. 线程退出与等待（`pthread_exit` 与 `pthread_join`）
+
+线程退出有三种方式：
+
+1. 线程入口函数正常返回（返回值即为退出状态）。
+2. 线程调用 `pthread_exit(rval_ptr)` 主动退出。
+3. 被其他线程调用 `pthread_cancel(tid)` 取消（需线程允许取消）。
+
+`pthread_join` 类似进程的 `waitpid`，用于等待指定线程退出并回收资源：
+
+- 若线程已退出，`pthread_join` 会立即返回，并通过 `rval_ptr` 获取退出状态。
+- 若线程未退出，`pthread_join` 会阻塞当前线程，直到目标线程退出。
+
+#### 示例：线程退出与等待
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+
+void *thread_sleep(void *arg) {
+    sleep(2); // 模拟耗时操作
+    pthread_exit((void *)200); // 主动退出，返回 200
+}
+
+int main() {
+    pthread_t tid;
+    pthread_create(&tid, NULL, thread_sleep, NULL);
+
+    // 等待线程退出，获取退出状态
+    void *rval_ptr;
+    pthread_join(tid, &rval_ptr);
+    printf("子线程退出状态: %d\n", (int)rval_ptr); // 输出 200
+
+    return 0;
+}
+```
+
+#### 线程分离状态（Detached State）
+
+线程默认处于**可结合状态**（Joinable）：退出后资源（如退出状态）会保留，直到其他线程调用 `pthread_join` 回收。若线程设置为**分离状态**（Detached），退出后资源会立即被内核回收，无法用 `pthread_join` 等待。
+
+设置分离状态的两种方式：
+
+1. 创建线程时通过属性设置：
+
+   ```c
+   pthread_attr_t attr;
+   pthread_attr_init(&attr);
+   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // 分离状态
+   pthread_create(&tid, &attr, thread_func, NULL);
+   pthread_attr_destroy(&attr); // 销毁属性对象
+   ```
+
+2. 线程创建后调用 `pthread_detach`：
+
+   ```c
+   pthread_detach(tid); // 将 tid 线程设为分离状态
+   ```
+
+### 4. 线程取消（`pthread_cancel`）与清理函数
+
+`pthread_cancel(tid)` 向目标线程发送"取消请求"，但目标线程需允许取消才能被终止：
+
+- 线程默认允许取消（可通过 `pthread_setcancelstate` 修改）。
+- 取消请求并非立即生效，需等待线程进入"取消点"（如 `sleep`、`pthread_join`、`mutex` 操作等）。
+
+#### 线程清理函数（`pthread_cleanup_push/pop`）
+
+线程被取消或调用 `pthread_exit` 时，需释放已占用的资源（如互斥锁、堆内存），可通过**清理函数**自动处理：
+
+- `pthread_cleanup_push(rtn, arg)`：将清理函数 `rtn` 压入栈（LIFO 顺序）。
+- `pthread_cleanup_pop(execute)`：弹出栈顶清理函数，`execute=1` 时执行该函数，`execute=0` 时不执行。
+
+#### 示例：线程取消与清理
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
+
+pthread_mutex_t mutex;
+
+// 清理函数：释放互斥锁
+void cleanup_mutex(void *arg) {
+    printf("清理函数：释放互斥锁\n");
+    pthread_mutex_unlock(&mutex);
+}
+
+void *thread_work(void *arg) {
+    pthread_mutex_lock(&mutex); // 加锁
+    pthread_cleanup_push(cleanup_mutex, NULL); // 注册清理函数
+
+    while (1) {
+        sleep(1); // 取消点：此处可接收取消请求
+        printf("线程运行中...\n");
+    }
+
+    pthread_cleanup_pop(1); // 执行清理函数（实际不会执行，因线程被取消）
+    return NULL;
+}
+
+int main() {
+    pthread_mutex_init(&mutex, NULL);
+    pthread_t tid;
+    pthread_create(&tid, NULL, thread_work, NULL);
+
+    sleep(3); // 让线程运行 3 秒
+    pthread_cancel(tid); // 发送取消请求
+    pthread_join(tid, NULL); // 等待线程退出
+
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}
+```
+
+#### 输出结果
+
+```erlang
+线程运行中...
+线程运行中...
+清理函数：释放互斥锁
+```
+
+### 5. 线程同步：互斥锁、条件变量、读写锁
+
+线程间共享资源（如全局变量、文件）时，需通过同步机制避免数据竞争。以下通过示例讲解三种核心同步方式。
+
+#### （1）互斥锁：保证临界区互斥访问
+
+**场景**：两个线程同时对全局变量 `count` 自增 10000 次，需用互斥锁保证结果正确。
+
+```c
+#include <pthread.h>
+#include <stdio.h>
+
+int count = 0;
+pthread_mutex_t mutex;
+
+void *inc_count(void *arg) {
+    for (int i = 0; i < 10000; i++) {
+        pthread_mutex_lock(&mutex);   // 加锁：进入临界区
+        count++;                     // 临界区操作（共享变量自增）
+        pthread_mutex_unlock(&mutex); // 解锁：退出临界区
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t tid1, tid2;
+    pthread_mutex_init(&mutex, NULL);
+
+    pthread_create(&tid1, NULL, inc_count, NULL);
+    pthread_create(&tid2, NULL, inc_count, NULL);
+
+    pthread_join(tid1, NULL);
+    pthread_join(tid2, NULL);
+
+    printf("最终 count 值: %d\n", count); // 正确输出 20000（无锁时可能小于 20000）
+    pthread_mutex_destroy(&mutex);
+    return 0;
+}
+```

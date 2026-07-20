@@ -1,12 +1,6 @@
 ---
-import {
-  ArrowRight,
-  Bot,
-  Braces,
-  Github,
-  Sparkles,
-  Wrench,
-} from 'lucide-astro';
+import { ArrowRight, Bot, Braces, Sparkles, Wrench } from '@lucide/astro';
+import GithubIcon from '@/components/GithubIcon.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const directions = [
@@ -54,7 +48,7 @@ const directions = [
           class="button"
           href="https://github.com/RenJie-L"
           target="_blank"
-          rel="noreferrer"><Github size={16} /> GitHub</a
+          rel="noreferrer"><GithubIcon size={16} /> GitHub</a
         >
       </div>
     </div>

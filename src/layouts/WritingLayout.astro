@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, CalendarDays, Clock3 } from 'lucide-astro';
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3 } from '@lucide/astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { formatDate, type Writing } from '@/lib/content';
 
@@ -117,6 +117,39 @@ const toc = headings.filter(
   </article>
 </BaseLayout>
 <script>
+  const mermaidSources = new Map<HTMLElement, string>();
+  document
+    .querySelectorAll<HTMLElement>('.prose pre.mermaid')
+    .forEach((pre) => {
+      const source = pre.textContent ?? '';
+      mermaidSources.set(pre, source);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'mermaid-wrapper';
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+      const toggleButton = document.createElement('button');
+      toggleButton.className = 'toggle-source';
+      toggleButton.type = 'button';
+      toggleButton.innerHTML = '<span>查看源代码</span>';
+      wrapper.appendChild(toggleButton);
+      const sourceContainer = document.createElement('div');
+      sourceContainer.className = 'mermaid-source';
+      sourceContainer.hidden = true;
+      const sourcePre = document.createElement('pre');
+      sourcePre.className = 'mermaid-source-code';
+      const sourceCode = document.createElement('code');
+      sourceCode.textContent = source;
+      sourcePre.appendChild(sourceCode);
+      sourceContainer.appendChild(sourcePre);
+      wrapper.appendChild(sourceContainer);
+      toggleButton.addEventListener('click', () => {
+        sourceContainer.hidden = !sourceContainer.hidden;
+        toggleButton.querySelector('span')!.textContent = sourceContainer.hidden
+          ? '查看源代码'
+          : '隐藏源代码';
+        toggleButton.classList.toggle('active');
+      });
+    });
   document.querySelectorAll<HTMLElement>('.prose pre').forEach((pre) => {
     const button = document.createElement('button');
     button.className = 'copy-code';
@@ -124,7 +157,8 @@ const toc = headings.filter(
     button.setAttribute('aria-label', '复制代码');
     button.innerHTML = '<span>复制</span>';
     button.addEventListener('click', async () => {
-      const value = pre.querySelector('code')?.textContent ?? '';
+      const source = mermaidSources.get(pre);
+      const value = source ?? pre.querySelector('code')?.textContent ?? '';
       try {
         await navigator.clipboard.writeText(value);
       } catch {
@@ -427,5 +461,56 @@ const toc = headings.filter(
     .post-navigation {
       grid-template-columns: 1fr;
     }
+  }
+  .mermaid-wrapper {
+    margin: 1.7rem 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .mermaid-wrapper pre.mermaid {
+    margin: 0;
+    padding: 1rem;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+  }
+  .mermaid-wrapper pre.mermaid svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+  .toggle-source {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-top: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+  }
+  .toggle-source:hover,
+  .toggle-source.active {
+    background: var(--code);
+    color: var(--accent);
+  }
+  .mermaid-source {
+    border-top: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .mermaid-source-code {
+    margin: 0;
+    padding: 1rem;
+    background: var(--code);
+    border-radius: 0;
+    font-size: 0.8rem;
+    overflow-x: auto;
   }
 </style>

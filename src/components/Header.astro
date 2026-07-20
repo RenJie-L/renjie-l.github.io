@@ -1,5 +1,6 @@
 ---
-import { Github, Menu, Moon, Search, Sun, X } from 'lucide-astro';
+import { Menu, Moon, Search, Sun, X } from '@lucide/astro';
+import GithubIcon from '@/components/GithubIcon.astro';
 import { localizedPath, type Locale, ui } from '@/i18n/config';
 
 interface Props {
@@ -61,7 +62,7 @@ const links = [
         href="https://github.com/RenJie-L"
         target="_blank"
         rel="noreferrer"
-        aria-label="GitHub"><Github size={18} /></a
+        aria-label="GitHub"><GithubIcon size={18} /></a
       >
       <button
         class="icon-button menu-toggle"

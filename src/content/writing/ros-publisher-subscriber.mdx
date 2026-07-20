@@ -1,0 +1,175 @@
+---
+title: 'ROS Publisher 与 Subscriber 节点代码解析'
+description: 'ROS 中 Publisher 与 Subscriber 节点的代码实现与运行流程解析。'
+publishDate: 2021-10-09
+tags: ['ROS', 'Robotics', 'C++']
+category: 'Robotics'
+featured: false
+draft: false
+readingTime: 10
+language: 'zh-CN'
+legacyUrl: '/2021/10/09/publish节点/'
+---
+
+在ROS（Robot Operating System）中，**节点（Node）** 是连接到ROS网络的可执行文件，用于实现特定功能。本文将展示两个核心节点的代码：`Publisher（发布者）`节点（持续广播消息）和`Subscriber（订阅者）`节点（接收并处理消息），并对关键代码逻辑进行解析。
+
+## 1. Publisher节点（发布者：talker）
+
+Publisher节点的核心功能是：初始化ROS节点后，以固定频率在指定话题（`chatter`）上持续发布`std_msgs::String`类型的消息。
+
+### 1.1 完整代码
+
+```cpp
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+
+#include <sstream>
+
+int main(int argc, char **argv) {
+    // 1. 初始化ROS节点
+    // ros::init() 需传入argc和argv，用于解析命令行中的ROS参数与节点名称重映射
+    // 第三个参数"talker"是当前节点的名称（需保证ROS网络中唯一）
+    ros::init(argc, argv, "talker");
+
+    // 2. 创建节点句柄（NodeHandle）
+    // NodeHandle是与ROS系统通信的"总入口"，用于创建Publisher/Subscriber、访问参数服务器等
+    ros::NodeHandle n;
+
+    // 3. 创建Publisher对象
+    // 函数参数说明：
+    // - "chatter"：要发布的话题名称
+    // - 1000：消息队列大小（若发布速度快于接收速度，队列满时会丢弃旧消息）
+    // - 模板类型std_msgs::String：发布的消息类型（需包含对应头文件）
+    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+
+    // 4. 设置循环频率
+    // ros::Rate用于控制节点的循环频率，参数"10"表示10Hz（即每秒循环10次）
+    ros::Rate loop_rate(10);
+
+    // 5. 消息计数变量（用于区分不同消息）
+    int count = 0;
+
+    // 6. 核心循环（持续发布消息）
+    // ros::ok()：判断节点是否正常运行（如收到Ctrl+C终止指令时返回false）
+    while (ros::ok()) {
+        // 6.1 初始化消息对象
+        std_msgs::String msg;
+        std::stringstream ss;  // 用于拼接字符串
+        ss << "hello world " << count;  // 构造消息内容（如"hello world 0", "hello world 1"...）
+        msg.data = ss.str();   // 将字符串流内容赋值给消息的data字段（std_msgs::String的核心字段）
+
+        // 6.2 发布消息
+        ROS_INFO("%s", msg.data.c_str());  // 打印消息到终端（类似printf，属于ROS日志函数）
+        chatter_pub.publish(msg);          // 向"chatter"话题发布消息
+
+        // 6.3 处理回调（可选）
+        // ros::spinOnce()：触发一次回调函数处理（若当前节点同时订阅话题，需调用此函数）
+        // 本节点仅作为Publisher，此句可省略，但保留不影响功能
+        ros::spinOnce();
+
+        // 6.4 按设定频率延时
+        // loop_rate.sleep()：根据循环频率计算延时时间，确保循环稳定在10Hz
+        loop_rate.sleep();
+        ++count;  // 消息计数自增
+    }
+
+    return 0;
+}
+```
+
+## 2. Subscriber节点（订阅者：listener）
+
+Subscriber节点的核心功能是：初始化ROS节点后，订阅`Publisher`发布的`chatter`话题，当收到消息时触发回调函数进行处理（如打印消息）。
+
+### 2.1 完整代码
+
+```cpp
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+
+// 1. 回调函数（消息接收后自动执行）
+// 参数说明：
+// - const std_msgs::String::ConstPtr& msg：指向接收消息的常量指针
+//   使用ConstPtr避免拷贝，提高效率；Const确保消息不被修改
+void chatterCallback(const std_msgs::String::ConstPtr& msg) {
+    // 打印接收到的消息（ROS_INFO是ROS的日志级别，终端会显示绿色信息）
+    ROS_INFO("I heard: [%s]", msg->data.c_str());
+}
+
+int main(int argc, char **argv) {
+    // 2. 初始化ROS节点
+    // 节点名称为"listener"，需与网络中其他节点名称唯一
+    ros::init(argc, argv, "listener");
+
+    // 3. 创建节点句柄（与Publisher节点功能一致，是ROS通信的入口）
+    ros::NodeHandle n;
+
+    // 4. 创建Subscriber对象
+    // 函数参数说明：
+    // - "chatter"：要订阅的话题名称（必须与Publisher发布的话题一致）
+    // - 1000：消息队列大小（缓存未处理的消息，满时丢弃旧消息）
+    // - chatterCallback：消息回调函数（收到消息时自动调用此函数）
+    ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
+
+    // 5. 循环等待回调
+    // ros::spin()：进入无限循环，持续监听话题消息，收到消息后触发回调函数
+    // 此函数会阻塞当前线程，直到节点被终止（如Ctrl+C）
+    ros::spin();
+
+    return 0;
+}
+```
+
+## 3. 核心概念补充
+
+为帮助理解代码逻辑，以下是ROS节点通信的核心概念总结：
+
+| 概念                       | 作用说明                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **节点（Node）**           | ROS中的最小功能单元（可执行文件），如本文的`talker`（发布）和`listener`（订阅）。                       |
+| **话题（Topic）**          | 节点间传递消息的"通道"，Publisher向话题发布消息，Subscriber从话题订阅消息。                             |
+| **消息（Message）**        | 节点间传递的数据格式，如本文的`std_msgs::String`（字符串类型），ROS还提供激光、图像等复杂消息类型。     |
+| **回调函数（Callback）**   | Subscriber接收消息后执行的函数，用于处理消息（如打印、数据解析）。                                      |
+| **节点句柄（NodeHandle）** | 与ROS系统交互的核心对象，所有ROS通信（创建Publisher/Subscriber）都需通过它。                            |
+| **ROS日志函数**            | 如`ROS_INFO`（信息）、`ROS_WARN`（警告）、`ROS_ERROR`（错误），用于终端输出调试信息，区分不同日志级别。 |
+
+## 4. 代码运行说明
+
+若需运行上述代码，需完成以下步骤（以ROS Noetic为例）：
+
+1. 在ROS工作空间的`src`目录下创建功能包（如`learning_topic`），依赖`roscpp`和`std_msgs`：
+
+   ```bash
+   catkin_create_pkg learning_topic roscpp std_msgs
+   ```
+
+2. 将上述代码分别保存为`talker.cpp`和`listener.cpp`，放入功能包的`src`目录。
+3. 修改功能包的`CMakeLists.txt`，添加编译规则（指定可执行文件、依赖项）。
+4. 编译工作空间：
+
+   ```bash
+   cd ~/catkin_ws  # 进入工作空间目录
+   catkin_make     # 编译
+   ```
+
+5. 启动ROS核心（新终端）：
+
+   ```bash
+   roscore
+   ```
+
+6. 运行Publisher节点（新终端）：
+
+   ```bash
+   source devel/setup.bash  # 加载工作空间环境变量
+   rosrun learning_topic talker
+   ```
+
+7. 运行Subscriber节点（新终端）：
+
+   ```bash
+   source devel/setup.bash
+   rosrun learning_topic listener
+   ```
+
+8. 此时可在终端看到：`talker`持续输出`hello world X`，`listener`持续输出`I heard: [hello world X]`。
