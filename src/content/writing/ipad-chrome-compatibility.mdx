@@ -1,0 +1,178 @@
+---
+title: '在 iPad 上使用 Chrome 访问电脑版网页的兼容性问题分析'
+description: '分析 iPad Chrome 访问电脑版网页时的兼容性问题成因与解决方案。'
+publishDate: 2025-09-09
+tags: ['iPad', 'Chrome', 'Compatibility', 'Frontend']
+category: 'Frontend Engineering'
+featured: false
+draft: false
+readingTime: 6
+language: 'zh-CN'
+legacyUrl: '/2025/09/09/iPad兼容问题/'
+---
+
+## 问题概述
+
+当在 iPad 上使用 Chrome 浏览器访问电脑版网页时，出现了 check.browsernotsupported 兼容性错误。这个问题与 iOS 13 + 之后苹果对 iPad userAgent 的改变以及 Chrome 在 iOS 上的特殊表现有关。
+
+## 可能的原因分析
+
+### 1. iOS 13+ iPad userAgent 的变化
+
+从 iOS 13 开始，苹果改变了 iPad 的 userAgent 字符串格式，这是导致兼容性问题的主要原因之一。
+
+**具体变化**：
+
+- iOS 12 及之前的 iPad userAgent：`Mozilla/5.0 (iPad; CPU OS 12_4_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.2 Mobile/15E148 Safari/604.1`
+- iOS 13 及之后的 iPad userAgent：`Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15`
+
+可以看到，**从 iOS 13 开始，iPad 的 userAgent 不再包含 "iPad" 字段，而是包含 "Macintosh" 字段**，这使得网站会将 iPad 识别为 Mac 电脑。
+
+**变化原因**：
+
+苹果在 iOS 13 中新增了 "请求桌面网站" 功能，默认开启，让 iPad 访问 PC 网站而不是移动端网站。通过修改 userAgent 来实现，让网站认为是 Mac 电脑访问。
+
+### 2. 代码中 iPad 检测逻辑失效
+
+在提供的代码中，`isIPad()` 函数通过检查 userAgent 中是否包含 "iPad" 来判断是否是 iPad：
+
+```ts
+function isIPad() {
+  return /iPad/i.test(window.navigator.userAgent);
+}
+```
+
+由于 iOS 13 + 的 userAgent 变化，这个函数会返回 false，导致代码进入 `checkBrowser()` 函数而不是直接返回成功的 Promise。
+
+### 3. Chrome on iOS 的特殊标识问题
+
+iOS 上的 Chrome 浏览器有其特殊的 userAgent 格式，这可能导致 platform 库无法正确识别。
+
+**Chrome on iOS 的 userAgent 格式**：
+
+- 包含 "CriOS" 标识（Chrome for iOS 的缩写）
+- 例如：`Mozilla/5.0 (iPad; CPU OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/141.0.7390.41 Mobile/15E148 Safari/604.1`
+
+**问题**：platform 库可能无法正确识别包含 "CriOS" 的 userAgent，或者将其识别为 Safari 而不是 Chrome。
+
+### 4. platform 库的浏览器识别问题
+
+在 `isBrowserSupported()` 函数中，依赖 platform 库来获取浏览器名称和版本：
+
+```ts
+function isBrowserSupported(): boolean {
+  const { version, name } = platform;
+
+  if (version === undefined || name === undefined) {
+    return false;
+  }
+
+  const matchedSpec = Spec[name];
+
+  if (!matchedSpec) {
+    return false;
+  }
+
+  return matchedSpec(parseFloat(version));
+}
+```
+
+如果 platform 库不能正确识别 Chrome on iOS，可能会导致以下问题：
+
+- `platform.name` 可能返回 "Safari" 而不是 "Chrome"
+- 即使返回 "Chrome"，也可能因为版本号解析错误而导致版本检查失败
+
+### 5. 版本号检查失败
+
+即使 platform 库正确识别了 Chrome，也可能因为版本号解析错误而导致版本检查失败。
+
+在 Spec 对象中，Chrome 的版本要求是 45 及以上：
+
+```ts
+const Spec: ISpec = {
+  Chrome: biggerEqual(45),
+
+  // ...其他浏览器
+};
+```
+
+如果 platform 库无法正确解析 Chrome on iOS 的版本号，就会返回 false。
+
+## 解决方案
+
+### 1. 更新 iPad 检测逻辑
+
+修改 `isIPad()` 函数，使其能够正确识别 iOS 13 + 的 iPad：
+
+```ts
+function isIPad() {
+  // iOS 13以前：检查userAgent中的"iPad"字段
+
+  // iOS 13以后：检查platform是否为"MacIntel"且maxTouchPoints大于1（iPad有触摸屏，而Mac没有）
+
+  return (
+    /iPad/i.test(window.navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
+```
+
+### 2. 优化 Chrome on iOS 检测
+
+修改 `isBrowserSupported()` 函数，使其能够正确识别 Chrome on iOS：
+
+```ts
+function isBrowserSupported(): boolean {
+  const userAgent = window.navigator.userAgent;
+
+  const { version, name } = platform;
+
+  // 检测Chrome on iOS（包含"CriOS"标识）
+  const isChromeOnIOS = /CriOS/.test(userAgent);
+
+  if (isChromeOnIOS) {
+    // 提取Chrome on iOS的版本号
+    const criosVersionMatch = userAgent.match(/CriOS\/(\d+)/);
+
+    if (criosVersionMatch && criosVersionMatch[1]) {
+      const criosVersion = parseInt(criosVersionMatch[1], 10);
+
+      return criosVersion >= 45;
+    }
+
+    return false;
+  }
+
+  if (version === undefined || name === undefined) {
+    return false;
+  }
+
+  const matchedSpec = Spec[name];
+
+  if (!matchedSpec) {
+    return false;
+  }
+
+  return matchedSpec(parseFloat(version));
+}
+```
+
+### 3. 更新 Spec 对象
+
+在 Spec 对象中添加对 Chrome on iOS 的支持：
+
+```ts
+const Spec: ISpec = {
+  Chrome: biggerEqual(45),
+
+  'Chrome on iOS': biggerEqual(45), // 添加Chrome on iOS的版本要求
+
+  Firefox: biggerEqual(49),
+
+  'Firefox for iOS': biggerEqual(10.3),
+
+  IE: just(false),
+
+  Safari: biggerEqual(10.1),
+};
+```
