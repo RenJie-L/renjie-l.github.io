@@ -1,0 +1,382 @@
+---
+import { getEntry, render } from 'astro:content';
+import { ArrowLeft, ArrowUpRight, CalendarRange, User } from '@lucide/astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import 'katex/dist/katex.min.css';
+
+const project = await getEntry('projects', 'uav-swing-free-trajectory');
+if (!project) {
+  return Astro.redirect('/404');
+}
+const { Content, headings } = await render(project);
+const toc = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+const publication = project.data.links.find((link) =>
+  link.url.startsWith('http'),
+);
+---
+
+<BaseLayout
+  title={project.data.title}
+  description={project.data.description}
+  type="article"
+>
+  <article class="project-shell" data-pagefind-body>
+    <header class="project-header container">
+      <a class="back-link" href="/projects"><ArrowLeft size={15} /> 返回项目列表</a>
+      <p class="eyebrow">{project.data.venue ?? 'Project'}</p>
+      <h1 data-pagefind-meta="title">{project.data.title}</h1>
+      <p class="description">{project.data.description}</p>
+      <div class="post-meta">
+        <span><CalendarRange size={15} /> {project.data.period}</span>
+        <span>{project.data.role}</span>
+        {
+          project.data.authors && (
+            <span class="authors">
+              <User size={15} />
+              {project.data.authors.join(' · ')}
+            </span>
+          )
+        }
+      </div>
+      <div class="tech-list">
+        {project.data.technologies.map((item) => <span>{item}</span>)}
+      </div>
+      {
+        publication && (
+          <a
+            class="button pub-cta"
+            href={publication.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            查看论文原文 <ArrowUpRight size={15} />
+          </a>
+        )
+      }
+    </header>
+    {
+      toc.length > 0 && (
+        <details class="mobile-toc container">
+          <>
+            <summary>项目目录</summary>
+            <nav aria-label="项目目录">
+              {toc.map((heading) => (
+                <a class={`depth-${heading.depth}`} href={`#${heading.slug}`}>
+                  {heading.text}
+                </a>
+              ))}
+            </nav>
+          </>
+        </details>
+      )
+    }
+    <div class="project-grid container">
+      <div class="prose">
+        <Content />
+      </div>
+      {
+        toc.length > 0 && (
+          <aside class="desktop-toc">
+            <>
+              <p>目录</p>
+              <nav aria-label="项目目录">
+                {toc.map((heading) => (
+                  <a class={`depth-${heading.depth}`} href={`#${heading.slug}`}>
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            </>
+          </aside>
+        )
+      }
+    </div>
+    <div class="project-footer-cta container">
+      <a class="button" href="/projects"><ArrowLeft size={15} /> 返回项目列表</a>
+      {
+        publication && (
+          <a
+            class="button primary"
+            href={publication.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            IEEE Xplore 原文 <ArrowUpRight size={15} />
+          </a>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.desktop-toc a')];
+  const sections = links
+    .map((link) =>
+      document.getElementById(decodeURIComponent(link.hash.slice(1))),
+    )
+    .filter(Boolean);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          links.forEach((link) =>
+            link.classList.toggle(
+              'active',
+              link.hash === `#${entry.target.id}`,
+            ),
+          );
+        }
+      });
+    },
+    { rootMargin: '-15% 0px -75%' },
+  );
+  sections.forEach((section) => observer.observe(section!));
+</script>
+
+<style is:global>
+  .project-header {
+    max-width: 860px;
+    padding-top: clamp(4rem, 9vw, 7rem);
+    padding-bottom: 3.5rem;
+    text-align: center;
+  }
+  .project-header .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 2.5rem;
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+  .project-header h1 {
+    max-width: 850px;
+    margin: 0.75rem auto 1.25rem;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+  .project-header .description {
+    max-width: 680px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1rem;
+    margin: 1.5rem 0 0.8rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .post-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .post-meta .authors {
+    flex-wrap: wrap;
+  }
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .tech-list span {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .tech-list span:not(:last-child)::after {
+    content: ' /';
+    color: var(--line);
+  }
+  .pub-cta {
+    margin-top: 0.5rem;
+  }
+  .project-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 760px) 220px;
+    justify-content: center;
+    gap: 4.5rem;
+    align-items: start;
+  }
+  .desktop-toc {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+  }
+  .desktop-toc > p {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .desktop-toc nav,
+  .mobile-toc nav {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .desktop-toc a,
+  .mobile-toc a {
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+  .desktop-toc a:hover,
+  .desktop-toc a.active {
+    color: var(--accent);
+  }
+  .desktop-toc .depth-3,
+  .mobile-toc .depth-3 {
+    padding-left: 0.75rem;
+  }
+  .mobile-toc {
+    display: none;
+  }
+  .project-footer-cta {
+    max-width: 760px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    margin-top: 5rem;
+    padding-bottom: 4rem;
+  }
+  /* Prose styles (math-aware) */
+  .prose {
+    min-width: 0;
+    font-size: 1.04rem;
+    line-height: 1.88;
+  }
+  .prose h2,
+  .prose h3 {
+    scroll-margin-top: 6rem;
+    line-height: 1.35;
+    letter-spacing: -0.025em;
+  }
+  .prose h2 {
+    margin: 3.2rem 0 1rem;
+    padding-top: 0.8rem;
+    font-size: 1.75rem;
+  }
+  .prose h3 {
+    margin: 2.3rem 0 0.8rem;
+    font-size: 1.3rem;
+  }
+  .prose p,
+  .prose li {
+    color: color-mix(in srgb, var(--text) 88%, var(--muted));
+  }
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    text-underline-offset: 3px;
+  }
+  .prose blockquote {
+    margin: 1.7rem 0;
+    padding: 0.8rem 1.2rem;
+    border-left: 3px solid var(--accent);
+    background: var(--surface-2);
+    border-radius: 0 10px 10px 0;
+  }
+  .prose blockquote p {
+    margin: 0;
+  }
+  .prose pre {
+    margin: 1.7rem 0;
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 0.86rem;
+    box-shadow: none;
+  }
+  .prose :not(pre) > code {
+    padding: 0.15em 0.35em;
+    background: var(--code);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    font-size: 0.88em;
+  }
+  .prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .prose th,
+  .prose td {
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--line);
+    text-align: left;
+  }
+  .prose th {
+    background: var(--surface-2);
+  }
+  .prose img {
+    display: block;
+    margin: 1.8rem auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  /* KaTeX display math: allow horizontal scroll on small screens */
+  .prose .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
+  }
+  .prose .katex-display > .katex {
+    white-space: nowrap;
+  }
+  @media (max-width: 960px) {
+    .project-grid {
+      grid-template-columns: minmax(0, 760px);
+    }
+    .desktop-toc {
+      display: none;
+    }
+    .mobile-toc {
+      display: block;
+      max-width: 760px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+    }
+    .mobile-toc summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .mobile-toc nav {
+      padding-top: 0.8rem;
+    }
+  }
+  @media (max-width: 600px) {
+    .project-header {
+      text-align: left;
+    }
+    .project-header .description {
+      margin: 0;
+    }
+    .post-meta,
+    .tech-list {
+      justify-content: flex-start;
+    }
+    .project-footer-cta {
+      flex-direction: column;
+    }
+  }
+</style>

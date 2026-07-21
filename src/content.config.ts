@@ -45,6 +45,8 @@ const projects = defineCollection({
         alt: z.string(),
       })
       .optional(),
+    authors: z.array(z.string()).optional(),
+    venue: z.string().optional(),
   }),
 });
 

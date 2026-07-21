@@ -3,6 +3,8 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import mermaid from 'astro-mermaid';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 export default defineConfig({
   site: 'https://renjie-l.github.io',
@@ -16,7 +18,10 @@ export default defineConfig({
       theme: 'forest',
       autoTheme: true,
     }),
-    mdx(),
+    mdx({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+    }),
     sitemap({
       i18n: {
         defaultLocale: 'zh-CN',
@@ -30,6 +35,8 @@ export default defineConfig({
       wrap: true,
     },
     headingAnchorPrefix: '',
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
   },
   vite: { plugins: [tailwindcss()] },
 });

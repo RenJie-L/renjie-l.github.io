@@ -82,6 +82,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </div>
     </article>
     <article class="project-card">
+      <a
+        class="project-cover"
+        href="/projects/uav-swing-free-trajectory"
+        aria-label="Read the UAV swing-free trajectory summary"
+      >
+        <img
+          src="/img/uav-poster.png"
+          alt="A quadrotor UAV carrying a suspended payload by a cable, with a dashed trajectory line"
+          loading="lazy"
+        />
+      </a>
       <div class="project-head">
         <div>
           <span>2022.03 — 2023.06 · Researcher / Engineer</span><h2>
@@ -91,24 +102,39 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
             reduce suspended-load swing, validated on a physical UAV system.
           </p>
         </div>
-        <a
-          class="button"
-          href="https://ieeexplore.ieee.org/"
-          target="_blank"
-          rel="noreferrer">Publication <ExternalLink size={14} /></a
-        >
+        <div class="project-links">
+          <a class="button" href="/projects/uav-swing-free-trajectory">
+            Read summary <ExternalLink size={14} />
+          </a>
+          <a
+            class="button"
+            href="https://ieeexplore.ieee.org/abstract/document/10055333"
+            target="_blank"
+            rel="noreferrer">Publication <ExternalLink size={14} /></a
+          >
+        </div>
       </div>
       <ul>
-        <li>Modeled trajectory planning for a UAV with a suspended load.</li><li
-        >
-          Explored swing-free trajectory generation with deep reinforcement
-          learning.
-        </li><li>Validated the approach on a physical UAV system.</li>
+        <li>
+          Modeled UAV suspended-load transport as a 2D underactuated system with
+          an OpenAI Gym-compatible simulator.
+        </li><li>
+          Proposed a region-based progressive reward function balancing fast
+          approach and swing suppression.
+        </li><li>
+          Learned trajectories with DQN, keeping max swing angle under ~16°;
+          converged after ~600 episodes.
+        </li><li>
+          Published at China Automation Congress 2022 and validated on a
+          physical UAV system.
+        </li>
       </ul>
       <div class="technologies">
-        <span>Reinforcement Learning</span><span>Trajectory Planning</span><span
-          >UAV</span
-        ><span>Python</span>
+        <span>Reinforcement Learning</span><span>DQN</span><span
+          >Trajectory Planning</span
+        ><span>UAV</span><span>PyTorch</span><span>OpenAI Gym</span><span
+          >Python</span
+        >
       </div>
     </article>
   </section>
@@ -154,6 +180,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     font:
       600 0.78rem ui-monospace,
       monospace;
+  }
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: flex-start;
+    justify-content: flex-end;
   }
   .project-card h2 {
     margin: 0.45rem 0;
