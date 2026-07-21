@@ -3,6 +3,8 @@ import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import mermaid from 'astro-mermaid';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
 
 export default defineConfig({
   site: 'https://renjie-l.github.io',
@@ -25,6 +27,8 @@ export default defineConfig({
     }),
   ],
   markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
       wrap: true,
