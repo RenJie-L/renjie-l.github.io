@@ -13,7 +13,7 @@ links:
     url: '/experiments/west-lake'
 featured: true
 cover:
-  src: '/experiments/west-lake/poster.png'
+  src: '//qhstaticssl.kujiale.com/image/png/1784635482363/DE063287279A2D3B475758E3E2C9712F.png?imageMogr2/format/webp'
   alt: '水墨风格的西湖、石桥、远山与塔影'
 ---
 

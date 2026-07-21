@@ -1,5 +1,5 @@
 ﻿---
-import { ExternalLink } from '@lucide/astro';
+import { ArrowRight, ExternalLink } from '@lucide/astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
@@ -28,9 +28,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
             SPZ spatial capture with Spark and Three.js.
           </p>
         </div>
-        <a class="button" href="/en/experiments/gaussian-splat">
-          Enter scene <ExternalLink size={14} />
-        </a>
+        <div class="project-links">
+          <a class="project-action" href="/en/experiments/gaussian-splat">
+            Enter scene <ArrowRight size={14} />
+          </a>
+        </div>
       </div>
       <ul>
         <li>Loads a remote 7.6 MB SPZ scene directly in the browser.</li>
@@ -44,14 +46,14 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         ><span>Astro</span>
       </div>
     </article>
-    <article class="project-card">
+    <article class="project-card has-cover">
       <a
         class="project-cover"
         href="/en/experiments/west-lake"
         aria-label="Enter West Lake WebGL Experience"
       >
         <img
-          src="/experiments/west-lake/poster.png"
+          src="//qhstaticssl.kujiale.com/image/png/1784635482363/DE063287279A2D3B475758E3E2C9712F.png?imageMogr2/format/webp"
           alt="Ink-wash West Lake with a stone bridge, distant mountains, and a pagoda"
           loading="lazy"
         />
@@ -65,9 +67,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
             water shaders, mist, and restrained interaction.
           </p>
         </div>
-        <a class="button" href="/en/experiments/west-lake">
-          Enter scene <ExternalLink size={14} />
-        </a>
+        <div class="project-links">
+          <a class="project-action" href="/en/experiments/west-lake">
+            Enter scene <ArrowRight size={14} />
+          </a>
+        </div>
       </div>
       <ul>
         <li>
@@ -81,34 +85,60 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         ><span>Astro</span>
       </div>
     </article>
-    <article class="project-card">
+    <article class="project-card has-cover">
+      <a
+        class="project-cover"
+        href="https://ieeexplore.ieee.org/abstract/document/10055333"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Read the UAV swing-free trajectory planning publication"
+      >
+        <img
+          src="//qhstaticssl.kujiale.com/image/png/1784635477373/1D4A17E9B264CA306E1E28A789EF5470.png?imageMogr2/format/webp"
+          alt="A quadrotor follows a planned trajectory toward a target region while its suspended payload swing settles"
+          loading="lazy"
+        />
+      </a>
       <div class="project-head">
         <div>
-          <span>2022.03 — 2023.06 · Researcher / Engineer</span><h2>
+          <span>2022.03 — 2023.06 · First Author / Researcher</span><h2>
             Reinforcement Learning for Swing-Free UAV Trajectories
           </h2><p>
-            A deep reinforcement learning approach to generate trajectories that
-            reduce suspended-load swing, validated on a physical UAV system.
+            A DQN-based trajectory planner that balances travel efficiency and
+            swing suppression for a quadrotor carrying a cable-suspended load.
           </p>
         </div>
-        <a
-          class="button"
-          href="https://ieeexplore.ieee.org/"
-          target="_blank"
-          rel="noreferrer">Publication <ExternalLink size={14} /></a
-        >
+        <div class="project-links">
+          <a
+            class="project-action secondary"
+            href="https://ieeexplore.ieee.org/abstract/document/10055333"
+            target="_blank"
+            rel="noreferrer">Publication <ExternalLink size={14} /></a
+          >
+        </div>
       </div>
       <ul>
-        <li>Modeled trajectory planning for a UAV with a suspended load.</li><li
-        >
-          Explored swing-free trajectory generation with deep reinforcement
-          learning.
-        </li><li>Validated the approach on a physical UAV system.</li>
+        <li>
+          Reduced the coupled, nonlinear, underactuated system to planar motion
+          and built a six-state, Gym-compatible simulator.
+        </li>
+        <li>
+          Combined a discrete action space with DQN, experience replay, and
+          separate main and target networks.
+        </li>
+        <li>
+          Designed a region-approximation exploration reward that progressively
+          balances target distance against payload swing.
+        </li>
+        <li>
+          Converged at about 600 of 850 training episodes; across 20 simulation
+          tests, peak swing stayed within 16° and angular speed within 46°/s.
+        </li>
       </ul>
       <div class="technologies">
-        <span>Reinforcement Learning</span><span>Trajectory Planning</span><span
-          >UAV</span
-        ><span>Python</span>
+        <span>DQN</span><span>Reinforcement Learning</span><span
+          >Trajectory Planning</span
+        ><span>PyTorch</span><span>OpenAI Gym</span>
       </div>
     </article>
   </section>
@@ -121,21 +151,39 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     padding-top: 3rem;
   }
   .project-card {
+    --card-padding: clamp(1.4rem, 4vw, 2.2rem);
     overflow: hidden;
-    padding: clamp(1.4rem, 4vw, 2.2rem);
+    padding: var(--card-padding);
     border: 1px solid var(--line);
     border-radius: 16px;
     background: var(--surface);
   }
+  .project-card.has-cover {
+    display: block;
+  }
   .project-cover {
     display: block;
     overflow: hidden;
-    margin: calc(clamp(1.4rem, 4vw, 2.2rem) * -1);
-    margin-bottom: clamp(1.4rem, 4vw, 2.2rem);
+    margin: calc(var(--card-padding) * -1);
+    margin-bottom: var(--card-padding);
     aspect-ratio: 1200 / 630;
     background: var(--surface-2);
   }
+  .has-cover .project-cover {
+    position: relative;
+    margin: calc(var(--card-padding) * -1);
+    margin-bottom: 0;
+    aspect-ratio: 1200 / 630;
+  }
+  .has-cover .project-cover::after {
+    position: absolute;
+    inset: 50% 0 0;
+    background: linear-gradient(to bottom, transparent 0%, var(--surface) 100%);
+    content: '';
+    pointer-events: none;
+  }
   .project-cover img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -145,9 +193,51 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     transform: scale(1.025);
   }
   .project-head {
+    display: block;
+  }
+  .has-cover .project-head {
+    position: relative;
+    z-index: 1;
+    margin-top: clamp(-7rem, -10vw, -5rem);
+  }
+  .project-links {
     display: flex;
-    justify-content: space-between;
-    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+    margin-top: 1rem;
+  }
+  .project-action {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.42rem 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+    border-radius: 9px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.86rem;
+    font-weight: 650;
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+  .project-action:hover {
+    border-color: color-mix(in srgb, var(--accent) 48%, var(--line));
+    transform: translateY(-1px);
+  }
+  .project-action.secondary {
+    min-height: auto;
+    padding: 0.35rem 0.1rem;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 560;
+  }
+  .project-action.secondary:hover {
+    color: var(--text);
   }
   .project-head span {
     color: var(--accent);
@@ -172,6 +262,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     padding-left: 1.25rem;
     margin: 1.7rem 0;
   }
+  .has-cover > ul {
+    margin: 1.35rem 0;
+  }
   .technologies {
     display: flex;
     flex-wrap: wrap;
@@ -188,8 +281,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     color: var(--line);
   }
   @media (max-width: 640px) {
-    .project-head {
-      flex-direction: column;
+    .has-cover .project-head {
+      margin-top: -4.5rem;
     }
   }
 </style>

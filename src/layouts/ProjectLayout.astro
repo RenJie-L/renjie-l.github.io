@@ -1,0 +1,316 @@
+---
+import { ArrowLeft, ExternalLink } from '@lucide/astro';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { project, headings } = Astro.props;
+const toc = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+---
+
+<BaseLayout
+  title={project.data.title}
+  description={project.data.description}
+  image={project.data.cover?.src}
+  type="article"
+>
+  <article class="project-document" data-pagefind-body>
+    <header class="project-document-header container">
+      <a class="back-link" href="/projects"
+        ><ArrowLeft size={15} /> 返回项目列表</a
+      >
+      <p class="eyebrow">Research Project</p>
+      <h1 data-pagefind-meta="title">{project.data.title}</h1>
+      <p class="description">{project.data.description}</p>
+      <div class="project-meta">
+        <span>{project.data.period}</span>
+        <span>{project.data.role}</span>
+      </div>
+      <div class="project-actions">
+        {
+          project.data.links
+            .filter((link) => link.url.startsWith('http'))
+            .map((link) => (
+              <a
+                class="button"
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {link.label} <ExternalLink size={14} />
+              </a>
+            ))
+        }
+      </div>
+    </header>
+
+    {
+      project.data.cover && (
+        <figure class="project-hero container">
+          <img src={project.data.cover.src} alt={project.data.cover.alt} />
+        </figure>
+      )
+    }
+
+    {
+      toc.length > 0 && (
+        <details class="mobile-toc container">
+          <summary>项目目录</summary>
+          <nav aria-label="项目目录">
+            {toc.map((heading) => (
+              <a class={`depth-${heading.depth}`} href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
+            ))}
+          </nav>
+        </details>
+      )
+    }
+
+    <div class="project-document-grid container">
+      <div class="project-prose"><slot /></div>
+      {
+        toc.length > 0 && (
+          <aside class="desktop-toc">
+            <p>目录</p>
+            <nav aria-label="项目目录">
+              {toc.map((heading) => (
+                <a class={`depth-${heading.depth}`} href={`#${heading.slug}`}>
+                  {heading.text}
+                </a>
+              ))}
+            </nav>
+          </aside>
+        )
+      }
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .project-document-header {
+    max-width: 900px;
+    padding-top: clamp(4rem, 9vw, 7rem);
+    padding-bottom: 2.5rem;
+    text-align: center;
+  }
+  .project-document-header .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 2.5rem;
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+  .project-document-header h1 {
+    margin: 0.75rem auto 1.25rem;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    text-wrap: balance;
+  }
+  .project-document-header .description {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .project-meta,
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1rem;
+  }
+  .project-meta {
+    margin-top: 1.25rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+  .project-meta span + span::before {
+    content: '·';
+    margin-right: 1rem;
+  }
+  .project-actions {
+    margin-top: 1.25rem;
+  }
+  .project-hero {
+    overflow: hidden;
+    max-width: 1120px;
+    margin-bottom: 4rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--surface-2);
+  }
+  .project-hero img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1200 / 630;
+    object-fit: cover;
+  }
+  .project-document-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 760px) 220px;
+    justify-content: center;
+    gap: 4.5rem;
+    align-items: start;
+  }
+  .desktop-toc {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+  }
+  .desktop-toc > p {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .desktop-toc nav,
+  .mobile-toc nav {
+    display: grid;
+    gap: 0.45rem;
+  }
+  .desktop-toc a,
+  .mobile-toc a {
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+  .desktop-toc a:hover {
+    color: var(--accent);
+  }
+  .desktop-toc .depth-3,
+  .mobile-toc .depth-3 {
+    padding-left: 0.75rem;
+  }
+  .mobile-toc {
+    display: none;
+  }
+  .project-prose {
+    min-width: 0;
+    font-size: 1.04rem;
+  }
+  .project-prose h2,
+  .project-prose h3 {
+    scroll-margin-top: 6rem;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+  }
+  .project-prose h2 {
+    margin: 3.5rem 0 1rem;
+    font-size: 1.65rem;
+  }
+  .project-prose h2:first-child {
+    margin-top: 0;
+  }
+  .project-prose h3 {
+    margin: 2.25rem 0 0.75rem;
+    font-size: 1.2rem;
+  }
+  .project-prose p,
+  .project-prose li {
+    color: color-mix(in srgb, var(--text) 82%, var(--muted));
+  }
+  .project-prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    text-underline-offset: 0.18em;
+  }
+  .project-prose blockquote {
+    margin: 1.5rem 0;
+    padding: 0.85rem 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 10px 10px 0;
+  }
+  .project-prose blockquote p {
+    margin: 0;
+  }
+  .project-prose pre {
+    overflow-x: auto;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--code);
+  }
+  .project-prose :not(pre) > code {
+    padding: 0.12rem 0.35rem;
+    border-radius: 5px;
+    background: var(--code);
+    font-size: 0.9em;
+  }
+  .project-prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border-collapse: collapse;
+  }
+  .project-prose th,
+  .project-prose td {
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--line);
+    text-align: left;
+  }
+  .project-prose th {
+    background: var(--surface-2);
+  }
+  @media (max-width: 900px) {
+    .project-document-grid {
+      display: block;
+    }
+    .desktop-toc {
+      display: none;
+    }
+    .mobile-toc {
+      display: block;
+      margin-bottom: 2.5rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+    .mobile-toc summary {
+      cursor: pointer;
+      font-weight: 650;
+    }
+    .mobile-toc nav {
+      margin-top: 1rem;
+    }
+  }
+  @media (max-width: 640px) {
+    .project-document-header {
+      text-align: left;
+    }
+    .project-document-header h1 {
+      font-size: 2.35rem;
+    }
+    .project-document-header .description {
+      font-size: 1rem;
+    }
+    .project-meta,
+    .project-actions {
+      justify-content: flex-start;
+    }
+    .project-meta span + span::before {
+      display: none;
+    }
+    .project-hero {
+      width: calc(100% - 2rem);
+      border-radius: 12px;
+    }
+  }
+</style>
