@@ -7,6 +7,8 @@ const SPLAT_URL =
 
 type ProgressCallback = (progress: number, status: string) => void;
 
+const MOVEMENT_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE']);
+
 export class GaussianSplatScene {
   private readonly root: HTMLElement;
   private readonly canvas: HTMLCanvasElement;
@@ -20,8 +22,39 @@ export class GaussianSplatScene {
   private frameId = 0;
   private disposed = false;
   private autoRotate = true;
+  private movementSpeed = 1;
+  private readonly pressedKeys = new Set<string>();
+  private readonly moveDirection = new THREE.Vector3();
+  private readonly forwardDirection = new THREE.Vector3();
+  private readonly rightDirection = new THREE.Vector3();
   private defaultCameraPosition = new THREE.Vector3(0, 0, 5);
   private defaultTarget = new THREE.Vector3();
+
+  private readonly handleKeyDown = (event: KeyboardEvent) => {
+    if (!MOVEMENT_KEYS.has(event.code)) return;
+    const target = event.target as HTMLElement | null;
+    if (
+      target?.matches('input, textarea, select') ||
+      target?.isContentEditable
+    ) {
+      return;
+    }
+    event.preventDefault();
+    this.stopAutoRotate();
+    this.pressedKeys.add(event.code);
+  };
+
+  private readonly handleKeyUp = (event: KeyboardEvent) => {
+    this.pressedKeys.delete(event.code);
+  };
+
+  private readonly clearPressedKeys = () => {
+    this.pressedKeys.clear();
+  };
+
+  private readonly stopAutoRotate = () => {
+    this.setAutoRotate(false);
+  };
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -48,6 +81,7 @@ export class GaussianSplatScene {
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.075;
+    this.controls.rotateSpeed = -1;
     this.controls.screenSpacePanning = true;
     this.controls.autoRotate = this.autoRotate;
     this.controls.autoRotateSpeed = 0.55;
@@ -76,6 +110,7 @@ export class GaussianSplatScene {
     onProgress(90, 'Entering the capture point…');
     this.frameSplat();
     this.setupResize();
+    this.setupInput();
     this.resize();
     onProgress(100, 'Scene ready');
   }
@@ -98,6 +133,7 @@ export class GaussianSplatScene {
     const eyeOffsetX = size.x * -0.12;
     this.camera.near = Math.max(sceneScale / 10_000, 0.001);
     this.camera.far = Math.max(sceneScale * 12, 100);
+    this.movementSpeed = sceneScale * 0.04;
     this.camera.updateProjectionMatrix();
 
     this.defaultTarget.set(eyeOffsetX, eyeHeight, -lookRadius);
@@ -108,6 +144,53 @@ export class GaussianSplatScene {
     this.controls.minDistance = lookRadius * 0.35;
     this.controls.maxDistance = sceneScale * 0.22;
     this.controls.update();
+  }
+
+  private setupInput() {
+    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('keyup', this.handleKeyUp);
+    window.addEventListener('blur', this.clearPressedKeys);
+    this.controls?.addEventListener('start', this.stopAutoRotate);
+  }
+
+  private updateKeyboardMovement(deltaTime: number) {
+    if (!this.controls || this.pressedKeys.size === 0) return;
+
+    this.camera.getWorldDirection(this.forwardDirection);
+    this.forwardDirection.y = 0;
+    if (this.forwardDirection.lengthSq() < 0.0001) {
+      this.forwardDirection.set(0, 0, -1);
+    } else {
+      this.forwardDirection.normalize();
+    }
+
+    this.rightDirection.set(1, 0, 0).applyQuaternion(this.camera.quaternion);
+    this.rightDirection.y = 0;
+    this.rightDirection.normalize();
+
+    this.moveDirection.set(0, 0, 0);
+    if (this.pressedKeys.has('KeyW')) {
+      this.moveDirection.add(this.forwardDirection);
+    }
+    if (this.pressedKeys.has('KeyS')) {
+      this.moveDirection.sub(this.forwardDirection);
+    }
+    if (this.pressedKeys.has('KeyD')) {
+      this.moveDirection.add(this.rightDirection);
+    }
+    if (this.pressedKeys.has('KeyA')) {
+      this.moveDirection.sub(this.rightDirection);
+    }
+    if (this.pressedKeys.has('KeyQ')) this.moveDirection.y += 1;
+    if (this.pressedKeys.has('KeyE')) this.moveDirection.y -= 1;
+    if (this.moveDirection.lengthSq() === 0) return;
+
+    this.stopAutoRotate();
+    this.moveDirection
+      .normalize()
+      .multiplyScalar(this.movementSpeed * deltaTime);
+    this.camera.position.add(this.moveDirection);
+    this.controls.target.add(this.moveDirection);
   }
 
   private setupResize() {
@@ -125,13 +208,17 @@ export class GaussianSplatScene {
   }
 
   start() {
-    const render = () => {
+    let previousTime = performance.now();
+    const render = (time: number) => {
       if (this.disposed || !this.renderer) return;
+      const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
+      previousTime = time;
+      this.updateKeyboardMovement(deltaTime);
       this.controls?.update();
       this.renderer.render(this.scene, this.camera);
       this.frameId = requestAnimationFrame(render);
     };
-    render();
+    render(previousTime);
   }
 
   resetView() {
@@ -142,14 +229,29 @@ export class GaussianSplatScene {
   }
 
   toggleAutoRotate() {
-    this.autoRotate = !this.autoRotate;
-    if (this.controls) this.controls.autoRotate = this.autoRotate;
+    this.setAutoRotate(!this.autoRotate);
     return this.autoRotate;
+  }
+
+  private setAutoRotate(enabled: boolean) {
+    if (this.autoRotate === enabled) return;
+    this.autoRotate = enabled;
+    if (this.controls) this.controls.autoRotate = enabled;
+    this.root.dispatchEvent(
+      new CustomEvent<boolean>('splat-auto-rotate-change', {
+        detail: enabled,
+      }),
+    );
   }
 
   destroy() {
     this.disposed = true;
     cancelAnimationFrame(this.frameId);
+    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('keyup', this.handleKeyUp);
+    window.removeEventListener('blur', this.clearPressedKeys);
+    this.controls?.removeEventListener('start', this.stopAutoRotate);
+    this.clearPressedKeys();
     this.resizeObserver?.disconnect();
     this.controls?.dispose();
     this.splat?.dispose();

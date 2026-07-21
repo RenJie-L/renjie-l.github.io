@@ -27,7 +27,7 @@ const copy = isEnglish
       enter: 'Load 3D scene',
       note: 'SPZ · Spark · Three.js · 7.6 MB',
       loading: 'Loading spatial scene',
-      interaction: 'Drag to look around · Scroll to adjust distance',
+      interaction: 'Drag to look · WASD move · Q/E ascend/descend',
       reset: 'Reset view',
       pause: 'Pause rotation',
       play: 'Auto rotate',
@@ -44,7 +44,7 @@ const copy = isEnglish
       enter: '加载 3D 场景',
       note: 'SPZ · Spark · Three.js · 7.6 MB',
       loading: '正在加载空间场景',
-      interaction: '拖动环视 · 滚轮微调距离',
+      interaction: '拖动环视 · WASD 移动 · Q 上升 / E 下降',
       reset: '重置视角',
       pause: '暂停旋转',
       play: '自动旋转',
@@ -148,6 +148,23 @@ const copy = isEnglish
     const loadBar = root.querySelector<HTMLElement>('[data-load-bar]');
     const loadValue = root.querySelector<HTMLElement>('[data-load-value]');
     const loadStatus = root.querySelector<HTMLElement>('[data-load-status]');
+    const rotationButton = root.querySelector<HTMLButtonElement>(
+      '[data-toggle-rotation]',
+    );
+
+    const updateRotationButton = (playing: boolean) => {
+      if (!rotationButton) return;
+      const playLabel = rotationButton.dataset.playLabel ?? 'Auto rotate';
+      const pauseLabel = rotationButton.dataset.pauseLabel ?? 'Pause rotation';
+      rotationButton.dataset.playing = String(playing);
+      rotationButton.title = playing ? pauseLabel : playLabel;
+      const label = rotationButton.querySelector('[data-rotation-label]');
+      if (label) label.textContent = playing ? pauseLabel : playLabel;
+    };
+
+    root.addEventListener('splat-auto-rotate-change', (event) => {
+      updateRotationButton((event as CustomEvent<boolean>).detail);
+    });
 
     loadButton?.addEventListener('click', async () => {
       loadButton.disabled = true;
@@ -179,18 +196,9 @@ const copy = isEnglish
     root.querySelector('[data-reset-view]')?.addEventListener('click', () => {
       splatScene?.resetView();
     });
-    root
-      .querySelector('[data-toggle-rotation]')
-      ?.addEventListener('click', (event) => {
-        const button = event.currentTarget as HTMLButtonElement;
-        const playing = splatScene?.toggleAutoRotate() ?? false;
-        const playLabel = button.dataset.playLabel ?? 'Auto rotate';
-        const pauseLabel = button.dataset.pauseLabel ?? 'Pause rotation';
-        button.dataset.playing = String(playing);
-        button.title = playing ? pauseLabel : playLabel;
-        const label = button.querySelector('[data-rotation-label]');
-        if (label) label.textContent = playing ? pauseLabel : playLabel;
-      });
+    rotationButton?.addEventListener('click', () => {
+      splatScene?.toggleAutoRotate();
+    });
     root.querySelector('[data-fullscreen]')?.addEventListener('click', () => {
       if (document.fullscreenElement) void document.exitFullscreen();
       else void root.requestFullscreen();
