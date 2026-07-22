@@ -1,4 +1,4 @@
-﻿---
+---
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 import SearchDialog from '@/components/SearchDialog.astro';
@@ -96,11 +96,17 @@ const enUrl = new URL(
     <ClientRouter />
     <script is:inline>
       (() => {
-        const saved = localStorage.getItem('theme');
-        const dark =
-          saved === 'dark' ||
-          (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
-        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        // 应用主题：优先读取用户选择，否则回退到系统偏好
+        const applyTheme = () => {
+          const saved = localStorage.getItem('theme');
+          const dark =
+            saved === 'dark' ||
+            (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        };
+        applyTheme();
+        // 视图过渡完成、浏览器绘制前重新应用主题，避免切换语言时主题丢失或闪烁
+        document.addEventListener('astro:after-swap', applyTheme);
       })();
     </script>
   </head>
@@ -109,25 +115,41 @@ const enUrl = new URL(
     <main id="main-content"><slot /></main>
     {!immersive && <Footer {locale} />}
     {!immersive && <SearchDialog {locale} />}
-    <script is:inline>
-      const themeButton = document.querySelector('.theme-toggle');
-      themeButton?.addEventListener('click', () => {
-        const next =
-          document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-        document.documentElement.dataset.theme = next;
-        localStorage.setItem('theme', next);
-      });
-      const menuButton = document.querySelector('.menu-toggle');
-      const menu = document.querySelector('#mobile-menu');
-      menuButton?.addEventListener('click', () => {
-        const open = menuButton.getAttribute('aria-expanded') !== 'true';
-        menuButton.setAttribute('aria-expanded', String(open));
-        menuButton.setAttribute(
-          'aria-label',
-          open ? menuButton.dataset.closeLabel : menuButton.dataset.openLabel,
-        );
-        menu.toggleAttribute('hidden', !open);
-      });
+    <script>
+      // 初始化 Header 交互控件（主题切换、移动端菜单）
+      function setupHeaderControls() {
+        const themeButton =
+          document.querySelector<HTMLButtonElement>('.theme-toggle');
+
+        themeButton?.addEventListener('click', () => {
+          const next =
+            document.documentElement.dataset.theme === 'dark'
+              ? 'light'
+              : 'dark';
+          document.documentElement.dataset.theme = next;
+          localStorage.setItem('theme', next);
+        });
+
+        const menuButton =
+          document.querySelector<HTMLButtonElement>('.menu-toggle');
+        const menu = document.querySelector<HTMLElement>('#mobile-menu');
+
+        menuButton?.addEventListener('click', () => {
+          if (!menu) return;
+          const open = menuButton.getAttribute('aria-expanded') !== 'true';
+          menuButton.setAttribute('aria-expanded', String(open));
+          menuButton.setAttribute(
+            'aria-label',
+            open
+              ? (menuButton.dataset.closeLabel ?? '')
+              : (menuButton.dataset.openLabel ?? ''),
+          );
+          menu.toggleAttribute('hidden', !open);
+        });
+      }
+
+      // 首次加载及每次 ClientRouter 导航结束后触发，确保绑定到最新的 Header 节点
+      document.addEventListener('astro:page-load', setupHeaderControls);
     </script>
   </body>
 </html>

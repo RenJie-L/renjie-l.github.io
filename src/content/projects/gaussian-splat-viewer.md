@@ -11,7 +11,7 @@ highlights:
 links:
   - label: '进入场景'
     url: '/experiments/gaussian-splat'
-featured: false
+featured: true
 ---
 
 一个面向 3D Gaussian Splatting 的独立实验页，验证压缩 SPZ 场景在静态 Astro 网站中的加载、渲染和交互体验。

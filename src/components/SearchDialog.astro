@@ -1,4 +1,4 @@
-﻿---
+---
 import { type Locale, ui } from '@/i18n/config';
 
 interface Props {
@@ -28,51 +28,69 @@ const t = ui[locale];
 </dialog>
 
 <script>
-  let initialized = false;
-  const dialog = document.querySelector<HTMLDialogElement>('.search-dialog');
-  const openSearch = async () => {
-    if (!dialog) return;
-    dialog.showModal();
-    document.body.classList.add('dialog-open');
-    if (!initialized) {
-      try {
-        const { PagefindUI } = await import('@pagefind/default-ui');
-        new PagefindUI({
-          element: '#search',
-          showSubResults: true,
-          showImages: false,
-          translations: {
-            placeholder: dialog.dataset.placeholder ?? '',
-            zero_results: dialog.dataset.empty ?? '',
-          },
-        });
-        initialized = true;
-      } catch {
-        document.querySelector('#search')!.textContent =
-          dialog.dataset.unavailable ?? '';
-      }
+  // 持有当前页面对应的打开搜索函数，供全局 Cmd/Ctrl + K 快捷键调用
+  let openSearch: (() => void) | null = null;
+
+  // 初始化搜索弹窗：查询当前页面节点并绑定事件
+  function setupSearchDialog() {
+    const dialog = document.querySelector<HTMLDialogElement>('.search-dialog');
+    if (!dialog) {
+      openSearch = null;
+      return;
     }
-    setTimeout(
-      () => dialog.querySelector<HTMLInputElement>('input')?.focus(),
-      50,
+
+    const handleOpen = async () => {
+      dialog.showModal();
+      document.body.classList.add('dialog-open');
+      // 标记存放在节点 dataset 上：导航后 dialog 被替换，标记随之重置，确保重新初始化
+      if (!dialog.dataset.initialized) {
+        try {
+          const { PagefindUI } = await import('@pagefind/default-ui');
+          new PagefindUI({
+            element: '#search',
+            showSubResults: true,
+            showImages: false,
+            translations: {
+              placeholder: dialog.dataset.placeholder ?? '',
+              zero_results: dialog.dataset.empty ?? '',
+            },
+          });
+          dialog.dataset.initialized = 'true';
+        } catch {
+          const searchEl = document.querySelector('#search');
+          if (searchEl) searchEl.textContent = dialog.dataset.unavailable ?? '';
+        }
+      }
+      setTimeout(
+        () => dialog.querySelector<HTMLInputElement>('input')?.focus(),
+        50,
+      );
+    };
+
+    openSearch = handleOpen;
+
+    document
+      .querySelector('.search-trigger')
+      ?.addEventListener('click', handleOpen);
+    document
+      .querySelector('.search-close')
+      ?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () =>
+      document.body.classList.remove('dialog-open'),
     );
-  };
-  document
-    .querySelector('.search-trigger')
-    ?.addEventListener('click', openSearch);
-  document
-    .querySelector('.search-close')
-    ?.addEventListener('click', () => dialog?.close());
-  dialog?.addEventListener('close', () =>
-    document.body.classList.remove('dialog-open'),
-  );
-  dialog?.addEventListener('click', (event) => {
-    if (event.target === dialog) dialog.close();
-  });
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  }
+
+  // 首次加载及每次 ClientRouter 导航结束后触发，绑定到最新的 dialog 节点
+  document.addEventListener('astro:page-load', setupSearchDialog);
+
+  // 全局快捷键只注册一次，通过 openSearch 引用调用当前页面的处理函数
   document.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
-      openSearch();
+      openSearch?.();
     }
   });
 </script>

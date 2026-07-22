@@ -27,7 +27,7 @@ export const ui = {
     menuClose: '关闭导航',
     language: 'Switch to English',
     languageShort: 'EN',
-    footerTagline: '持续学习，持续构建。',
+    footerTagline: '无限进步',
   },
   en: {
     nav: {
@@ -50,9 +50,9 @@ export const ui = {
     theme: 'Switch color theme',
     menuOpen: 'Open navigation',
     menuClose: 'Close navigation',
-    language: '切换到中文',
+    language: 'Switch to Chinese',
     languageShort: '中',
-    footerTagline: 'Keep learning. Keep building.',
+    footerTagline: 'Infinite progress',
   },
 } as const;
 
