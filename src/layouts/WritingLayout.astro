@@ -344,6 +344,14 @@ const toc = headings.filter(
     font-size: 0.86rem;
     box-shadow: none;
   }
+  [data-theme='dark'] .prose .astro-code,
+  [data-theme='dark'] .prose .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
   .prose :not(pre) > code {
     padding: 0.15em 0.35em;
     background: var(--code);

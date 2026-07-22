@@ -1,7 +1,7 @@
 ---
 title: '3D Gaussian Splat 场景浏览器'
 description: '基于 Spark 与 Three.js，在浏览器中直接加载并探索 SPZ 格式的三维高斯场景。'
-period: '2026.07 — 至今'
+period: '2026.01 — 至今'
 role: 'Creative Developer'
 technologies: ['3DGS', 'SPZ', 'Spark', 'Three.js', 'Astro']
 highlights:
