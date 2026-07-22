@@ -30,7 +30,8 @@ const t = ui[locale];
           >GitHub</a
         >
       </nav>
-      <p class="site-stats" aria-live="polite">
+      <!-- 保留统计节点继续累计数据，访问量达到展示条件后移除 hidden 即可。 -->
+      <p class="site-stats" aria-live="polite" hidden>
         <span id="busuanzi_container_site_pv" style="display: none;">
           {locale === 'en' ? 'Total views' : '总访问量'}
           <span id="busuanzi_value_site_pv"></span>
