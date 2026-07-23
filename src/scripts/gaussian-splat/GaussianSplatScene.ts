@@ -121,6 +121,10 @@ export class GaussianSplatScene {
     onProgress(8, 'Downloading 7.6 MB SPZ scene…');
     this.splat = new SplatMesh({
       url: SPLAT_URL,
+      // 构建 LoD 数据，否则面板中的细节层次与注视点参数没有作用。
+      lod: true,
+      // 同时保留原始 splat，供包围盒取景与关闭 LoD 时使用。
+      nonLod: true,
       onProgress: (event) => {
         const ratio = event.lengthComputable
           ? event.loaded / event.total
@@ -271,7 +275,7 @@ export class GaussianSplatScene {
       maxSh: number;
       updateGenerator: () => void;
     };
-    const spark = this.spark as SparkRenderer & Record<string, unknown>;
+    const spark = this.spark;
 
     if (params.opacity !== undefined) splat.opacity = params.opacity;
     if (params.recolor !== undefined) {
@@ -309,6 +313,20 @@ export class GaussianSplatScene {
     }
     if (params.sortRadial !== undefined) spark.sortRadial = params.sortRadial;
     if (params.enable2DGS !== undefined) spark.enable2DGS = params.enable2DGS;
+
+    // LoD 参数需要显式标记遍历结果失效；排序模式也需要触发重排。
+    if (
+      params.lodSplatScale !== undefined ||
+      params.lodRenderScale !== undefined ||
+      params.coneFov0 !== undefined ||
+      params.coneFov !== undefined ||
+      params.coneFoveate !== undefined ||
+      params.behindFoveate !== undefined
+    ) {
+      spark.lodDirty = true;
+    }
+    if (params.sortRadial !== undefined) spark.sortDirty = true;
+    spark.setDirty();
   }
 
   private setAutoRotate(enabled: boolean) {

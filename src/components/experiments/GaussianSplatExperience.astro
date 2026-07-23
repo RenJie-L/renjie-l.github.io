@@ -279,8 +279,9 @@ const copy = isEnglish
         </label>
         <label class="field">
           <span class="field-label">{copy.panel.minPixelRadius}</span>
+          <span class="field-value" data-value-for="minPixelRadius">0</span>
           <input
-            type="number"
+            type="range"
             min="0"
             max="16"
             step="0.5"
@@ -289,8 +290,9 @@ const copy = isEnglish
         </label>
         <label class="field">
           <span class="field-label">{copy.panel.maxPixelRadius}</span>
+          <span class="field-value" data-value-for="maxPixelRadius">512</span>
           <input
-            type="number"
+            type="range"
             min="16"
             max="1024"
             step="1"
@@ -471,11 +473,6 @@ const copy = isEnglish
       if (label) label.textContent = playing ? pauseLabel : playLabel;
     };
 
-    const updatePanelAria = (open: boolean) => {
-      if (!panelEl) return;
-      panelEl.setAttribute('aria-hidden', String(!open));
-    };
-
     root.addEventListener('splat-auto-rotate-change', (event) => {
       updateRotationButton((event as CustomEvent<boolean>).detail);
     });
@@ -499,6 +496,7 @@ const copy = isEnglish
         splatPanel = new GaussianSplatPanel(root, (p) =>
           splatScene?.applyParams(p),
         );
+        panelEl?.setAttribute('aria-hidden', 'false');
         root.dataset.state = 'active';
         intro?.setAttribute('hidden', '');
         loader?.setAttribute('hidden', '');
@@ -520,11 +518,10 @@ const copy = isEnglish
       splatScene?.toggleAutoRotate();
     });
     root.querySelector('[data-toggle-panel]')?.addEventListener('click', () => {
-      const open = splatPanel?.toggle();
-      updatePanelAria(Boolean(open));
+      splatPanel?.toggle();
     });
     root.querySelector('[data-close-panel]')?.addEventListener('click', () => {
-      if (splatPanel && splatPanel.toggle() === false) updatePanelAria(false);
+      splatPanel?.setOpen(false);
     });
     root.querySelector('[data-fullscreen]')?.addEventListener('click', () => {
       if (document.fullscreenElement) void document.exitFullscreen();
@@ -566,6 +563,25 @@ const copy = isEnglish
     color: #f5f4ef;
     background: #090b0f;
   }
+  .splat-experience::before {
+    position: absolute;
+    z-index: -3;
+    inset: 0;
+    background:
+      url('//qhstaticssl.kujiale.com/image/png/1784796389707/2AD7DC892E5ED414DBC4BC20F6BEF4D6.png?imageMogr2/format/webp')
+        center / cover no-repeat,
+      #090b0f;
+    content: '';
+    opacity: 0.9;
+    transform: scale(1.015);
+    transition:
+      opacity 0.8s ease,
+      transform 1.4s ease;
+  }
+  [data-state='active'].splat-experience::before {
+    opacity: 0;
+    transform: scale(1);
+  }
   [data-splat-canvas],
   .ambient {
     position: absolute;
@@ -588,14 +604,15 @@ const copy = isEnglish
     background:
       radial-gradient(
         circle at 72% 22%,
-        rgb(76 107 113 / 16%),
+        rgb(76 107 113 / 10%),
         transparent 38%
       ),
       linear-gradient(
         90deg,
         rgb(9 11 15 / 96%) 0%,
-        rgb(9 11 15 / 58%) 52%,
-        transparent 78%
+        rgb(9 11 15 / 88%) 34%,
+        rgb(9 11 15 / 34%) 62%,
+        rgb(9 11 15 / 8%) 100%
       );
   }
   [data-state='active'] .ambient {
