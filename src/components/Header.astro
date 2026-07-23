@@ -1,6 +1,5 @@
 ---
 import { Menu, Moon, Search, Sun, X } from '@lucide/astro';
-import GithubIcon from '@/components/GithubIcon.astro';
 import { localizedPath, type Locale, ui } from '@/i18n/config';
 
 interface Props {
@@ -57,13 +56,6 @@ const links = [
         aria-label={t.language}
         title={t.language}>{t.languageShort}</a
       >
-      <a
-        class="icon-button desktop-github"
-        href="https://github.com/RenJie-L"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="GitHub"><GithubIcon size={18} /></a
-      >
       <button
         class="icon-button menu-toggle"
         aria-expanded="false"
@@ -80,9 +72,6 @@ const links = [
   </div>
   <nav id="mobile-menu" class="mobile-menu" aria-label={t.mobileNav} hidden>
     {links.map(({ href, label }) => <a href={href}>{label}</a>)}
-    <a href="https://github.com/RenJie-L" target="_blank" rel="noreferrer"
-      >GitHub</a
-    >
     <a href={languageHref} lang={locale === 'en' ? 'zh-CN' : 'en'}
       >{t.language}</a
     >

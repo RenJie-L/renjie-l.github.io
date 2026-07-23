@@ -390,8 +390,10 @@ img {
 }
 .search-dialog {
   width: min(92vw, 680px);
+  max-height: calc(100dvh - 2 * clamp(1rem, 5dvh, 3rem));
   padding: 0;
-  margin: 12vh auto auto;
+  margin: clamp(1rem, 5dvh, 3rem) auto;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface);
@@ -403,6 +405,9 @@ img {
   backdrop-filter: blur(4px);
 }
 .search-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
   padding: 1rem;
   min-height: 220px;
 }
@@ -430,6 +435,23 @@ img {
   --pagefind-ui-background: var(--surface);
   --pagefind-ui-border: var(--line);
   --pagefind-ui-tag: var(--surface-2);
+}
+#search {
+  min-height: 0;
+  overflow: hidden;
+}
+#search .pagefind-ui {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+#search .pagefind-ui__form {
+  flex: none;
+}
+#search .pagefind-ui__drawer {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .empty-state {
   color: var(--muted);
@@ -480,7 +502,8 @@ img {
     text-align: left;
   }
   .search-dialog {
-    margin: 5vh auto auto;
+    max-height: calc(100dvh - 2rem);
+    margin: 1rem auto;
   }
 }
 

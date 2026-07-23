@@ -2,7 +2,6 @@
 import { ArrowRight, Bot, Braces, Sparkles, Wrench } from '@lucide/astro';
 import { getCollection } from 'astro:content';
 import ArticleCard from '@/components/ArticleCard.astro';
-import GithubIcon from '@/components/GithubIcon.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { byNewest, publishedOnly } from '@/lib/content';
 
@@ -50,12 +49,7 @@ const directions = [
       <div class="hero-actions">
         <a class="button primary" href="/writing"
           >查看文章 <ArrowRight size={16} /></a
-        ><a class="button" href="/about">了解我</a><a
-          class="button"
-          href="https://github.com/RenJie-L"
-          target="_blank"
-          rel="noreferrer"><GithubIcon size={16} /> GitHub</a
-        >
+        ><a class="button" href="/about">了解我</a>
       </div>
     </div>
     <div class="hero-signal" aria-hidden="true">
