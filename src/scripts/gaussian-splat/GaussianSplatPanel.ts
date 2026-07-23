@@ -48,8 +48,10 @@ export class GaussianSplatPanel {
   private readonly panel: HTMLElement;
   private readonly apply: ApplyFn;
   private readonly state: GaussianParams;
-  private fastTimer: ReturnType<typeof setTimeout> | undefined;
-  private slowTimer: ReturnType<typeof setTimeout> | undefined;
+  private readonly applyTimers = new Map<
+    keyof GaussianParams,
+    ReturnType<typeof setTimeout>
+  >();
 
   constructor(root: HTMLElement, apply: ApplyFn) {
     this.apply = apply;
@@ -60,19 +62,26 @@ export class GaussianSplatPanel {
     this.state = this.loadState();
     this.bindControls();
     this.reflectState();
+    // 场景加载完成后默认展开，参数变化可以直接与画面对照。
+    this.setOpen(true);
     // 初始一次性下发，确保渲染器状态与持久化值一致。
     this.apply(this.state);
   }
 
   toggle(): boolean {
     const open = this.panel.dataset.open !== 'true';
+    return this.setOpen(open);
+  }
+
+  setOpen(open: boolean): boolean {
     this.panel.dataset.open = String(open);
+    this.panel.setAttribute('aria-hidden', String(!open));
     return open;
   }
 
   dispose(): void {
-    if (this.fastTimer) clearTimeout(this.fastTimer);
-    if (this.slowTimer) clearTimeout(this.slowTimer);
+    for (const timer of this.applyTimers.values()) clearTimeout(timer);
+    this.applyTimers.clear();
   }
 
   private loadState(): GaussianParams {
@@ -210,19 +219,17 @@ export class GaussianSplatPanel {
 
   private scheduleApply(key: keyof GaussianParams): void {
     this.refreshValueLabels();
-    if (EXPENSIVE_KEYS.has(key)) {
-      if (this.slowTimer) clearTimeout(this.slowTimer);
-      this.slowTimer = setTimeout(
-        () => this.apply({ [key]: this.state[key] }),
-        200,
-      );
-    } else {
-      if (this.fastTimer) clearTimeout(this.fastTimer);
-      this.fastTimer = setTimeout(
-        () => this.apply({ [key]: this.state[key] }),
-        50,
-      );
-    }
+    const pending = this.applyTimers.get(key);
+    if (pending) clearTimeout(pending);
+
+    // 每个参数独立 debounce。共用计时器会让快速连续调整不同参数时，
+    // 前一个参数的渲染更新被后一个参数取消。
+    const delay = EXPENSIVE_KEYS.has(key) ? 200 : 50;
+    const timer = setTimeout(() => {
+      this.applyTimers.delete(key);
+      this.apply({ [key]: this.state[key] });
+    }, delay);
+    this.applyTimers.set(key, timer);
   }
 
   private reset(): void {

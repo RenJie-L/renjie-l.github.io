@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "npm run check:images && astro build && pagefind --site dist",
+    "check:images": "node scripts/check-image-urls.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint .",
