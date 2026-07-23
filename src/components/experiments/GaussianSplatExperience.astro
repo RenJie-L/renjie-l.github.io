@@ -7,6 +7,8 @@ import {
   Pause,
   Play,
   RotateCcw,
+  SlidersHorizontal,
+  X,
 } from '@lucide/astro';
 import type { Locale } from '@/i18n/config';
 
@@ -34,6 +36,37 @@ const copy = isEnglish
       fullscreen: 'Fullscreen',
       failed:
         'The scene could not be loaded. Check WebGL support and try again.',
+      panel: {
+        toggle: 'Tune',
+        title: 'Gaussian Parameters',
+        reset: 'Reset to defaults',
+        close: 'Close',
+        sectionAppearance: 'Appearance',
+        opacity: 'Opacity',
+        recolor: 'Tint',
+        maxSh: 'SH degree',
+        sectionRender: 'Rendering',
+        maxStdDev: 'Gaussian extent',
+        focalAdjustment: 'Sharpness',
+        falloff: 'Falloff',
+        minAlpha: 'Alpha cutoff',
+        minPixelRadius: 'Min pixel radius',
+        maxPixelRadius: 'Max pixel radius',
+        preBlurAmount: 'Pre-blur',
+        sortRadial: 'Radial sorting',
+        enable2DGS: '2D Gaussians',
+        sectionLod: 'Level of Detail',
+        lodSplatScale: 'Detail scale',
+        lodRenderScale: 'Min splat pixels',
+        sectionDof: 'Depth of Field',
+        focalDistance: 'Focus distance',
+        apertureAngle: 'Aperture angle',
+        sectionFoveation: 'Foveation',
+        coneFov0: 'Full-res cone',
+        coneFov: 'Falloff cone',
+        coneFoveate: 'Edge scale',
+        behindFoveate: 'Behind scale',
+      },
     }
   : {
       back: '返回项目',
@@ -50,6 +83,37 @@ const copy = isEnglish
       play: '自动旋转',
       fullscreen: '全屏',
       failed: '场景加载失败，请检查浏览器 WebGL 支持后重试。',
+      panel: {
+        toggle: '调参',
+        title: '高斯参数',
+        reset: '恢复默认',
+        close: '关闭',
+        sectionAppearance: '外观',
+        opacity: '不透明度',
+        recolor: '染色',
+        maxSh: '球谐阶数',
+        sectionRender: '渲染',
+        maxStdDev: '高斯延展',
+        focalAdjustment: '锐度',
+        falloff: '衰减',
+        minAlpha: 'Alpha 截断',
+        minPixelRadius: '最小像素半径',
+        maxPixelRadius: '最大像素半径',
+        preBlurAmount: '预模糊',
+        sortRadial: '径向排序',
+        enable2DGS: '2D 高斯',
+        sectionLod: '细节层次',
+        lodSplatScale: '细节倍率',
+        lodRenderScale: '最小像素',
+        sectionDof: '景深',
+        focalDistance: '对焦距离',
+        apertureAngle: '光圈角度',
+        sectionFoveation: '注视点',
+        coneFov0: '全分辨率锥角',
+        coneFov: '衰减锥角',
+        coneFoveate: '边缘缩放',
+        behindFoveate: '后方缩放',
+      },
     };
 ---
 
@@ -116,11 +180,242 @@ const copy = isEnglish
         <Play class="play-icon" size={16} />
         <span data-rotation-label>{copy.pause}</span>
       </button>
+      <button type="button" data-toggle-panel title={copy.panel.toggle}>
+        <SlidersHorizontal size={16} /><span>{copy.panel.toggle}</span>
+      </button>
       <button type="button" data-fullscreen title={copy.fullscreen}>
         <Expand size={16} /><span>{copy.fullscreen}</span>
       </button>
     </div>
   </div>
+
+  <aside class="splat-panel" data-splat-panel data-open="false" aria-hidden="true">
+    <header class="panel-head">
+      <h2>{copy.panel.title}</h2>
+      <button type="button" data-close-panel title={copy.panel.close}>
+        <X size={16} />
+      </button>
+    </header>
+
+    <div class="panel-body">
+      <section class="panel-group">
+        <h3>{copy.panel.sectionAppearance}</h3>
+        <label class="field">
+          <span class="field-label">{copy.panel.opacity}</span>
+          <span class="field-value" data-value-for="opacity">1</span>
+          <input type="range" min="0" max="1" step="0.01" data-param="opacity" />
+        </label>
+        <label class="field field-color">
+          <span class="field-label">{copy.panel.recolor}</span>
+          <input type="color" data-param="recolor" />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.maxSh}</span>
+          <select data-param="maxSh">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="panel-group">
+        <h3>{copy.panel.sectionRender}</h3>
+        <label class="field">
+          <span class="field-label">{copy.panel.maxStdDev}</span>
+          <span class="field-value" data-value-for="maxStdDev">2.83</span>
+          <input
+            type="range"
+            min="2"
+            max="3"
+            step="0.01"
+            data-param="maxStdDev"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.focalAdjustment}</span>
+          <span class="field-value" data-value-for="focalAdjustment">1</span>
+          <input
+            type="range"
+            min="0.5"
+            max="3"
+            step="0.05"
+            data-param="focalAdjustment"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.falloff}</span>
+          <span class="field-value" data-value-for="falloff">1</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            data-param="falloff"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.minAlpha}</span>
+          <span class="field-value" data-value-for="minAlpha">0.002</span>
+          <input
+            type="range"
+            min="0"
+            max="0.05"
+            step="0.001"
+            data-param="minAlpha"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.minPixelRadius}</span>
+          <input
+            type="number"
+            min="0"
+            max="16"
+            step="0.5"
+            data-param="minPixelRadius"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.maxPixelRadius}</span>
+          <input
+            type="number"
+            min="16"
+            max="1024"
+            step="1"
+            data-param="maxPixelRadius"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.preBlurAmount}</span>
+          <span class="field-value" data-value-for="preBlurAmount">0</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            data-param="preBlurAmount"
+          />
+        </label>
+        <label class="field field-toggle">
+          <span class="field-label">{copy.panel.sortRadial}</span>
+          <input type="checkbox" data-bool-param="sortRadial" />
+        </label>
+        <label class="field field-toggle">
+          <span class="field-label">{copy.panel.enable2DGS}</span>
+          <input type="checkbox" data-bool-param="enable2DGS" />
+        </label>
+      </section>
+
+      <section class="panel-group">
+        <h3>{copy.panel.sectionLod}</h3>
+        <label class="field">
+          <span class="field-label">{copy.panel.lodSplatScale}</span>
+          <span class="field-value" data-value-for="lodSplatScale">1</span>
+          <input
+            type="range"
+            min="0.25"
+            max="4"
+            step="0.05"
+            data-param="lodSplatScale"
+          />
+        </label>
+        <label class="field">
+          <span class="field-label">{copy.panel.lodRenderScale}</span>
+          <span class="field-value" data-value-for="lodRenderScale">1</span>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            step="0.5"
+            data-param="lodRenderScale"
+          />
+        </label>
+      </section>
+
+      <section class="panel-group" data-collapsible data-collapsed="true">
+        <h3 data-collapse-trigger>{copy.panel.sectionDof}</h3>
+        <div class="panel-group-body">
+          <label class="field">
+            <span class="field-label">{copy.panel.focalDistance}</span>
+            <span class="field-value" data-value-for="focalDistance">0</span>
+            <input
+              type="range"
+              min="0"
+              max="50"
+              step="0.5"
+              data-param="focalDistance"
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">{copy.panel.apertureAngle}</span>
+            <span class="field-value" data-value-for="apertureAngle">0</span>
+            <input
+              type="range"
+              min="0"
+              max="0.5"
+              step="0.01"
+              data-param="apertureAngle"
+            />
+          </label>
+        </div>
+      </section>
+
+      <section class="panel-group" data-collapsible data-collapsed="true">
+        <h3 data-collapse-trigger>{copy.panel.sectionFoveation}</h3>
+        <div class="panel-group-body">
+          <label class="field">
+            <span class="field-label">{copy.panel.coneFov0}</span>
+            <span class="field-value" data-value-for="coneFov0">90</span>
+            <input
+              type="range"
+              min="30"
+              max="120"
+              step="5"
+              data-param="coneFov0"
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">{copy.panel.coneFov}</span>
+            <span class="field-value" data-value-for="coneFov">120</span>
+            <input
+              type="range"
+              min="60"
+              max="180"
+              step="5"
+              data-param="coneFov"
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">{copy.panel.coneFoveate}</span>
+            <span class="field-value" data-value-for="coneFoveate">0.4</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              data-param="coneFoveate"
+            />
+          </label>
+          <label class="field">
+            <span class="field-label">{copy.panel.behindFoveate}</span>
+            <span class="field-value" data-value-for="behindFoveate">0.2</span>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              data-param="behindFoveate"
+            />
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <footer class="panel-foot">
+      <button type="button" data-panel-reset>{copy.panel.reset}</button>
+    </footer>
+  </aside>
 
   <p class="error-message" data-splat-error hidden role="alert">
     {copy.failed}
@@ -132,8 +427,10 @@ const copy = isEnglish
 
 <script>
   import type { GaussianSplatScene } from '@/scripts/gaussian-splat/GaussianSplatScene';
+  import type { GaussianSplatPanel } from '@/scripts/gaussian-splat/GaussianSplatPanel';
 
   let splatScene: GaussianSplatScene | undefined;
+  let splatPanel: GaussianSplatPanel | undefined;
 
   function setupSplatExperience() {
     const root = document.querySelector<HTMLElement>('[data-splat-root]');
@@ -151,6 +448,7 @@ const copy = isEnglish
     const rotationButton = root.querySelector<HTMLButtonElement>(
       '[data-toggle-rotation]',
     );
+    const panelEl = root.querySelector<HTMLElement>('[data-splat-panel]');
 
     const updateRotationButton = (playing: boolean) => {
       if (!rotationButton) return;
@@ -162,6 +460,11 @@ const copy = isEnglish
       if (label) label.textContent = playing ? pauseLabel : playLabel;
     };
 
+    const updatePanelAria = (open: boolean) => {
+      if (!panelEl) return;
+      panelEl.setAttribute('aria-hidden', String(!open));
+    };
+
     root.addEventListener('splat-auto-rotate-change', (event) => {
       updateRotationButton((event as CustomEvent<boolean>).detail);
     });
@@ -171,14 +474,20 @@ const copy = isEnglish
       root.dataset.state = 'loading';
       loader?.removeAttribute('hidden');
       try {
-        const { GaussianSplatScene } =
-          await import('@/scripts/gaussian-splat/GaussianSplatScene');
+        const [{ GaussianSplatScene }, { GaussianSplatPanel }] =
+          await Promise.all([
+            import('@/scripts/gaussian-splat/GaussianSplatScene'),
+            import('@/scripts/gaussian-splat/GaussianSplatPanel'),
+          ]);
         splatScene = new GaussianSplatScene(root);
         await splatScene.init((progress, status) => {
           if (loadBar) loadBar.style.width = `${progress}%`;
           if (loadValue) loadValue.textContent = `${progress}%`;
           if (loadStatus) loadStatus.textContent = status;
         });
+        splatPanel = new GaussianSplatPanel(root, (p) =>
+          splatScene?.applyParams(p),
+        );
         root.dataset.state = 'active';
         intro?.setAttribute('hidden', '');
         loader?.setAttribute('hidden', '');
@@ -199,6 +508,17 @@ const copy = isEnglish
     rotationButton?.addEventListener('click', () => {
       splatScene?.toggleAutoRotate();
     });
+    root
+      .querySelector('[data-toggle-panel]')
+      ?.addEventListener('click', () => {
+        const open = splatPanel?.toggle();
+        updatePanelAria(Boolean(open));
+      });
+    root
+      .querySelector('[data-close-panel]')
+      ?.addEventListener('click', () => {
+        if (splatPanel && splatPanel.toggle() === false) updatePanelAria(false);
+      });
     root.querySelector('[data-fullscreen]')?.addEventListener('click', () => {
       if (document.fullscreenElement) void document.exitFullscreen();
       else void root.requestFullscreen();
@@ -206,6 +526,8 @@ const copy = isEnglish
   }
 
   function destroySplatExperience() {
+    splatPanel?.dispose();
+    splatPanel = undefined;
     splatScene?.destroy();
     splatScene = undefined;
   }
@@ -458,6 +780,249 @@ const copy = isEnglish
   @keyframes spin {
     to {
       transform: rotate(360deg);
+    }
+  }
+  /* 高斯参数调节面板 */
+  .splat-panel {
+    position: absolute;
+    z-index: 5;
+    top: max(4.5rem, env(safe-area-inset-top));
+    right: max(1.2rem, env(safe-area-inset-right));
+    bottom: max(5rem, env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    max-width: calc(100% - 2.4rem);
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 16px;
+    background: rgb(12 15 20 / 84%);
+    box-shadow: 0 24px 60px rgb(0 0 0 / 32%);
+    backdrop-filter: blur(18px);
+    color: #f5f4ef;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateX(16px);
+    visibility: hidden;
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease,
+      visibility 0.22s ease;
+  }
+  [data-open='true'].splat-panel {
+    opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 9%);
+  }
+  .panel-head h2 {
+    margin: 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+  .panel-head button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 8px;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+  }
+  .panel-head button:hover {
+    background: rgb(255 255 255 / 6%);
+  }
+  .panel-body {
+    overflow-y: auto;
+    padding: 0.6rem 1rem 0.4rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 18%) transparent;
+  }
+  .panel-body::-webkit-scrollbar {
+    width: 6px;
+  }
+  .panel-body::-webkit-scrollbar-thumb {
+    border-radius: 99px;
+    background: rgb(255 255 255 / 18%);
+  }
+  .panel-group {
+    padding: 0.4rem 0 0.7rem;
+    border-bottom: 1px solid rgb(255 255 255 / 6%);
+  }
+  .panel-group:last-child {
+    border-bottom: 0;
+  }
+  .panel-group h3 {
+    margin: 0 0 0.5rem;
+    color: rgb(167 227 223 / 92%);
+    font:
+      600 0.7rem ui-monospace,
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: default;
+  }
+  [data-collapsible] .panel-group-body {
+    display: block;
+    max-height: 600px;
+    overflow: hidden;
+    transition: max-height 0.22s ease;
+  }
+  [data-collapsible][data-collapsed='true'] .panel-group-body {
+    max-height: 0;
+  }
+  [data-collapsible] h3 {
+    cursor: pointer;
+    user-select: none;
+  }
+  [data-collapsible] h3::before {
+    content: '▾';
+    display: inline-block;
+    margin-right: 0.35rem;
+    transition: transform 0.18s ease;
+  }
+  [data-collapsible][data-collapsed='true'] h3::before {
+    transform: rotate(-90deg);
+  }
+  .field {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.35rem 0.6rem;
+    margin-bottom: 0.55rem;
+    font-size: 0.78rem;
+  }
+  .field-label {
+    color: rgb(245 244 239 / 78%);
+  }
+  .field-value {
+    color: rgb(167 227 223);
+    font:
+      0.72rem ui-monospace,
+      monospace;
+    min-width: 2.6em;
+    text-align: right;
+  }
+  .field input[type='range'] {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 4px;
+    margin: 0.15rem 0 0;
+    appearance: none;
+    background: rgb(255 255 255 / 12%);
+    border-radius: 99px;
+    cursor: pointer;
+  }
+  .field input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 0;
+    border-radius: 50%;
+    background: #a7e3df;
+    box-shadow: 0 0 0 3px rgb(167 227 223 / 18%);
+  }
+  .field input[type='range']::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 0;
+    border-radius: 50%;
+    background: #a7e3df;
+  }
+  .field input[type='number'],
+  .field select {
+    width: 5.5rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 8px;
+    background: rgb(255 255 255 / 4%);
+    color: inherit;
+    font-size: 0.76rem;
+  }
+  .field input[type='color'] {
+    width: 2.4rem;
+    height: 1.6rem;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .field-color {
+    grid-template-columns: 1fr auto;
+  }
+  .field-toggle {
+    grid-template-columns: 1fr auto;
+  }
+  .field-toggle input {
+    appearance: none;
+    width: 34px;
+    height: 19px;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 14%);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.18s ease;
+  }
+  .field-toggle input::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #f5f4ef;
+    transition: transform 0.18s ease;
+  }
+  .field-toggle input:checked {
+    background: #a7e3df;
+  }
+  .field-toggle input:checked::after {
+    transform: translateX(15px);
+    background: #081012;
+  }
+  .panel-foot {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.7rem 1rem;
+    border-top: 1px solid rgb(255 255 255 / 9%);
+  }
+  .panel-foot button {
+    padding: 0.45rem 0.8rem;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: 8px;
+    color: inherit;
+    background: transparent;
+    font-size: 0.76rem;
+    cursor: pointer;
+  }
+  .panel-foot button:hover {
+    background: rgb(255 255 255 / 6%);
+  }
+  @media (max-width: 680px) {
+    .splat-panel {
+      top: auto;
+      right: 1rem;
+      left: 1rem;
+      bottom: 6rem;
+      width: auto;
+      max-height: 60svh;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .splat-panel,
+    [data-collapsible] .panel-group-body,
+    .field-toggle input::after {
+      transition: none;
     }
   }
   @media (max-width: 680px) {
