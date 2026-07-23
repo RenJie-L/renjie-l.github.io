@@ -189,7 +189,12 @@ const copy = isEnglish
     </div>
   </div>
 
-  <aside class="splat-panel" data-splat-panel data-open="false" aria-hidden="true">
+  <aside
+    class="splat-panel"
+    data-splat-panel
+    data-open="false"
+    aria-hidden="true"
+  >
     <header class="panel-head">
       <h2>{copy.panel.title}</h2>
       <button type="button" data-close-panel title={copy.panel.close}>
@@ -203,7 +208,13 @@ const copy = isEnglish
         <label class="field">
           <span class="field-label">{copy.panel.opacity}</span>
           <span class="field-value" data-value-for="opacity">1</span>
-          <input type="range" min="0" max="1" step="0.01" data-param="opacity" />
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            data-param="opacity"
+          />
         </label>
         <label class="field field-color">
           <span class="field-label">{copy.panel.recolor}</span>
@@ -508,17 +519,13 @@ const copy = isEnglish
     rotationButton?.addEventListener('click', () => {
       splatScene?.toggleAutoRotate();
     });
-    root
-      .querySelector('[data-toggle-panel]')
-      ?.addEventListener('click', () => {
-        const open = splatPanel?.toggle();
-        updatePanelAria(Boolean(open));
-      });
-    root
-      .querySelector('[data-close-panel]')
-      ?.addEventListener('click', () => {
-        if (splatPanel && splatPanel.toggle() === false) updatePanelAria(false);
-      });
+    root.querySelector('[data-toggle-panel]')?.addEventListener('click', () => {
+      const open = splatPanel?.toggle();
+      updatePanelAria(Boolean(open));
+    });
+    root.querySelector('[data-close-panel]')?.addEventListener('click', () => {
+      if (splatPanel && splatPanel.toggle() === false) updatePanelAria(false);
+    });
     root.querySelector('[data-fullscreen]')?.addEventListener('click', () => {
       if (document.fullscreenElement) void document.exitFullscreen();
       else void root.requestFullscreen();
