@@ -96,9 +96,9 @@ export class GaussianSplatPanel {
 
   private bindControls(): void {
     // 滑块、数值输入、颜色、下拉
-    const inputs = this.panel.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
-      '[data-param]',
-    );
+    const inputs = this.panel.querySelectorAll<
+      HTMLInputElement | HTMLSelectElement
+    >('[data-param]');
     for (const input of inputs) {
       const key = input.dataset.param as keyof GaussianParams | undefined;
       if (!key) continue;
@@ -126,9 +126,12 @@ export class GaussianSplatPanel {
       ?.addEventListener('click', () => this.reset());
 
     // 折叠分组
-    const groups = this.panel.querySelectorAll<HTMLElement>('[data-collapsible]');
+    const groups =
+      this.panel.querySelectorAll<HTMLElement>('[data-collapsible]');
     for (const group of groups) {
-      const trigger = group.querySelector<HTMLElement>('[data-collapse-trigger]');
+      const trigger = group.querySelector<HTMLElement>(
+        '[data-collapse-trigger]',
+      );
       trigger?.addEventListener('click', () => {
         const collapsed = group.dataset.collapsed === 'true';
         group.dataset.collapsed = String(!collapsed);
@@ -150,9 +153,7 @@ export class GaussianSplatPanel {
       if (Number.isFinite(num)) (this.state[key] as unknown) = num;
     } else if (input instanceof HTMLSelectElement) {
       const num = Number(input.value);
-      (this.state[key] as unknown) = Number.isFinite(num)
-        ? num
-        : input.value;
+      (this.state[key] as unknown) = Number.isFinite(num) ? num : input.value;
     } else {
       (this.state[key] as unknown) = input.value;
     }
@@ -162,9 +163,9 @@ export class GaussianSplatPanel {
 
   // 根据 state 反写到控件显示，避免初始/重置后控件与状态不同步。
   private reflectState(): void {
-    const inputs = this.panel.querySelectorAll<HTMLInputElement | HTMLSelectElement>(
-      '[data-param]',
-    );
+    const inputs = this.panel.querySelectorAll<
+      HTMLInputElement | HTMLSelectElement
+    >('[data-param]');
     for (const input of inputs) {
       const key = input.dataset.param as keyof GaussianParams | undefined;
       if (!key) continue;
@@ -211,10 +212,16 @@ export class GaussianSplatPanel {
     this.refreshValueLabels();
     if (EXPENSIVE_KEYS.has(key)) {
       if (this.slowTimer) clearTimeout(this.slowTimer);
-      this.slowTimer = setTimeout(() => this.apply({ [key]: this.state[key] }), 200);
+      this.slowTimer = setTimeout(
+        () => this.apply({ [key]: this.state[key] }),
+        200,
+      );
     } else {
       if (this.fastTimer) clearTimeout(this.fastTimer);
-      this.fastTimer = setTimeout(() => this.apply({ [key]: this.state[key] }), 50);
+      this.fastTimer = setTimeout(
+        () => this.apply({ [key]: this.state[key] }),
+        50,
+      );
     }
   }
 
