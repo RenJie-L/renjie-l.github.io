@@ -7,6 +7,35 @@ const SPLAT_URL =
 
 type ProgressCallback = (progress: number, status: string) => void;
 
+// 面板可调节的参数集合；与 GaussianSplatPanel 的 DEFAULTS 保持一致。
+export interface GaussianParams {
+  // SplatMesh 实例属性
+  opacity: number; // 0..1
+  recolor: string; // 十六进制颜色，内部转 THREE.Color
+  maxSh: 0 | 1 | 2 | 3; // 球谐阶数，改后需 updateGenerator()
+  // SparkRenderer 外观
+  maxStdDev: number; // 2.0..3.0
+  focalAdjustment: number; // 0.5..3.0
+  falloff: number; // 0..1
+  minAlpha: number; // 0..0.05
+  minPixelRadius: number;
+  maxPixelRadius: number;
+  preBlurAmount: number; // 0..1
+  sortRadial: boolean;
+  enable2DGS: boolean;
+  // LoD
+  lodSplatScale: number; // 0.25..4.0
+  lodRenderScale: number; // 1..5
+  // 景深
+  focalDistance: number;
+  apertureAngle: number;
+  // 注视点
+  coneFov0: number;
+  coneFov: number;
+  coneFoveate: number;
+  behindFoveate: number;
+}
+
 const MOVEMENT_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE']);
 
 export class GaussianSplatScene {
@@ -231,6 +260,55 @@ export class GaussianSplatScene {
   toggleAutoRotate() {
     this.setAutoRotate(!this.autoRotate);
     return this.autoRotate;
+  }
+
+  // 应用面板下发的参数。所有副作用集中在此处，UI 层不直接读写渲染器字段。
+  applyParams(params: Partial<GaussianParams>): void {
+    if (!this.spark || !this.splat) return;
+    const splat = this.splat as SplatMesh & {
+      opacity: number;
+      recolor: THREE.Color;
+      maxSh: number;
+      updateGenerator: () => void;
+    };
+    const spark = this.spark as SparkRenderer & Record<string, unknown>;
+
+    if (params.opacity !== undefined) splat.opacity = params.opacity;
+    if (params.recolor !== undefined) {
+      try {
+        splat.recolor.set(params.recolor);
+      } catch {
+        /* 非法颜色字符串则忽略 */
+      }
+    }
+    if (params.maxSh !== undefined && splat.maxSh !== params.maxSh) {
+      splat.maxSh = params.maxSh;
+      splat.updateGenerator();
+    }
+
+    const scalarKeys = [
+      'maxStdDev',
+      'focalAdjustment',
+      'falloff',
+      'minAlpha',
+      'minPixelRadius',
+      'maxPixelRadius',
+      'preBlurAmount',
+      'lodSplatScale',
+      'lodRenderScale',
+      'focalDistance',
+      'apertureAngle',
+      'coneFov0',
+      'coneFov',
+      'coneFoveate',
+      'behindFoveate',
+    ] as const;
+    for (const key of scalarKeys) {
+      const value = params[key];
+      if (value !== undefined) spark[key] = value;
+    }
+    if (params.sortRadial !== undefined) spark.sortRadial = params.sortRadial;
+    if (params.enable2DGS !== undefined) spark.enable2DGS = params.enable2DGS;
   }
 
   private setAutoRotate(enabled: boolean) {
