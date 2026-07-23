@@ -77,3 +77,143 @@ const links = [
     >
   </nav>
 </header>
+
+<style>
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: -5rem;
+    z-index: 100;
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+  }
+  .header-inner {
+    width: min(calc(100% - 2rem), var(--max));
+    margin: auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-weight: 690;
+    letter-spacing: -0.02em;
+  }
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 9px;
+    font-family: Georgia, serif;
+  }
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .desktop-nav a {
+    padding: 0.4rem 0.7rem;
+    color: var(--muted);
+    font-size: 0.925rem;
+    border-radius: 8px;
+  }
+  .desktop-nav a:hover,
+  .desktop-nav a[aria-current='page'] {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  .header-actions {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+  }
+  .language-switch {
+    display: grid;
+    place-items: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.45rem;
+    border-radius: 9px;
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 680;
+    letter-spacing: 0.02em;
+  }
+  .language-switch:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  .icon-button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .icon-button:hover {
+    background: var(--surface-2);
+  }
+  .moon-icon,
+  [data-theme='dark'] .sun-icon {
+    display: none;
+  }
+  [data-theme='dark'] .moon-icon {
+    display: block;
+  }
+  .menu-toggle,
+  .mobile-menu,
+  .menu-close-icon {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .desktop-nav {
+      display: none;
+    }
+    .menu-toggle {
+      display: grid;
+    }
+    .menu-toggle[aria-expanded='true'] .menu-open-icon {
+      display: none;
+    }
+    .menu-toggle[aria-expanded='true'] .menu-close-icon {
+      display: block;
+    }
+    .mobile-menu {
+      padding: 0.5rem 1rem 1rem;
+      border-top: 1px solid var(--line);
+    }
+    .mobile-menu:not([hidden]) {
+      display: grid;
+    }
+    .mobile-menu a {
+      padding: 0.7rem 0.25rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+    }
+  }
+</style>

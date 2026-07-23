@@ -1,0 +1,342 @@
+---
+title: '构建自己的 Gym 训练环境'
+description: '详细介绍如何搭建自定义 Gym 训练环境，解析环境六大核心模块（__init__、seed、step、reset、render、close），以及环境注册与测试方法。'
+publishDate: 2021-09-11
+updatedDate: 2021-09-11
+tags: ['强化学习', 'Gym', 'Python', '科研']
+category: 'Reinforcement Learning'
+featured: false
+draft: false
+readingTime: 15
+language: 'zh-CN'
+---
+
+## 前言
+
+本文主要对搭建自己的 Gym 训练环境做详细介绍，涉及环境核心模块解析、环境注册与测试等关键步骤。以下为相关官方资源链接：
+
+- **[Gym 主页](https://gym.openai.com/)**
+- **[Gym 官方入门文档](https://gym.openai.com/docs/)**
+
+## 一、构建自己的 Gym 训练环境
+
+一个标准的 Gym 环境主要包含六个核心模块。下文将以 Gym 官方的 `MountainCarEnv`（山地车环境）为例，逐一拆解每个模块的功能、实现逻辑与关键代码。
+
+### 1. `__init__` 方法：初始化环境参数
+
+`__init__` 是环境的构造函数，主要作用是定义环境的基础参数、动作空间（`action_space`）和观测空间（`observation_space`），为后续的交互与仿真奠定基础。
+
+#### 核心功能
+
+- 定义环境物理参数（如智能体尺寸、重量、外力系数等）；
+- 限定状态变量的边界（如位置、速度的最大值/最小值）；
+- 声明动作空间和观测空间的类型与范围；
+- 初始化可视化相关变量（如 `viewer`）。
+
+#### 示例代码（MountainCarEnv）
+
+```python
+def __init__(self, goal_velocity=0):
+    # 1. 环境物理与状态边界参数
+    self.min_position = -1.2  # 小车最小位置
+    self.max_position = 0.6   # 小车最大位置
+    self.max_speed = 0.07     # 小车最大速度
+    self.goal_position = 0.5  # 目标位置（山顶）
+    self.goal_velocity = goal_velocity  # 到达目标所需的最小速度
+
+    self.force = 0.001        # 推力系数
+    self.gravity = 0.0025     # 重力系数
+
+    # 2. 观测空间定义（Box 表示连续型空间，参数为「最小值数组」和「最大值数组」）
+    self.low = np.array([self.min_position, -self.max_speed], dtype=np.float32)
+    self.high = np.array([self.max_position, self.max_speed], dtype=np.float32)
+    self.observation_space = spaces.Box(self.low, self.high, dtype=np.float32)
+
+    # 3. 动作空间定义（Discrete 表示离散型空间，参数为「动作数量」）
+    self.action_space = spaces.Discrete(3)  # 3个动作：向左（0）、不动（1）、向右（2）
+
+    # 4. 可视化相关初始化
+    self.viewer = None
+
+    # 5. 随机种子初始化（调用下方 seed 方法）
+    self.seed()
+```
+
+#### 关键参数说明
+
+- `action_space`：智能体可执行的动作集合。示例中 `spaces.Discrete(3)` 表示离散动作，共 3 种选择；若为连续动作（如无人机推力大小），需使用 `spaces.Box`。
+- `observation_space`：智能体可观测的状态集合。示例中 `spaces.Box(self.low, self.high)` 表示连续观测空间，状态包含「小车位置」和「小车速度」两个维度。
+
+### 2. `seed` 方法：设置随机种子
+
+`seed` 方法用于初始化环境的随机数生成器，确保实验结果的可复现性。即使不主动设置随机种子，也**必须实现该方法**以符合 Gym 规范。
+
+#### 核心功能
+
+- 接收外部传入的随机种子（若未传入则自动生成）；
+- 初始化 `np_random`（Gym 推荐的随机数生成器）；
+- 返回初始化后的种子，便于后续复现实验。
+
+#### 示例代码
+
+```python
+def seed(self, seed=None):
+    self.np_random, seed = seeding.np_random(seed)  # 初始化随机数生成器
+    return [seed]  # 返回种子列表
+```
+
+### 3. `step` 方法：环境交互与状态更新
+
+`step` 是环境的核心交互接口，扮演"物理引擎"的角色：接收智能体的动作（`action`），计算下一时刻的状态、即时奖励（`reward`），并判断 episode 是否终止（`done`）。
+
+#### 输入与输出
+
+- **输入**：`action`（智能体选择的动作，需在 `action_space` 范围内）；
+- **输出**：`(next_state, reward, done, info)`，其中：
+  - `next_state`：智能体的下一状态（需与 `observation_space` 匹配）；
+  - `reward`：即时奖励（引导智能体学习目标）；
+  - `done`：布尔值（`True` 表示 episode 终止，需调用 `reset` 重置环境）；
+  - `info`：调试用字典（可存储额外信息，如未截断的原始状态）。
+
+#### 示例 1：MountainCarEnv 的 `step` 实现
+
+```python
+def step(self, action):
+    # 1. 校验动作合法性（确保动作在 action_space 内）
+    assert self.action_space.contains(action), "%r (%s) invalid" % (action, type(action))
+
+    # 2. 读取当前状态（位置 + 速度）
+    position, velocity = self.state
+
+    # 3. 根据物理模型更新状态（核心：动力学方程）
+    velocity += (action - 1) * self.force + math.cos(3 * position) * (-self.gravity)
+    velocity = np.clip(velocity, -self.max_speed, self.max_speed)  # 限制速度在合法范围
+    position += velocity
+    position = np.clip(position, self.min_position, self.max_position)  # 限制位置在合法范围
+
+    # 4. 处理边界特殊情况（小车到达最左端且速度为负时，速度置0）
+    if position == self.min_position and velocity < 0:
+        velocity = 0
+
+    # 5. 判断 episode 是否终止（到达目标位置且速度达标）
+    done = bool(position >= self.goal_position and velocity >= self.goal_velocity)
+
+    # 6. 计算即时奖励（每步惩罚 -1，激励智能体尽快到达山顶）
+    reward = -1.0
+
+    # 7. 更新当前状态并返回结果
+    self.state = (position, velocity)
+    return np.array(self.state, dtype=np.float32), reward, done, {}
+```
+
+#### 示例 2：CartPoleEnv（倒立摆）的 `done` 与 `reward` 逻辑
+
+倒立摆的终止条件与奖励设计与山地车不同，可对比参考：
+
+```python
+# 1. 判断终止条件（小车超出边界 / 摆杆倾斜角度过大）
+done = bool(
+    x < -self.x_threshold  # 小车左边界
+    or x > self.x_threshold  # 小车右边界
+    or theta < -self.theta_threshold_radians  # 摆杆左倾超限
+    or theta > self.theta_threshold_radians   # 摆杆右倾超限
+)
+
+# 2. 计算奖励（保持平衡则持续奖励，终止后停止奖励）
+if not done:
+    reward = 1.0  # 未终止时，每步奖励 1
+elif self.steps_beyond_done is None:
+    # 首次终止（摆杆刚倒下），仍奖励 1
+    self.steps_beyond_done = 0
+    reward = 1.0
+else:
+    # 终止后继续调用 step，警告并奖励 0（Gym 不推荐此行为）
+    if self.steps_beyond_done == 0:
+        logger.warn("You are calling 'step()' even though this environment has already returned done = True. You should always call 'reset()' once you receive 'done = True' -- any further steps are undefined behavior.")
+    self.steps_beyond_done += 1
+    reward = 0.0
+```
+
+#### 关键设计建议
+
+- **状态更新**：需根据智能体的运动学/动力学模型设计（如无人机需加入俯仰角、XYZ 位置、加速度等参数）；
+- **奖励函数**：可灵活优化（如山地车可加入"距离目标越近，奖励越大"的逻辑，加快训练收敛）；
+- **合法性校验**：务必通过 `self.action_space.contains(action)` 校验动作，避免非法输入导致崩溃。
+
+### 4. `reset` 方法：重置环境状态
+
+`reset` 方法用于在每个 episode 开始前（或 `done=True` 后）重置环境状态，返回初始观测值（`observation`）。**注意：`reset` 初始化的状态参数数量，需与 `step` 中的 `state` 维度完全一致**。
+
+#### 核心功能
+
+- 随机（或固定）初始化智能体的初始状态（如位置、速度）；
+- 重置与 episode 相关的临时变量（如 `steps_beyond_done`）；
+- 返回初始观测值（不参与神经网络计算，仅用于智能体决策初始化）。
+
+#### 示例代码（MountainCarEnv）
+
+```python
+def reset(self):
+    # 随机初始化状态：位置在 [-0.6, -0.4] 之间，速度为 0
+    self.state = np.array([self.np_random.uniform(low=-0.6, high=-0.4), 0])
+    return np.array(self.state, dtype=np.float32)  # 返回初始观测值
+```
+
+### 5. `render` 方法：环境可视化
+
+`render` 方法用于绘制环境与智能体的实时状态，便于直观观察训练过程。该方法**可以为空实现，但必须存在**以符合 Gym 规范。
+
+#### 核心功能
+
+- 初始化绘图窗口（如尺寸、背景）；
+- 绘制环境元素（如山地车的轨道、目标旗帜）；
+- 绘制智能体（如小车、车轮）；
+- 根据当前状态更新绘图元素的位置与姿态。
+
+#### 示例代码（MountainCarEnv）
+
+```python
+def render(self, mode='human'):
+    # 1. 初始化画布尺寸与缩放比例
+    screen_width = 600
+    screen_height = 400
+    world_width = self.max_position - self.min_position  # 真实世界宽度
+    scale = screen_width / world_width  # 像素缩放比例（真实单位 → 像素）
+    carwidth = 40  # 小车宽度（像素）
+    carheight = 20  # 小车高度（像素）
+
+    # 2. 初始化绘图窗口（仅首次调用时初始化）
+    if self.viewer is None:
+        from gym.envs.classic_control import rendering
+        self.viewer = rendering.Viewer(screen_width, screen_height)
+
+        # 绘制轨道（山地曲线）
+        xs = np.linspace(self.min_position, self.max_position, 100)  # 位置采样点
+        ys = self._height(xs)  # 每个位置对应的高度（调用内部 _height 函数）
+        xys = list(zip((xs - self.min_position) * scale, ys * scale))  # 转换为像素坐标
+        self.track = rendering.make_polyline(xys)  # 创建折线
+        self.track.set_linewidth(4)  # 设置线宽
+        self.viewer.add_geom(self.track)  # 添加到绘图窗口
+
+        # 绘制小车（填充矩形）
+        clearance = 10  # 小车底部与轨道的间隙（像素）
+        l, r, t, b = -carwidth/2, carwidth/2, carheight, 0  # 小车矩形顶点
+        car = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+        car.add_attr(rendering.Transform(translation=(0, clearance)))  # 向上平移（避免贴地）
+        self.cartrans = rendering.Transform()  # 小车的平移/旋转属性
+        car.add_attr(self.cartrans)
+        self.viewer.add_geom(car)
+
+        # 绘制车轮（圆形）
+        frontwheel = rendering.make_circle(carheight / 2.5)
+        frontwheel.set_color(0.5, 0.5, 0.5)  # 灰色
+        frontwheel.add_attr(rendering.Transform(translation=(carwidth/4, clearance)))
+        frontwheel.add_attr(self.cartrans)
+        self.viewer.add_geom(frontwheel)
+
+        backwheel = rendering.make_circle(carheight / 2.5)
+        backwheel.set_color(0.5, 0.5, 0.5)
+        backwheel.add_attr(rendering.Transform(translation=(-carwidth/4, clearance)))
+        backwheel.add_attr(self.cartrans)
+        self.viewer.add_geom(backwheel)
+
+        # 绘制目标旗帜（终点标识）
+        flagx = (self.goal_position - self.min_position) * scale  # 旗帜X坐标
+        flagy1 = self._height(self.goal_position) * scale  # 旗帜底部Y坐标
+        flagy2 = flagy1 + 50  # 旗帜顶部Y坐标
+        flagpole = rendering.Line((flagx, flagy1), (flagx, flagy2))  # 旗杆
+        self.viewer.add_geom(flagpole)
+        flag = rendering.FilledPolygon([(flagx, flagy2), (flagx, flagy2-10), (flagx+25, flagy2-5)])  # 旗帜
+        flag.set_color(0.8, 0.8, 0)  # 黄色
+        self.viewer.add_geom(flag)
+
+    # 3. 根据当前状态更新小车位置与姿态
+    pos = self.state[0]
+    self.cartrans.set_translation((pos - self.min_position) * scale, self._height(pos) * scale)  # 平移
+    self.cartrans.set_rotation(math.cos(3 * pos))  # 旋转（模拟山地倾斜）
+
+    # 4. 渲染并返回图像（mode='human' 显示窗口，'rgb_array' 返回图像数组）
+    return self.viewer.render(return_rgb_array=mode == "rgb_array")
+```
+
+#### 性能优化建议
+
+训练时频繁调用 `render` 会大幅降低训练速度。建议：
+
+- 训练阶段：关闭 `render`（或仅在日志中记录关键指标）；
+- 验证阶段：当奖励达到预设阈值后，再调用 `render` 查看训练效果。
+
+### 6. `close` 方法：关闭可视化窗口
+
+`close` 方法用于释放可视化资源，关闭绘图窗口，避免内存泄漏。
+
+#### 示例代码
+
+```python
+def close(self):
+    if self.viewer:  # 若窗口已初始化，则关闭并置空
+        self.viewer.close()
+        self.viewer = None
+```
+
+## 二、将自定义环境添加到 Gym 库中
+
+完成环境编写后，需将其注册到 Gym 库中，才能通过 `gym.make()` 调用。以下是具体步骤：
+
+### 1. 注册环境
+
+需在 Gym 的环境注册列表中添加自定义环境的信息，确保 Gym 能找到并加载该环境。
+
+#### 操作步骤
+
+1. 找到 Gym 安装目录下的环境注册文件：`.\Lib\site-packages\gym\envs\__init__.py`（路径需根据 Python 安装位置调整）；
+2. 在文件末尾添加如下注册代码（需替换为自定义环境的信息）：
+
+```python
+# 自定义环境注册（user 为自定义分类，可修改）
+# ---------
+register(
+    id='GridWorld-v1',  # 环境唯一ID（格式：<环境名>-v<版本号>）
+    entry_point='gym.envs.user:GridEnv1',  # 环境类路径（<模块路径>:<类名>）
+    max_episode_steps=200,  # 每个episode的最大步数（防止无限循环）
+    reward_threshold=100.0,  # 训练达标阈值（可选）
+)
+```
+
+#### 参数说明
+
+- `id`：环境的唯一标识，调用时需与 `gym.make(id)` 完全一致；
+- `entry_point`：环境类的完整路径，格式为 `"<模块路径>:<类名>"`（如 `gym.envs.user:GridEnv1` 表示 `user` 模块下的 `GridEnv1` 类）；
+- `max_episode_steps`：可选参数，限制每个 episode 的最大步数，超时后 `done` 会置为 `True`。
+
+### 2. 放置环境文件
+
+需将自定义环境的代码文件放入 Gym 指定目录，并通过 `__init__.py` 暴露环境类。
+
+#### 操作步骤
+
+1. 在 Gym 环境目录下新建文件夹：`.\Lib\site-packages\gym\envs\user`（`user` 为自定义文件夹名，可修改）；
+2. 在 `user` 文件夹中新建 `__init__.py` 文件，并添加如下代码（暴露环境类）：
+
+```python
+# 从环境文件中导入环境类（grid_mdp_v1.py 为自定义环境文件名，GridEnv1 为类名）
+from gym.envs.user.grid_mdp_v1 import GridEnv1
+```
+
+3. 将编写好的环境代码文件（如 `grid_mdp_v1.py`）放入 `user` 文件夹中。
+
+### 3. 测试自定义环境
+
+编写测试脚本，验证环境是否能正常加载、重置与渲染。
+
+#### 测试代码（main.py）
+
+```python
+import gym
+import numpy as np
+import time
+import sys
+
+# 1. 加载自定义环境（id 需与注册时的 id 完全一致）
+env = gym.make('GridWorld-v1')
+```

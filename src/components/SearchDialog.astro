@@ -27,6 +27,63 @@ const t = ui[locale];
   </div>
 </dialog>
 
+<style>
+  .search-dialog {
+    width: min(92vw, 680px);
+    max-height: calc(100dvh - 2 * clamp(1rem, 5dvh, 3rem));
+    padding: 0;
+    margin: clamp(1rem, 5dvh, 3rem) auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 30px 100px rgb(0 0 0 / 30%);
+  }
+  .search-dialog::backdrop {
+    background: rgb(0 0 0 / 45%);
+    backdrop-filter: blur(4px);
+  }
+  .search-panel {
+    padding: 1rem;
+    min-height: 220px;
+  }
+  .search-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.2rem 0.25rem 0.8rem;
+  }
+  .search-heading h2 {
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .search-close {
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+  /* pagefind-ui 由第三方库注入到 #search 内，用 :global() 跨越 scoped 边界传递 CSS 变量 */
+  :global(.pagefind-ui) {
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--text);
+    --pagefind-ui-background: var(--surface);
+    --pagefind-ui-border: var(--line);
+    --pagefind-ui-tag: var(--surface-2);
+  }
+
+  @media (max-width: 760px) {
+    .search-dialog {
+      max-height: calc(100dvh - 2rem);
+      margin: 1rem auto;
+    }
+  }
+</style>
+
 <script>
   // 持有当前页面对应的打开搜索函数，供全局 Cmd/Ctrl + K 快捷键调用
   let openSearch: (() => void) | null = null;

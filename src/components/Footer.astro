@@ -46,6 +46,75 @@ const t = ui[locale];
   </div>
 </footer>
 
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding: 2.25rem 0;
+    margin-top: 7rem;
+    color: var(--muted);
+  }
+  .footer-inner {
+    width: min(calc(100% - 2rem), var(--max));
+    margin: auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .footer-identity,
+  .footer-side {
+    display: grid;
+    gap: 0.55rem;
+  }
+  .footer-signature {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+  }
+  .footer-inner strong {
+    color: var(--text);
+  }
+  .footer-dot {
+    color: var(--line);
+  }
+  .footer-side {
+    justify-items: end;
+  }
+  .footer-links {
+    display: flex;
+    gap: 1.25rem;
+  }
+  .footer-links a:hover {
+    color: var(--text);
+  }
+  .copyright,
+  .site-stats {
+    margin: 0;
+    font-size: 0.82rem;
+  }
+  .site-stats {
+    text-align: right;
+  }
+  .stats-separator {
+    margin-inline: 0.35rem;
+  }
+
+  @media (max-width: 760px) {
+    .footer-inner {
+      align-items: stretch;
+      flex-direction: column;
+      gap: 1.35rem;
+    }
+    .footer-side {
+      justify-items: start;
+    }
+    .site-stats {
+      text-align: left;
+    }
+  }
+</style>
+
 <script
   is:inline
   data-astro-rerun

@@ -1,4 +1,4 @@
-﻿---
+---
 import { ArrowUpRight } from '@lucide/astro';
 import type { Writing } from '@/lib/content';
 import { formatDate } from '@/lib/content';
@@ -31,3 +31,72 @@ const { article, compact = false } = Astro.props;
     }
   </div>
 </article>
+
+<style>
+  .article-card {
+    min-width: 0;
+    padding: 1.35rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 14px;
+    transition:
+      border-color 0.2s,
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+  .article-card:hover {
+    border-color: color-mix(in srgb, var(--line) 55%, var(--text));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  /* 列表视图下父容器 .article-list 在页面层定义，用 :global() 让其保持全局匹配 */
+  :global(.article-list) .article-card {
+    border-width: 0 0 1px;
+    border-radius: 0;
+    background: transparent;
+    padding: 1.5rem 0;
+    box-shadow: none;
+    transform: none;
+  }
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .article-card h3 {
+    margin: 0.7rem 0 0.5rem;
+    font-size: 1.15rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+  .article-card h3 a {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .article-card h3 svg {
+    flex: none;
+    margin-top: 0.15rem;
+    color: var(--muted);
+  }
+  .article-card p {
+    color: var(--muted);
+    margin: 0 0 1rem;
+    font-size: 0.92rem;
+  }
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .tag-list a {
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .tag-list a:hover {
+    color: var(--accent);
+  }
+</style>

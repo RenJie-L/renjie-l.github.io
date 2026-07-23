@@ -111,10 +111,10 @@ const enUrl = new URL(
     </script>
   </head>
   <body class={pageClass}>
-    {!immersive && <Header {locale} {languageHref} />}
+    {!immersive && <Header locale={locale} languageHref={languageHref} />}
     <main id="main-content"><slot /></main>
-    {!immersive && <Footer {locale} />}
-    {!immersive && <SearchDialog {locale} />}
+    {!immersive && <Footer locale={locale} />}
+    {!immersive && <SearchDialog locale={locale} />}
     <script>
       // 初始化 Header 交互控件（主题切换、移动端菜单）
       function setupHeaderControls() {

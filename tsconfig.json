@@ -2,7 +2,10 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": {
+      "@/*": ["src/*"],
+      "@lucide/astro": ["node_modules/@lucide/astro/src/lucide-astro.ts"]
+    }
   },
   "exclude": ["dist", "public"]
 }

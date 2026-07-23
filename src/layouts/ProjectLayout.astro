@@ -35,8 +35,8 @@ const toc = headings.filter(
       <div class="project-actions">
         {
           project.data.links
-            .filter((link) => link.url.startsWith('http'))
-            .map((link) => (
+            .filter((link: { url: string; label: string }) => link.url.startsWith('http'))
+            .map((link: { url: string; label: string }) => (
               <a
                 class="button"
                 href={link.url}
