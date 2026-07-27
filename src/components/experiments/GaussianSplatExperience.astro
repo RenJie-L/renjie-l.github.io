@@ -175,7 +175,10 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
 
   <div class="loader" data-splat-loader hidden aria-live="polite">
     <span class="loader-mark" aria-hidden="true"></span>
-    <strong data-loading-text={copy.loading} data-scene-loading-text={copy.sceneLoading}>{copy.loading}</strong>
+    <strong
+      data-loading-text={copy.loading}
+      data-scene-loading-text={copy.sceneLoading}>{copy.loading}</strong
+    >
     <span data-load-status>Preparing renderer…</span>
     <div class="load-track" aria-hidden="true"><span data-load-bar></span></div>
     <span data-load-value>0%</span>
@@ -497,11 +500,15 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       '[data-toggle-rotation]',
     );
     const panelEl = root.querySelector<HTMLElement>('[data-splat-panel]');
-    const sceneSelect =
-      root.querySelector<HTMLSelectElement>('[data-scene-select] select');
-    const sceneSwitcher = root.querySelector<HTMLElement>('[data-scene-select]');
-    const sceneLoadingLabel =
-      root.querySelector<HTMLElement>('[data-splat-loader] strong');
+    const sceneSelect = root.querySelector<HTMLSelectElement>(
+      '[data-scene-select] select',
+    );
+    const sceneSwitcher = root.querySelector<HTMLElement>(
+      '[data-scene-select]',
+    );
+    const sceneLoadingLabel = root.querySelector<HTMLElement>(
+      '[data-splat-loader] strong',
+    );
 
     const updateRotationButton = (playing: boolean) => {
       if (!rotationButton) return;
@@ -566,7 +573,8 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       if (!splatScene || splatScene.getSceneId() === id) return;
       const originalText = sceneLoadingLabel?.textContent ?? '';
       if (sceneLoadingLabel && sceneLoadingLabel.dataset.sceneLoadingText) {
-        sceneLoadingLabel.textContent = sceneLoadingLabel.dataset.sceneLoadingText;
+        sceneLoadingLabel.textContent =
+          sceneLoadingLabel.dataset.sceneLoadingText;
       }
       if (sceneSelect) sceneSelect.disabled = true;
       sceneSwitcher?.classList.add('is-disabled');

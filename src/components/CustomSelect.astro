@@ -55,7 +55,9 @@ const initialLabel = options[initialIndex]?.label ?? '';
   {...rest}
 >
   {label && <span class="custom-select-label">{label}</span>}
-  <span class="custom-select-value" data-custom-select-value>{initialLabel}</span>
+  <span class="custom-select-value" data-custom-select-value
+    >{initialLabel}</span
+  >
   <span class="custom-select-arrow" aria-hidden="true"></span>
 
   <select
@@ -66,24 +68,38 @@ const initialLabel = options[initialIndex]?.label ?? '';
     hidden
     aria-hidden="true"
   >
-    {options.map((o) => (
-      <option value={o.value} selected={o.value === initialValue}>{o.label}</option>
-    ))}
+    {
+      options.map((o) => (
+        <option value={o.value} selected={o.value === initialValue}>
+          {o.label}
+        </option>
+      ))
+    }
   </select>
 
-  <ul class="custom-select-dropdown" data-custom-select-dropdown role="listbox" hidden>
-    {options.map((o, i) => (
-      <li
-        role="option"
-        data-value={o.value}
-        data-index={i}
-        aria-selected={i === initialIndex ? 'true' : 'false'}
-        class:list={['custom-select-option', { 'is-active': i === initialIndex }]}
-      >
-        <span class="custom-select-check" aria-hidden="true"></span>
-        <span class="custom-select-option-label">{o.label}</span>
-      </li>
-    ))}
+  <ul
+    class="custom-select-dropdown"
+    data-custom-select-dropdown
+    role="listbox"
+    hidden
+  >
+    {
+      options.map((o, i) => (
+        <li
+          role="option"
+          data-value={o.value}
+          data-index={i}
+          aria-selected={i === initialIndex ? 'true' : 'false'}
+          class:list={[
+            'custom-select-option',
+            { 'is-active': i === initialIndex },
+          ]}
+        >
+          <span class="custom-select-check" aria-hidden="true" />
+          <span class="custom-select-option-label">{o.label}</span>
+        </li>
+      ))
+    }
   </ul>
 </div>
 
@@ -105,7 +121,9 @@ const initialLabel = options[initialIndex]?.label ?? '';
       dropdown?.querySelectorAll<HTMLElement>('[data-value]') ?? [],
     );
     let open = false;
-    let activeIndex = optionEls.findIndex((el) => el.classList.contains('is-active'));
+    let activeIndex = optionEls.findIndex((el) =>
+      el.classList.contains('is-active'),
+    );
     if (activeIndex < 0) activeIndex = 0;
 
     const updateActive = (index: number, fireEvent = false) => {
@@ -237,7 +255,9 @@ const initialLabel = options[initialIndex]?.label ?? '';
 
   function initAll() {
     document
-      .querySelectorAll<HTMLElement>('[data-custom-select]:not([data-initialized])')
+      .querySelectorAll<HTMLElement>(
+        '[data-custom-select]:not([data-initialized])',
+      )
       .forEach(initCustomSelect);
   }
 

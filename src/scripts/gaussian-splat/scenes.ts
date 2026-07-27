@@ -74,7 +74,9 @@ export const SPLAT_SCENES: readonly SplatSceneConfig[] = [
 
 export const DEFAULT_SCENE_ID = SPLAT_SCENES[0].id;
 
-export function findSceneConfig(id: string | null | undefined): SplatSceneConfig | undefined {
+export function findSceneConfig(
+  id: string | null | undefined,
+): SplatSceneConfig | undefined {
   if (!id) return undefined;
   return SPLAT_SCENES.find((s) => s.id === id);
 }

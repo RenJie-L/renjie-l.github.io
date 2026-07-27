@@ -226,7 +226,11 @@ export class GaussianSplatScene {
 
     const cam = this.currentConfig.camera;
     if (cam) {
-      this.defaultCameraPosition.set(cam.position[0], cam.position[1], cam.position[2]);
+      this.defaultCameraPosition.set(
+        cam.position[0],
+        cam.position[1],
+        cam.position[2],
+      );
       this.defaultTarget.set(cam.target[0], cam.target[1], cam.target[2]);
     } else {
       const f = { ...DEFAULT_FRAMING, ...this.currentConfig.framing };
