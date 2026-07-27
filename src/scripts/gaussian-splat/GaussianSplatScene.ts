@@ -1,11 +1,21 @@
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
-const SPLAT_URL =
-  'https://qhrenderstorage-oss.kujiale.com//worldmodel/prod_test/2026/06/24/5470b666-1552-4bfe-ab6e-d42821118b41.spz';
+import {
+  DEFAULT_SCENE_ID,
+  findSceneConfig,
+  type SplatSceneConfig,
+} from './scenes';
 
 type ProgressCallback = (progress: number, status: string) => void;
+
+// 取景默认比例，与原 frameSplat() 保持一致；config.framing 可覆盖。
+const DEFAULT_FRAMING = {
+  eyeHeightRatio: -0.4,
+  eyeOffsetXRatio: -0.12,
+  lookRadiusRatio: 0.025,
+  maxDistanceRatio: 0.22,
+} as const;
 
 // 面板可调节的参数集合；与 GaussianSplatPanel 的 DEFAULTS 保持一致。
 export interface GaussianParams {
@@ -46,6 +56,8 @@ export class GaussianSplatScene {
   private renderer?: THREE.WebGLRenderer;
   private spark?: SparkRenderer;
   private splat?: SplatMesh;
+  private currentConfig?: SplatSceneConfig;
+  private currentSceneId: string = DEFAULT_SCENE_ID;
   private controls?: OrbitControls;
   private resizeObserver?: ResizeObserver;
   private frameId = 0;
@@ -92,7 +104,10 @@ export class GaussianSplatScene {
     this.canvas = canvas;
   }
 
-  async init(onProgress: ProgressCallback) {
+  async init(
+    onProgress: ProgressCallback,
+    initialSceneId: string = DEFAULT_SCENE_ID,
+  ) {
     onProgress(4, 'Initializing WebGL renderer…');
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -118,9 +133,41 @@ export class GaussianSplatScene {
     this.spark = new SparkRenderer({ renderer: this.renderer });
     this.scene.add(this.spark);
 
-    onProgress(8, 'Downloading 7.6 MB SPZ scene…');
-    this.splat = new SplatMesh({
-      url: SPLAT_URL,
+    this.setupResize();
+    this.setupInput();
+    this.resize();
+
+    await this.loadScene(initialSceneId, onProgress);
+  }
+
+  /**
+   * 切换场景。释放旧 splat 的 GPU 资源后加载新场景，并应用其 transform。
+   * renderer / camera / controls / spark 复用，避免视角与上下文丢失。
+   */
+  async loadScene(
+    sceneId: string,
+    onProgress: ProgressCallback,
+  ): Promise<void> {
+    const config = findSceneConfig(sceneId);
+    if (!config) throw new Error(`Unknown splat scene: ${sceneId}`);
+    if (this.currentSceneId === sceneId && this.splat) return;
+
+    // 丢掉旧 splat：从场景图移除 + dispose 释放 GPU 资源
+    if (this.splat) {
+      this.scene.remove(this.splat);
+      this.splat.dispose();
+      this.splat = undefined;
+    }
+
+    this.currentConfig = config;
+    this.currentSceneId = sceneId;
+
+    const sizeHint = config.sizeBytes ?? 8_000_000;
+    const sizeMB = (sizeHint / 1024 / 1024).toFixed(1);
+    onProgress(8, `Downloading ${sizeMB} MB SPZ scene…`);
+
+    const splat = new SplatMesh({
+      url: config.url,
       // 构建 LoD 数据，否则面板中的细节层次与注视点参数没有作用。
       lod: true,
       // 同时保留原始 splat，供包围盒取景与关闭 LoD 时使用。
@@ -128,54 +175,74 @@ export class GaussianSplatScene {
       onProgress: (event) => {
         const ratio = event.lengthComputable
           ? event.loaded / event.total
-          : Math.min(event.loaded / 7_973_645, 1);
+          : Math.min(event.loaded / sizeHint, 1);
         onProgress(
           Math.round(8 + ratio * 76),
           `Downloading scene… ${(event.loaded / 1024 / 1024).toFixed(1)} MB`,
         );
       },
     });
-    this.splat.quaternion.set(1, 0, 0, 0);
-    this.scene.add(this.splat);
 
-    await this.splat.initialized;
+    // 应用 transform：scale → quaternion（先于加入场景，避免一帧闪烁）。
+    // position 留到 frameSplat() 里居中后再叠加。
+    const { scale, quaternion } = config.transform;
+    if (scale !== undefined) splat.scale.setScalar(scale);
+    if (quaternion) splat.quaternion.set(...quaternion);
+    this.splat = splat;
+    this.scene.add(splat);
+
+    await splat.initialized;
     if (this.disposed) return;
     onProgress(90, 'Entering the capture point…');
     this.frameSplat();
-    this.setupResize();
-    this.setupInput();
-    this.resize();
     onProgress(100, 'Scene ready');
   }
 
+  getSceneId(): string {
+    return this.currentSceneId;
+  }
+
   private frameSplat() {
-    if (!this.splat || !this.controls) return;
+    if (!this.splat || !this.controls || !this.currentConfig) return;
     const box = this.splat.getBoundingBox();
     if (box.isEmpty()) return;
 
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
     const rotatedCenter = center.clone().applyQuaternion(this.splat.quaternion);
+    // 居中：把包围盒中心（旋转后）搬到原点
     this.splat.position.copy(rotatedCenter).multiplyScalar(-1);
+    // 叠加 config.transform.position（在居中之后的额外偏移）
+    const pos = this.currentConfig.transform.position;
+    if (pos) this.splat.position.add(new THREE.Vector3(pos[0], pos[1], pos[2]));
 
-    // Keep the camera close to the capture origin instead of fitting the whole
-    // bounding box, so OrbitControls behaves like an interior look-around view.
+    // 取景：优先用 config.camera 硬编码值，否则用 framing 比例算
     const sceneScale = Math.max(size.x, size.y, size.z, 0.5);
-    const lookRadius = sceneScale * 0.025;
-    const eyeHeight = -size.y * 0.4;
-    const eyeOffsetX = size.x * -0.12;
-    this.camera.near = Math.max(sceneScale / 10_000, 0.001);
-    this.camera.far = Math.max(sceneScale * 12, 100);
-    this.movementSpeed = sceneScale * 0.04;
+    const worldScale = sceneScale * (this.splat.scale.x || 1);
+    this.camera.near = Math.max(worldScale / 10_000, 0.001);
+    this.camera.far = Math.max(worldScale * 12, 100);
+    this.movementSpeed = worldScale * 0.04;
     this.camera.updateProjectionMatrix();
 
-    this.defaultTarget.set(eyeOffsetX, eyeHeight, -lookRadius);
-    this.defaultCameraPosition.set(eyeOffsetX, eyeHeight, 0);
+    const cam = this.currentConfig.camera;
+    if (cam) {
+      this.defaultCameraPosition.set(cam.position[0], cam.position[1], cam.position[2]);
+      this.defaultTarget.set(cam.target[0], cam.target[1], cam.target[2]);
+    } else {
+      const f = { ...DEFAULT_FRAMING, ...this.currentConfig.framing };
+      const lookRadius = sceneScale * f.lookRadiusRatio;
+      const eyeHeight = size.y * f.eyeHeightRatio;
+      const eyeOffsetX = size.x * f.eyeOffsetXRatio;
+      this.defaultTarget.set(eyeOffsetX, eyeHeight, -lookRadius);
+      this.defaultCameraPosition.set(eyeOffsetX, eyeHeight, 0);
+    }
     this.camera.position.copy(this.defaultCameraPosition);
     this.controls.target.copy(this.defaultTarget);
     this.controls.enablePan = false;
-    this.controls.minDistance = lookRadius * 0.35;
-    this.controls.maxDistance = sceneScale * 0.22;
+    // minDistance/maxDistance 用 worldScale 估算，保证可缩放范围合理
+    const dist = this.defaultCameraPosition.distanceTo(this.defaultTarget);
+    this.controls.minDistance = dist * 0.1;
+    this.controls.maxDistance = worldScale * 0.5;
     this.controls.update();
   }
 

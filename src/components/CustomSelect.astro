@@ -1,0 +1,495 @@
+---
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  options: SelectOption[];
+  value?: string;
+  label?: string;
+  size?: 'sm' | 'md';
+  direction?: 'up' | 'down';
+  align?: 'center' | 'left' | 'right';
+  name?: string;
+  'data-param'?: string;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  options,
+  value,
+  label,
+  size = 'md',
+  direction = 'down',
+  align = 'center',
+  name,
+  disabled = false,
+  class: className = '',
+  'data-param': dataParam,
+  ...rest
+} = Astro.props;
+const initialValue = value ?? options[0]?.value ?? '';
+const initialIndex = Math.max(
+  0,
+  options.findIndex((o) => o.value === initialValue),
+);
+const initialLabel = options[initialIndex]?.label ?? '';
+---
+
+<div
+  class:list={[
+    'custom-select',
+    `size-${size}`,
+    `direction-${direction}`,
+    `align-${align}`,
+    { 'is-disabled': disabled },
+    className,
+  ]}
+  data-custom-select
+  tabindex={disabled ? -1 : 0}
+  role="listbox"
+  aria-haspopup="listbox"
+  aria-expanded="false"
+  {...rest}
+>
+  {label && <span class="custom-select-label">{label}</span>}
+  <span class="custom-select-value" data-custom-select-value>{initialLabel}</span>
+  <span class="custom-select-arrow" aria-hidden="true"></span>
+
+  <select
+    data-custom-select-native
+    {name}
+    data-param={dataParam}
+    {disabled}
+    hidden
+    aria-hidden="true"
+  >
+    {options.map((o) => (
+      <option value={o.value} selected={o.value === initialValue}>{o.label}</option>
+    ))}
+  </select>
+
+  <ul class="custom-select-dropdown" data-custom-select-dropdown role="listbox" hidden>
+    {options.map((o, i) => (
+      <li
+        role="option"
+        data-value={o.value}
+        data-index={i}
+        aria-selected={i === initialIndex ? 'true' : 'false'}
+        class:list={['custom-select-option', { 'is-active': i === initialIndex }]}
+      >
+        <span class="custom-select-check" aria-hidden="true"></span>
+        <span class="custom-select-option-label">{o.label}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<script>
+  function initCustomSelect(root: HTMLElement) {
+    if (root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    const nativeSelect = root.querySelector<HTMLSelectElement>(
+      '[data-custom-select-native]',
+    );
+    const valueEl = root.querySelector<HTMLElement>(
+      '[data-custom-select-value]',
+    );
+    const dropdown = root.querySelector<HTMLElement>(
+      '[data-custom-select-dropdown]',
+    );
+    const optionEls = Array.from(
+      dropdown?.querySelectorAll<HTMLElement>('[data-value]') ?? [],
+    );
+    let open = false;
+    let activeIndex = optionEls.findIndex((el) => el.classList.contains('is-active'));
+    if (activeIndex < 0) activeIndex = 0;
+
+    const updateActive = (index: number, fireEvent = false) => {
+      activeIndex = index;
+      optionEls.forEach((el, i) => {
+        const isActive = i === index;
+        el.classList.toggle('is-active', isActive);
+        el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+      const opt = optionEls[index];
+      if (opt && valueEl) {
+        const label =
+          opt.querySelector<HTMLElement>('.custom-select-option-label')
+            ?.textContent ?? '';
+        valueEl.textContent = label;
+      }
+      if (nativeSelect && opt) {
+        nativeSelect.value = opt.dataset.value ?? '';
+        if (fireEvent) {
+          nativeSelect.dispatchEvent(new Event('input', { bubbles: true }));
+          nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    };
+
+    const openDropdown = () => {
+      if (open || !dropdown || root.classList.contains('is-disabled')) return;
+      open = true;
+      root.setAttribute('aria-expanded', 'true');
+      root.classList.add('is-open');
+      dropdown.hidden = false;
+      requestAnimationFrame(() => {
+        dropdown.classList.add('is-open');
+      });
+      setTimeout(() => {
+        optionEls[activeIndex]?.scrollIntoView({ block: 'nearest' });
+      }, 10);
+    };
+
+    const closeDropdown = () => {
+      if (!open || !dropdown) return;
+      open = false;
+      root.setAttribute('aria-expanded', 'false');
+      root.classList.remove('is-open');
+      dropdown.classList.remove('is-open');
+      setTimeout(() => {
+        if (!open) dropdown.hidden = true;
+      }, 180);
+    };
+
+    const toggleDropdown = () => {
+      if (open) closeDropdown();
+      else openDropdown();
+    };
+
+    const selectOption = (index: number) => {
+      updateActive(index, true);
+      closeDropdown();
+    };
+
+    root.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (root.classList.contains('is-disabled')) return;
+      const option = (e.target as HTMLElement).closest('[data-value]');
+      if (option) {
+        const idx = Number((option as HTMLElement).dataset.index);
+        if (!Number.isNaN(idx)) selectOption(idx);
+      } else {
+        toggleDropdown();
+      }
+    });
+
+    optionEls.forEach((opt) => {
+      opt.addEventListener('mouseenter', () => {
+        optionEls.forEach((o) => o.classList.remove('is-hovered'));
+        opt.classList.add('is-hovered');
+      });
+    });
+
+    root.addEventListener('keydown', (e) => {
+      if (root.classList.contains('is-disabled')) return;
+      switch (e.key) {
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (!open) openDropdown();
+          else selectOption(activeIndex);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          if (!open) openDropdown();
+          else {
+            const next = (activeIndex + 1) % optionEls.length;
+            updateActive(next);
+            optionEls[next]?.scrollIntoView({ block: 'nearest' });
+          }
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          if (!open) openDropdown();
+          else {
+            const prev =
+              (activeIndex - 1 + optionEls.length) % optionEls.length;
+            updateActive(prev);
+            optionEls[prev]?.scrollIntoView({ block: 'nearest' });
+          }
+          break;
+        case 'Escape':
+          e.preventDefault();
+          closeDropdown();
+          break;
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (open && !root.contains(e.target as Node)) closeDropdown();
+    });
+
+    // 监听原生 select 的外部 value 变更（例如参数面板 reset 时）
+    const syncFromNative = () => {
+      if (!nativeSelect) return;
+      const idx = optionEls.findIndex(
+        (el) => el.dataset.value === nativeSelect.value,
+      );
+      if (idx >= 0 && idx !== activeIndex) updateActive(idx);
+    };
+    nativeSelect?.addEventListener('change', syncFromNative);
+  }
+
+  function initAll() {
+    document
+      .querySelectorAll<HTMLElement>('[data-custom-select]:not([data-initialized])')
+      .forEach(initCustomSelect);
+  }
+
+  // ClientRouter 导航结束后触发（含首次加载）
+  document.addEventListener('astro:page-load', initAll);
+  // 兜底：模块脚本是 defer 的，可能晚于 astro:page-load 执行。
+  // 此时 DOM 已就绪，直接初始化未处理的实例。
+  if (document.readyState !== 'loading') {
+    initAll();
+  } else {
+    document.addEventListener('DOMContentLoaded', initAll, { once: true });
+  }
+</script>
+
+<style>
+  .custom-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 36px;
+    padding: 0.45rem 1.8rem 0.45rem 0.7rem;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 999px;
+    color: #f5f4ef;
+    background: rgb(12 15 20 / 74%);
+    backdrop-filter: blur(14px);
+    font-size: 0.78rem;
+    cursor: pointer;
+    user-select: none;
+    pointer-events: auto;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .custom-select.size-md {
+    min-height: 42px;
+    padding: 0.65rem 2rem 0.65rem 0.85rem;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 20%);
+  }
+  .custom-select:hover {
+    border-color: rgb(255 255 255 / 34%);
+    background: rgb(25 30 37 / 86%);
+  }
+  .custom-select:focus-visible {
+    outline: none;
+    border-color: rgb(167 227 223 / 60%);
+    box-shadow: 0 0 0 3px rgb(167 227 223 / 18%);
+  }
+  .custom-select.is-disabled {
+    opacity: 0.5;
+    cursor: wait;
+  }
+  .custom-select-label {
+    color: rgb(245 244 239 / 60%);
+    font-size: 0.72rem;
+    text-shadow: 0 1px 8px #000;
+    white-space: nowrap;
+  }
+  .custom-select-value {
+    font-weight: 600;
+    text-shadow: 0 1px 8px #000;
+    white-space: nowrap;
+  }
+  .custom-select-arrow {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid rgb(245 244 239 / 70%);
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition:
+      transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+      border-top-color 0.2s ease;
+  }
+  .size-md .custom-select-arrow {
+    right: 0.85rem;
+  }
+  .custom-select:hover .custom-select-arrow {
+    border-top-color: #a7e3df;
+  }
+  .custom-select.is-open .custom-select-arrow {
+    transform: translateY(-50%) rotate(180deg);
+    border-top-color: #a7e3df;
+  }
+
+  /* 下拉面板 */
+  .custom-select-dropdown {
+    position: absolute;
+    z-index: 10;
+    min-width: 100%;
+    margin: 0;
+    padding: 0.35rem;
+    list-style: none;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 12px;
+    background: rgb(12 15 20 / 92%);
+    backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow:
+      0 20px 50px rgb(0 0 0 / 40%),
+      0 0 0 1px rgb(167 227 223 / 6%) inset;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.18s ease,
+      transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .custom-select-dropdown.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 方向：向上 */
+  .direction-up .custom-select-dropdown {
+    left: 50%;
+    bottom: calc(100% + 0.5rem);
+    transform: translateX(-50%) translateY(4px);
+  }
+  .direction-up .custom-select-dropdown.is-open {
+    transform: translateX(-50%) translateY(0);
+  }
+  .direction-up .custom-select-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgb(255 255 255 / 12%);
+  }
+
+  /* 方向：向下 */
+  .direction-down .custom-select-dropdown {
+    left: 50%;
+    top: calc(100% + 0.5rem);
+    transform: translateX(-50%) translateY(-4px);
+  }
+  .direction-down .custom-select-dropdown.is-open {
+    transform: translateX(-50%) translateY(0);
+  }
+  .direction-down .custom-select-dropdown::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgb(255 255 255 / 12%);
+  }
+
+  /* 对齐方式 */
+  .align-left.direction-up .custom-select-dropdown,
+  .align-left.direction-down .custom-select-dropdown {
+    left: 0;
+    transform: translateX(0) translateY(4px);
+  }
+  .align-left.direction-up .custom-select-dropdown.is-open,
+  .align-left.direction-down .custom-select-dropdown.is-open {
+    transform: translateX(0) translateY(0);
+  }
+  .align-left.direction-up .custom-select-dropdown::after,
+  .align-left.direction-down .custom-select-dropdown::after {
+    left: 20px;
+    transform: none;
+  }
+  .align-right.direction-up .custom-select-dropdown,
+  .align-right.direction-down .custom-select-dropdown {
+    left: auto;
+    right: 0;
+    transform: translateY(4px);
+  }
+  .align-right.direction-up .custom-select-dropdown.is-open,
+  .align-right.direction-down .custom-select-dropdown.is-open {
+    transform: translateY(0);
+  }
+  .align-right.direction-up .custom-select-dropdown::after,
+  .align-right.direction-down .custom-select-dropdown::after {
+    left: auto;
+    right: 20px;
+    transform: none;
+  }
+
+  /* 选项 */
+  .custom-select-option {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    color: rgb(245 244 239 / 78%);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+  .custom-select-option:hover,
+  .custom-select-option.is-hovered {
+    background: rgb(255 255 255 / 6%);
+    color: #f5f4ef;
+  }
+  .custom-select-option.is-active {
+    color: #a7e3df;
+    background: rgb(167 227 223 / 10%);
+  }
+  .custom-select-check {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    border: 1.5px solid rgb(255 255 255 / 18%);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+  .custom-select-option.is-active .custom-select-check {
+    border-color: #a7e3df;
+    background: #a7e3df;
+  }
+  .custom-select-option.is-active .custom-select-check::after {
+    content: '';
+    width: 8px;
+    height: 4px;
+    border-left: 2px solid #081012;
+    border-bottom: 2px solid #081012;
+    transform: rotate(-45deg) translate(1px, -1px);
+  }
+  .custom-select-option-label {
+    line-height: 1.4;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .custom-select,
+    .custom-select-arrow,
+    .custom-select-dropdown,
+    .custom-select-option,
+    .custom-select-check {
+      transition: none;
+    }
+  }
+</style>

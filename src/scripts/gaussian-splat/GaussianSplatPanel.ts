@@ -191,7 +191,10 @@ export class GaussianSplatPanel {
       ) {
         input.value = String(value);
       } else if (input instanceof HTMLSelectElement) {
-        input.value = String(value);
+        if (input.value !== String(value)) {
+          input.value = String(value);
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
       }
     }
 

@@ -1,4 +1,4 @@
-﻿---
+---
 import {
   ArrowLeft,
   Expand,
@@ -11,6 +11,8 @@ import {
   X,
 } from '@lucide/astro';
 import type { Locale } from '@/i18n/config';
+import { SPLAT_SCENES } from '@/scripts/gaussian-splat/scenes';
+import CustomSelect from '@/components/CustomSelect.astro';
 
 interface Props {
   locale?: Locale;
@@ -34,8 +36,14 @@ const copy = isEnglish
       pause: 'Pause rotation',
       play: 'Auto rotate',
       fullscreen: 'Fullscreen',
+      scene: 'Scene',
+      sceneLoading: 'Switching scene…',
       failed:
         'The scene could not be loaded. Check WebGL support and try again.',
+      sceneNames: {
+        interior: 'Interior',
+        'holo-cos': 'Meilizhou Church',
+      } as Record<string, string>,
       panel: {
         toggle: 'Tune',
         title: 'Gaussian Parameters',
@@ -82,7 +90,13 @@ const copy = isEnglish
       pause: '暂停旋转',
       play: '自动旋转',
       fullscreen: '全屏',
+      scene: '场景',
+      sceneLoading: '正在切换场景…',
       failed: '场景加载失败，请检查浏览器 WebGL 支持后重试。',
+      sceneNames: {
+        interior: '室内场景',
+        'holo-cos': '美丽州教堂',
+      } as Record<string, string>,
       panel: {
         toggle: '调参',
         title: '高斯参数',
@@ -115,6 +129,11 @@ const copy = isEnglish
         behindFoveate: '后方缩放',
       },
     };
+
+const sceneOptions = SPLAT_SCENES.map((s) => ({
+  id: s.id,
+  name: copy.sceneNames[s.id] ?? s.name,
+}));
 ---
 
 <section
@@ -156,7 +175,7 @@ const copy = isEnglish
 
   <div class="loader" data-splat-loader hidden aria-live="polite">
     <span class="loader-mark" aria-hidden="true"></span>
-    <strong>{copy.loading}</strong>
+    <strong data-loading-text={copy.loading} data-scene-loading-text={copy.sceneLoading}>{copy.loading}</strong>
     <span data-load-status>Preparing renderer…</span>
     <div class="load-track" aria-hidden="true"><span data-load-bar></span></div>
     <span data-load-value>0%</span>
@@ -165,6 +184,15 @@ const copy = isEnglish
   <div class="viewer-hud" data-splat-hud hidden>
     <p><Move3D size={15} />{copy.interaction}</p>
     <div class="viewer-actions">
+      <CustomSelect
+        class="scene-switcher-select"
+        label={copy.scene}
+        size="md"
+        direction="up"
+        options={sceneOptions.map((s) => ({ value: s.id, label: s.name }))}
+        value={sceneOptions[0]?.id}
+        data-scene-select
+      />
       <button type="button" data-reset-view title={copy.reset}>
         <RotateCcw size={16} /><span>{copy.reset}</span>
       </button>
@@ -220,15 +248,23 @@ const copy = isEnglish
           <span class="field-label">{copy.panel.recolor}</span>
           <input type="color" data-param="recolor" />
         </label>
-        <label class="field">
+        <div class="field">
           <span class="field-label">{copy.panel.maxSh}</span>
-          <select data-param="maxSh">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-          </select>
-        </label>
+          <CustomSelect
+            class="param-select"
+            size="sm"
+            direction="up"
+            align="right"
+            data-param="maxSh"
+            value="3"
+            options={[
+              { value: '0', label: '0' },
+              { value: '1', label: '1' },
+              { value: '2', label: '2' },
+              { value: '3', label: '3' },
+            ]}
+          />
+        </div>
       </section>
 
       <section class="panel-group">
@@ -441,7 +477,6 @@ const copy = isEnglish
 <script>
   import type { GaussianSplatScene } from '@/scripts/gaussian-splat/GaussianSplatScene';
   import type { GaussianSplatPanel } from '@/scripts/gaussian-splat/GaussianSplatPanel';
-
   let splatScene: GaussianSplatScene | undefined;
   let splatPanel: GaussianSplatPanel | undefined;
 
@@ -462,6 +497,11 @@ const copy = isEnglish
       '[data-toggle-rotation]',
     );
     const panelEl = root.querySelector<HTMLElement>('[data-splat-panel]');
+    const sceneSelect =
+      root.querySelector<HTMLSelectElement>('[data-scene-select] select');
+    const sceneSwitcher = root.querySelector<HTMLElement>('[data-scene-select]');
+    const sceneLoadingLabel =
+      root.querySelector<HTMLElement>('[data-splat-loader] strong');
 
     const updateRotationButton = (playing: boolean) => {
       if (!rotationButton) return;
@@ -473,42 +513,74 @@ const copy = isEnglish
       if (label) label.textContent = playing ? pauseLabel : playLabel;
     };
 
+    const runWithProgress = async (
+      fn: (onProgress: (p: number, s: string) => void) => Promise<void>,
+    ) => {
+      root.dataset.state = 'loading';
+      loader?.removeAttribute('hidden');
+      if (loadBar) loadBar.style.width = '0%';
+      if (loadValue) loadValue.textContent = '0%';
+      try {
+        await fn((progress, status) => {
+          if (loadBar) loadBar.style.width = `${progress}%`;
+          if (loadValue) loadValue.textContent = `${progress}%`;
+          if (loadStatus) loadStatus.textContent = status;
+        });
+        root.dataset.state = 'active';
+        errorMessage?.setAttribute('hidden', '');
+      } catch (error) {
+        console.warn('Unable to load Gaussian splat scene.', error);
+        root.dataset.state = 'error';
+        errorMessage?.removeAttribute('hidden');
+      } finally {
+        loader?.setAttribute('hidden', '');
+      }
+    };
+
     root.addEventListener('splat-auto-rotate-change', (event) => {
       updateRotationButton((event as CustomEvent<boolean>).detail);
     });
 
     loadButton?.addEventListener('click', async () => {
       loadButton.disabled = true;
-      root.dataset.state = 'loading';
-      loader?.removeAttribute('hidden');
-      try {
+      await runWithProgress(async (onProgress) => {
         const [{ GaussianSplatScene }, { GaussianSplatPanel }] =
           await Promise.all([
             import('@/scripts/gaussian-splat/GaussianSplatScene'),
             import('@/scripts/gaussian-splat/GaussianSplatPanel'),
           ]);
         splatScene = new GaussianSplatScene(root);
-        await splatScene.init((progress, status) => {
-          if (loadBar) loadBar.style.width = `${progress}%`;
-          if (loadValue) loadValue.textContent = `${progress}%`;
-          if (loadStatus) loadStatus.textContent = status;
-        });
+        await splatScene.init(onProgress);
         splatPanel = new GaussianSplatPanel(root, (p) =>
           splatScene?.applyParams(p),
         );
         panelEl?.setAttribute('aria-hidden', 'false');
-        root.dataset.state = 'active';
         intro?.setAttribute('hidden', '');
-        loader?.setAttribute('hidden', '');
         hud?.removeAttribute('hidden');
         splatScene.start();
-      } catch (error) {
-        console.warn('Unable to load Gaussian splat scene.', error);
-        root.dataset.state = 'error';
-        loader?.setAttribute('hidden', '');
-        errorMessage?.removeAttribute('hidden');
-        loadButton.disabled = false;
+      });
+      if (root.dataset.state !== 'active') loadButton.disabled = false;
+    });
+
+    const switchScene = async (id: string) => {
+      if (!splatScene || splatScene.getSceneId() === id) return;
+      const originalText = sceneLoadingLabel?.textContent ?? '';
+      if (sceneLoadingLabel && sceneLoadingLabel.dataset.sceneLoadingText) {
+        sceneLoadingLabel.textContent = sceneLoadingLabel.dataset.sceneLoadingText;
       }
+      if (sceneSelect) sceneSelect.disabled = true;
+      sceneSwitcher?.classList.add('is-disabled');
+      await runWithProgress(async (onProgress) => {
+        await splatScene!.loadScene(id, onProgress);
+      });
+      if (sceneSelect) sceneSelect.disabled = false;
+      sceneSwitcher?.classList.remove('is-disabled');
+      if (sceneLoadingLabel) sceneLoadingLabel.textContent = originalText;
+    };
+
+    sceneSelect?.addEventListener('change', () => {
+      const id = sceneSelect.value;
+      void switchScene(id);
     });
 
     root.querySelector('[data-reset-view]')?.addEventListener('click', () => {
@@ -634,7 +706,8 @@ const copy = isEnglish
     pointer-events: none;
   }
   .nav-pill,
-  .viewer-actions button {
+  .viewer-actions button,
+  .scene-switcher-select {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
@@ -650,7 +723,8 @@ const copy = isEnglish
     pointer-events: auto;
   }
   .nav-pill:hover,
-  .viewer-actions button:hover {
+  .viewer-actions button:hover,
+  .scene-switcher-select:hover {
     border-color: rgb(255 255 255 / 34%);
     background: rgb(25 30 37 / 86%);
   }
@@ -1079,6 +1153,29 @@ const copy = isEnglish
       width: 42px;
       justify-content: center;
       padding: 0;
+    }
+    .scene-switcher-select .custom-select-label {
+      display: none;
+    }
+    .scene-switcher-select.custom-select {
+      padding: 0.45rem 1.7rem 0.45rem 0.75rem;
+    }
+    .scene-switcher-select .custom-select-arrow {
+      right: 0.65rem;
+    }
+    .scene-switcher-select .custom-select-dropdown {
+      left: auto;
+      right: 0;
+      transform: translateY(4px);
+      min-width: 140px;
+    }
+    .scene-switcher-select .custom-select-dropdown.is-open {
+      transform: translateY(0);
+    }
+    .scene-switcher-select .custom-select-dropdown::after {
+      left: auto;
+      right: 18px;
+      transform: none;
     }
   }
   @media (prefers-reduced-motion: reduce) {
