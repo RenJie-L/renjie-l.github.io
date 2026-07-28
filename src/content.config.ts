@@ -12,6 +12,7 @@ const writing = defineCollection({
     category: z.string(),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    hasMath: z.boolean().default(false),
     readingTime: z.number().positive(),
     language: z.enum(['zh-CN', 'en']),
     legacyUrl: z.string().optional(),

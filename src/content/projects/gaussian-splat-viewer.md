@@ -12,8 +12,8 @@ links:
     url: '/experiments/gaussian-splat'
 featured: true
 cover:
-  src: '//qhstaticssl.kujiale.com/image/png/1784796407414/25DF08664B29B28B0D18033AE03F4FD1.png?imageMogr2/format/webp'
-  alt: '由青蓝与暖橙色三维高斯点云重建而成的室内空间'
+  # src: '/images/projects/gaussian-splatting-cover.webp'
+  alt: '从蓝色高斯椭球点云逐渐重建成暖色建筑与树木的三维场景'
 ---
 
 一个面向 3D Gaussian Splatting 的独立实验页，验证压缩 SPZ 场景在静态 Astro 网站中的加载、渲染和交互体验。

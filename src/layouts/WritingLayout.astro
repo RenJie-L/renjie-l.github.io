@@ -2,6 +2,7 @@
 import { ArrowLeft, ArrowRight, CalendarDays, Clock3 } from '@lucide/astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { formatDate, type Writing } from '@/lib/content';
+import katexStylesheet from 'katex/dist/katex.min.css?url';
 
 interface Props {
   article: Writing;
@@ -20,6 +21,11 @@ const toc = headings.filter(
   description={article.data.description}
   type="article"
 >
+  {
+    article.data.hasMath && (
+      <link slot="head" rel="stylesheet" href={katexStylesheet} />
+    )
+  }
   <article class="writing-shell" data-pagefind-body>
     <header class="writing-header container">
       <a class="back-link" href="/writing"

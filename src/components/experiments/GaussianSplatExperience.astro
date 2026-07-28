@@ -741,10 +741,14 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     z-index: 3;
     top: 50%;
     left: max(7vw, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     width: min(560px, calc(100% - 3rem));
     transform: translateY(-46%);
   }
   .eyebrow {
+    margin: 0 0 0.85rem;
     color: #7fc7ca;
     font:
       650 0.72rem ui-monospace,
@@ -753,15 +757,18 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     text-transform: uppercase;
   }
   h1 {
-    margin: 0.65rem 0 1rem;
-    font-size: clamp(3.8rem, 10vw, 8.5rem);
-    line-height: 0.85;
-    letter-spacing: -0.075em;
+    margin: 0;
+    font-size: clamp(3.8rem, 8vw, 7.5rem);
+    line-height: 0.94;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
   }
   .description {
     max-width: 510px;
+    margin: 1.2rem 0 0;
     color: rgb(245 244 239 / 68%);
     font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.65;
   }
   .enter-button {
     display: inline-flex;
@@ -785,6 +792,7 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     cursor: wait;
   }
   .tech-note {
+    margin: 0.45rem 0 0;
     color: rgb(245 244 239 / 42%);
     font:
       0.72rem ui-monospace,
@@ -1146,7 +1154,8 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       transform: none;
     }
     h1 {
-      font-size: clamp(3.4rem, 19vw, 5.6rem);
+      font-size: clamp(3.2rem, 17vw, 5rem);
+      line-height: 0.92;
     }
     .viewer-hud {
       align-items: flex-end;

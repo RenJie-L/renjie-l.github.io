@@ -93,6 +93,7 @@ const enUrl = new URL(
     <meta name="twitter:description" content={description} />
     {imageUrl && <meta name="twitter:image" content={imageUrl} />}
     <title>{fullTitle}</title>
+    <slot name="head" />
     <ClientRouter />
     <script is:inline>
       (() => {
