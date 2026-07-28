@@ -3,4 +3,5 @@ export default {
   overrides: [{ files: '*.astro', options: { parser: 'astro' } }],
   singleQuote: true,
   trailingComma: 'all',
+  endOfLine: 'auto',
 };

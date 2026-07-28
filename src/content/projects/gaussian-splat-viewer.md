@@ -11,9 +11,6 @@ links:
   - label: '进入场景'
     url: '/experiments/gaussian-splat'
 featured: true
-cover:
-  # src: '/images/projects/gaussian-splatting-cover.webp'
-  alt: '从蓝色高斯椭球点云逐渐重建成暖色建筑与树木的三维场景'
 ---
 
 一个面向 3D Gaussian Splatting 的独立实验页，验证压缩 SPZ 场景在静态 Astro 网站中的加载、渲染和交互体验。

@@ -1,6 +1,18 @@
 ﻿---
-import { ArrowLeft, Languages, Move, Play, SkipForward } from '@lucide/astro';
+import {
+  ArrowLeft,
+  Languages,
+  MapPin,
+  Move,
+  Play,
+  SkipForward,
+  X,
+} from '@lucide/astro';
 import type { Locale } from '@/i18n/config';
+import {
+  WEST_LAKE_CHAPTERS,
+  WEST_LAKE_LANDMARKS,
+} from '@/scripts/west-lake/config/chapters';
 
 interface Props {
   locale?: Locale;
@@ -24,6 +36,9 @@ const copy = isEnglish
       interact: 'Move to look · Click the lake to create ripples',
       quality: 'Scene quality',
       reduced: 'Reduced motion is enabled. The static ink-wash scene is shown.',
+      chapters: 'Scenic route',
+      landmark: 'Open landmark story',
+      close: 'Close story',
     }
   : {
       back: '返回项目',
@@ -40,18 +55,46 @@ const copy = isEnglish
       interact: '移动视角 · 点击湖面产生涟漪',
       quality: '场景质量',
       reduced: '系统已开启减少动态效果，当前展示静态水墨场景。',
+      chapters: '西湖游线',
+      landmark: '打开地标故事',
+      close: '关闭故事',
     };
+const localized = (value: { zh: string; en: string }) =>
+  isEnglish ? value.en : value.zh;
 ---
 
 <section
   class="west-lake"
   data-west-lake-root
   data-state="intro"
+  data-locale={isEnglish ? 'en' : 'zh'}
   aria-labelledby="west-lake-title"
 >
   <div class="poster" aria-hidden="true"></div>
   <canvas data-west-lake-canvas aria-hidden="true"></canvas>
   <div class="paper-grain" aria-hidden="true"></div>
+  <div class="landmark-layer" data-landmark-layer aria-label={copy.chapters}>
+    {
+      WEST_LAKE_LANDMARKS.map((landmark, index) => (
+        <button
+          class="landmark-label"
+          type="button"
+          data-landmark-label={landmark.id}
+          data-chapter-id={landmark.chapterId}
+          data-chapter-active={index === 0 ? '' : undefined}
+          data-title={localized(landmark.title)}
+          data-eyebrow={localized(landmark.eyebrow)}
+          data-story={localized(landmark.story)}
+          data-poem={localized(landmark.poem)}
+          aria-label={`${copy.landmark}: ${localized(landmark.title)}`}
+        >
+          <span aria-hidden="true" />
+          <MapPin size={13} />
+          {localized(landmark.title)}
+        </button>
+      ))
+    }
+  </div>
 
   <nav
     class="experience-nav"
@@ -88,6 +131,45 @@ const copy = isEnglish
     <span data-load-value>0%</span>
   </div>
 
+  <div class="scene-rail" data-scene-rail hidden>
+    <p>{copy.chapters}</p>
+    <div role="group" aria-label={copy.chapters}>
+      {
+        WEST_LAKE_CHAPTERS.map((chapter, index) => (
+          <button
+            type="button"
+            data-chapter-button={chapter.id}
+            aria-pressed={index === 0 ? 'true' : 'false'}
+          >
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{localized(chapter.title)}</strong>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <aside
+    class="landmark-story"
+    data-landmark-story
+    hidden
+    aria-live="polite"
+    aria-label={copy.landmark}
+  >
+    <button
+      class="story-close"
+      type="button"
+      data-story-close
+      aria-label={copy.close}
+    >
+      <X size={17} />
+    </button>
+    <p class="story-eyebrow" data-story-eyebrow></p>
+    <h2 data-story-title></h2>
+    <blockquote data-story-poem></blockquote>
+    <p class="story-copy" data-story-copy></p>
+  </aside>
+
   <div class="scene-hud" data-scene-hud hidden>
     <p><Move size={15} />{copy.interact}</p>
     <div>
@@ -109,8 +191,10 @@ const copy = isEnglish
 
 <script>
   import type { WestLakeScene } from '@/scripts/west-lake/WestLakeScene';
+  import type { ChapterId } from '@/scripts/west-lake/types';
 
   let westLakeScene: WestLakeScene | undefined;
+  let keyHandler: ((event: KeyboardEvent) => void) | undefined;
 
   function setupWestLake() {
     const root = document.querySelector<HTMLElement>('[data-west-lake-root]');
@@ -120,6 +204,7 @@ const copy = isEnglish
     const intro = root.querySelector<HTMLElement>('[data-intro-panel]');
     const loader = root.querySelector<HTMLElement>('[data-scene-loader]');
     const hud = root.querySelector<HTMLElement>('[data-scene-hud]');
+    const rail = root.querySelector<HTMLElement>('[data-scene-rail]');
     const loadBar = root.querySelector<HTMLElement>('[data-load-bar]');
     const loadValue = root.querySelector<HTMLElement>('[data-load-value]');
     const loadStatus = root.querySelector<HTMLElement>('[data-load-status]');
@@ -127,6 +212,102 @@ const copy = isEnglish
     const reducedMessage = root.querySelector<HTMLElement>(
       '[data-reduced-message]',
     );
+    const story = root.querySelector<HTMLElement>('[data-landmark-story]');
+    const storyEyebrow = root.querySelector<HTMLElement>(
+      '[data-story-eyebrow]',
+    );
+    const storyTitle = root.querySelector<HTMLElement>('[data-story-title]');
+    const storyPoem = root.querySelector<HTMLElement>('[data-story-poem]');
+    const storyCopy = root.querySelector<HTMLElement>('[data-story-copy]');
+    const chapterButtons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('[data-chapter-button]'),
+    );
+    const landmarkLabels = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('[data-landmark-label]'),
+    );
+
+    const setActiveChapter = (id: string) => {
+      chapterButtons.forEach((button) => {
+        const active = button.dataset.chapterButton === id;
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      landmarkLabels.forEach((label) => {
+        label.toggleAttribute(
+          'data-chapter-active',
+          label.dataset.chapterId === id,
+        );
+      });
+    };
+
+    const openStory = (id: string) => {
+      const label = landmarkLabels.find(
+        (candidate) => candidate.dataset.landmarkLabel === id,
+      );
+      if (!label || !story) return;
+      if (storyEyebrow) storyEyebrow.textContent = label.dataset.eyebrow ?? '';
+      if (storyTitle) storyTitle.textContent = label.dataset.title ?? '';
+      if (storyPoem) storyPoem.textContent = label.dataset.poem ?? '';
+      if (storyCopy) storyCopy.textContent = label.dataset.story ?? '';
+      story.removeAttribute('hidden');
+      root.dataset.detailOpen = 'true';
+    };
+
+    const closeStory = () => {
+      story?.setAttribute('hidden', '');
+      delete root.dataset.detailOpen;
+    };
+
+    chapterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const id = button.dataset.chapterButton as ChapterId | undefined;
+        if (!id) return;
+        closeStory();
+        westLakeScene?.goToChapter(id);
+      });
+    });
+    landmarkLabels.forEach((label) => {
+      label.addEventListener('click', () => {
+        const id = label.dataset.landmarkLabel;
+        if (id) westLakeScene?.focusLandmark(id);
+      });
+    });
+    root
+      .querySelector('[data-story-close]')
+      ?.addEventListener('click', closeStory);
+    root.addEventListener('westlake:chapterchange', (event) => {
+      const id = (event as CustomEvent<{ id: string }>).detail.id;
+      setActiveChapter(id);
+    });
+    root.addEventListener('westlake:landmark', (event) => {
+      const detail = (event as CustomEvent<{ id: string; chapterId: string }>)
+        .detail;
+      setActiveChapter(detail.chapterId);
+      openStory(detail.id);
+    });
+
+    keyHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeStory();
+        return;
+      }
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest('a, button')
+      )
+        return;
+      const activeIndex = chapterButtons.findIndex(
+        (button) => button.getAttribute('aria-pressed') === 'true',
+      );
+      if (event.key === 'ArrowRight') {
+        const next = chapterButtons[Math.min(activeIndex + 1, 2)];
+        next?.click();
+      }
+      if (event.key === 'ArrowLeft') {
+        const previous = chapterButtons[Math.max(activeIndex - 1, 0)];
+        previous?.click();
+      }
+    };
+    document.addEventListener('keydown', keyHandler);
 
     enter?.addEventListener('click', async () => {
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -151,6 +332,7 @@ const copy = isEnglish
         intro?.setAttribute('hidden', '');
         loader?.setAttribute('hidden', '');
         hud?.removeAttribute('hidden');
+        rail?.removeAttribute('hidden');
         if (quality)
           quality.textContent = root.dataset.quality?.toUpperCase() ?? 'FULL';
         westLakeScene.start();
@@ -167,6 +349,8 @@ const copy = isEnglish
   }
 
   function destroyWestLake() {
+    if (keyHandler) document.removeEventListener('keydown', keyHandler);
+    keyHandler = undefined;
     westLakeScene?.destroy();
     westLakeScene = undefined;
   }
@@ -237,7 +421,7 @@ const copy = isEnglish
   }
   .paper-grain {
     z-index: 2;
-    opacity: 0.13;
+    opacity: 0.035;
     background-image:
       radial-gradient(
         circle at 20% 30%,
@@ -254,6 +438,59 @@ const copy = isEnglish
       11px 13px;
     mix-blend-mode: multiply;
     pointer-events: none;
+  }
+  .landmark-layer {
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+    pointer-events: none;
+  }
+  .landmark-label {
+    position: absolute;
+    top: var(--label-y, 50%);
+    left: var(--label-x, 50%);
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.58rem 0.35rem 0.48rem;
+    border: 1px solid rgb(34 63 63 / 20%);
+    border-radius: 999px;
+    color: #24474a;
+    background: rgb(235 239 228 / 78%);
+    box-shadow: 0 10px 28px rgb(34 61 59 / 12%);
+    backdrop-filter: blur(10px);
+    font-size: 0.7rem;
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 0.65rem)) scale(0.92);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      background 0.2s ease;
+  }
+  .landmark-label[data-visible][data-chapter-active] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, calc(-100% - 0.65rem)) scale(1);
+  }
+  .landmark-label > span {
+    position: absolute;
+    bottom: -0.52rem;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border: 2px solid rgb(238 241 230 / 88%);
+    border-radius: 50%;
+    background: #355f5e;
+    box-shadow: 0 0 0 1px rgb(35 66 65 / 25%);
+    transform: translateX(-50%);
+  }
+  .landmark-label:hover,
+  .landmark-label:focus-visible {
+    background: rgb(245 244 232 / 94%);
+    transform: translate(-50%, calc(-100% - 0.75rem)) scale(1.03);
   }
   .experience-nav {
     position: fixed;
@@ -391,6 +628,8 @@ const copy = isEnglish
   }
   .scene-loader[hidden],
   .scene-hud[hidden],
+  .scene-rail[hidden],
+  .landmark-story[hidden],
   .reduced-message[hidden] {
     display: none;
   }
@@ -427,6 +666,165 @@ const copy = isEnglish
     background: #29494d;
     transition: width 0.2s ease;
   }
+  .scene-rail {
+    position: absolute;
+    z-index: 5;
+    bottom: 3.8rem;
+    left: 50%;
+    width: min(690px, calc(100% - 3rem));
+    padding: 0.58rem 0.7rem 0.68rem;
+    border: 1px solid rgb(38 70 70 / 16%);
+    border-radius: 22px;
+    color: #29494d;
+    background: linear-gradient(
+      90deg,
+      rgb(238 242 232 / 82%),
+      rgb(231 237 228 / 74%)
+    );
+    box-shadow: 0 12px 38px rgb(29 56 56 / 13%);
+    backdrop-filter: blur(12px);
+    transform: translateX(-50%);
+  }
+  .scene-rail > p {
+    margin: 0 0 0.4rem;
+    color: #315355;
+    font:
+      700 0.61rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.14em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .scene-rail > div {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    padding-top: 0.38rem;
+  }
+  .scene-rail > div::before {
+    position: absolute;
+    top: 0;
+    right: 8%;
+    left: 8%;
+    height: 1px;
+    background: rgb(42 76 77 / 38%);
+    content: '';
+  }
+  .scene-rail button {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: #294b4d;
+    background: transparent;
+    text-shadow: 0 1px 8px rgb(248 248 236 / 90%);
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+  .scene-rail button span {
+    font:
+      700 0.62rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+  }
+  .scene-rail button strong {
+    font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    font-size: 0.92rem;
+    font-weight: 680;
+  }
+  .scene-rail button:hover {
+    color: #203f42;
+    transform: translateY(-1px);
+  }
+  .scene-rail button[aria-pressed='true'] {
+    border-color: rgb(41 73 77 / 28%);
+    color: #17393c;
+    background: rgb(247 247 236 / 92%);
+    box-shadow: 0 8px 24px rgb(32 59 59 / 14%);
+    backdrop-filter: blur(10px);
+  }
+  .landmark-story {
+    position: absolute;
+    z-index: 7;
+    top: 50%;
+    right: max(1.25rem, calc((100% - var(--max)) / 2));
+    width: min(360px, calc(100% - 2.5rem));
+    padding: 1.35rem 1.35rem 1.45rem;
+    border: 1px solid rgb(36 66 66 / 15%);
+    border-radius: 18px 3px 18px 3px;
+    color: #29494d;
+    background:
+      linear-gradient(rgb(241 241 228 / 91%), rgb(232 237 225 / 88%)),
+      radial-gradient(circle at 20% 30%, #29494d 0 0.5px, transparent 0.8px);
+    background-size:
+      auto,
+      9px 11px;
+    box-shadow: 0 28px 70px rgb(29 57 57 / 18%);
+    backdrop-filter: blur(15px);
+    transform: translateY(-50%);
+    animation: story-enter 0.4s ease both;
+  }
+  .story-close {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.7rem;
+    display: grid;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    color: #355658;
+    background: transparent;
+    cursor: pointer;
+    place-items: center;
+  }
+  .story-close:hover {
+    background: rgb(46 76 76 / 8%);
+  }
+  .story-eyebrow {
+    margin: 0 2.5rem 0.6rem 0;
+    color: #65807d;
+    font:
+      700 0.62rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .landmark-story h2 {
+    margin: 0;
+    font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    font-size: clamp(2.2rem, 4vw, 3.1rem);
+    font-weight: 500;
+    line-height: 1;
+  }
+  .landmark-story blockquote {
+    margin: 1.1rem 0 0;
+    padding-left: 0.85rem;
+    border-left: 2px solid rgb(52 87 84 / 25%);
+    color: #506e6c;
+    font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  .story-copy {
+    margin: 1rem 0 0;
+    color: #466362;
+    font-size: 0.82rem;
+    line-height: 1.75;
+  }
   .scene-hud {
     position: absolute;
     z-index: 5;
@@ -437,7 +835,7 @@ const copy = isEnglish
     align-items: end;
     justify-content: space-between;
     gap: 1rem;
-    color: #36585a;
+    color: #24484a;
     font:
       600 0.68rem ui-monospace,
       SFMono-Regular,
@@ -454,6 +852,16 @@ const copy = isEnglish
   .scene-hud p {
     gap: 0.45rem;
     margin: 0;
+  }
+  .scene-hud p,
+  .scene-hud > div > span {
+    padding: 0.42rem 0.65rem;
+    border: 1px solid rgb(41 73 77 / 15%);
+    border-radius: 999px;
+    background: rgb(239 242 231 / 76%);
+    box-shadow: 0 7px 22px rgb(31 58 58 / 10%);
+    backdrop-filter: blur(10px);
+    text-shadow: 0 1px 7px rgb(255 255 246 / 90%);
   }
   .scene-hud > div {
     gap: 1rem;
@@ -489,6 +897,12 @@ const copy = isEnglish
       transform: rotate(360deg);
     }
   }
+  @keyframes story-enter {
+    from {
+      opacity: 0;
+      transform: translateY(calc(-50% + 0.75rem));
+    }
+  }
   @media (max-width: 700px) {
     .language-pill {
       width: 42px;
@@ -517,11 +931,56 @@ const copy = isEnglish
       max-width: 92%;
       line-height: 1.62;
     }
+    .landmark-label {
+      padding-right: 0.48rem;
+      font-size: 0.64rem;
+    }
+    .scene-rail {
+      bottom: 4.5rem;
+      width: calc(100% - 1.5rem);
+    }
+    .scene-rail > p {
+      display: none;
+    }
+    .scene-rail > div {
+      gap: 0.25rem;
+    }
+    .scene-rail button {
+      min-height: 38px;
+      gap: 0.28rem;
+      padding-inline: 0.35rem;
+    }
+    .scene-rail button strong {
+      overflow: hidden;
+      max-width: 6.4rem;
+      font-size: 0.78rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .landmark-story {
+      top: auto;
+      right: 0.75rem;
+      bottom: 0.75rem;
+      left: 0.75rem;
+      width: auto;
+      transform: none;
+    }
+    [data-detail-open='true'] .scene-rail,
+    [data-detail-open='true'] .scene-hud {
+      opacity: 0;
+      pointer-events: none;
+    }
     .scene-hud > div > span {
       display: none;
     }
     .scene-hud p {
       max-width: 55%;
+    }
+    @keyframes story-enter {
+      from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+      }
     }
   }
   @media (prefers-reduced-motion: reduce) {

@@ -20,6 +20,13 @@ npm run check
 npm run build
 ```
 
+安装依赖后 Husky 会自动启用 Git hooks。每次提交前会对暂存文件运行 ESLint 和 Prettier，并执行完整的 Astro 内容与类型检查。也可以手动运行：
+
+```bash
+npm run precommit
+npm run validate
+```
+
 ## Deployment
 
 `master` 分支更新后，GitHub Actions 构建 `dist/` 并发布到 GitHub Pages。仓库 Pages Source 需要设置为 **GitHub Actions**。
