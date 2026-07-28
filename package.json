@@ -23,7 +23,7 @@
     "@lucide/astro": "^1.25.0",
     "@sparkjsdev/spark": "^2.1.0",
     "@tailwindcss/vite": "^4.1.11",
-    "astro": "^5.12.1",
+    "astro": "^7.1.4",
     "astro-mermaid": "^2.1.0",
     "gsap": "^3.15.0",
     "mermaid": "^11.16.0",
