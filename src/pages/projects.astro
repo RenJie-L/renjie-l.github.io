@@ -2,7 +2,9 @@
 import { ArrowRight, ExternalLink } from '@lucide/astro';
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-const projects = await getCollection('projects');
+import { byProjectNewest } from '@/lib/content';
+
+const projects = (await getCollection('projects')).sort(byProjectNewest);
 ---
 
 <BaseLayout title="项目" description="Renjie 的工程与研究项目。" hasTranslation>

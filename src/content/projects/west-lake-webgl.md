@@ -1,7 +1,8 @@
 ---
-title: '西湖数字场景：水墨 WebGL 实验'
+title: '西湖数字场景： WebGL 初体验'
 description: '以西湖为灵感，通过 Three.js、Shader 与程序化几何构建可交互的数字山水体验。'
-period: '2026.07 — Present'
+period: '2024.07'
+sortDate: '2024-07'
 role: 'Creative Developer'
 technologies: ['Three.js', 'WebGL', 'GLSL', 'GSAP', 'Astro']
 highlights:

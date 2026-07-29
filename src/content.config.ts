@@ -25,6 +25,7 @@ const projects = defineCollection({
     title: z.string(),
     description: z.string(),
     period: z.string(),
+    sortDate: z.coerce.date(),
     role: z.string(),
     technologies: z.array(z.string()),
     highlights: z.array(z.string()),

@@ -2,6 +2,7 @@
 title: '强化学习无人机负载无摆动轨迹规划'
 description: '面向四旋翼悬挂运输中的负载摆动问题，基于二维动力学模型与 DQN 学习兼顾到达效率和摆动抑制的飞行轨迹。'
 period: '2022.03 — 2023.06'
+sortDate: '2023-06'
 role: 'First Author / Researcher'
 technologies:
   [

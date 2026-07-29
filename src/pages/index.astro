@@ -3,7 +3,7 @@ import { ArrowRight, Bot, Braces, Sparkles, Wrench } from '@lucide/astro';
 import { getCollection } from 'astro:content';
 import ArticleCard from '@/components/ArticleCard.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { byNewest, publishedOnly } from '@/lib/content';
+import { byNewest, byProjectNewest, publishedOnly } from '@/lib/content';
 
 const articles = (await getCollection('writing'))
   .filter(
@@ -13,9 +13,9 @@ const articles = (await getCollection('writing'))
 const featured = articles
   .filter((article) => article.data.featured)
   .slice(0, 3);
-const projects = (await getCollection('projects')).filter(
-  (project) => project.data.featured,
-);
+const projects = (await getCollection('projects'))
+  .filter((project) => project.data.featured)
+  .sort(byProjectNewest);
 const directions = [
   {
     icon: Braces,

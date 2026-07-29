@@ -1,7 +1,8 @@
 ---
 title: '原神启动：WebGL 场景复刻'
 description: '在浏览器中复刻《原神》启动场景，通过云海、天空道路、遗迹光柱与天空之门构建完整的沉浸式进入流程。'
-period: '2026.07 — 至今'
+period: '2025.09'
+sortDate: '2025-09'
 role: 'Creative Developer'
 technologies: ['WebGL', 'xviewer', 'Three.js', 'GLSL', 'Astro']
 highlights:
