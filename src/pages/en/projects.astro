@@ -21,6 +21,54 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     <article class="project-card has-cover">
       <a
         class="project-cover"
+        href="/en/experiments/genshin"
+        aria-label="Enter the Genshin Impact WebGL Experience"
+      >
+        <img
+          src="/assets/experiments/genshin/v1/ui/cover.jpg"
+          alt="A luminous celestial gateway above a sea of clouds"
+          loading="lazy"
+        />
+      </a>
+      <div class="project-head">
+        <div>
+          <span>2026.07 — Present · Creative Developer</span>
+          <h2>Genshin Impact WebGL Experience</h2>
+          <p>
+            A browser recreation of the Genshin Impact opening sequence,
+            spanning the launch screen, a flight through the clouds, and the
+            final passage through the celestial gate.
+          </p>
+        </div>
+        <div class="project-links">
+          <a class="project-action" href="/en/experiments/genshin">
+            Enter scene <ArrowRight size={14} />
+          </a>
+        </div>
+      </div>
+      <ul>
+        <li>
+          Recreates the complete sequence from asset loading to the whiteout
+          portal transition.
+        </li>
+        <li>
+          Uses instanced rendering, custom shaders, FXAA, bloom, and ACES tone
+          mapping.
+        </li>
+        <li>
+          Loads the scene and audio on demand and releases rendering resources
+          during Astro page transitions.
+        </li>
+      </ul>
+      <div class="technologies">
+        <span>WebGL</span><span>xviewer</span><span>Three.js</span><span
+          >GLSL</span
+        ><span>Astro</span>
+      </div>
+    </article>
+    <article class="project-card has-cover">
+      <a
+        class="project-cover"
         href="/en/experiments/gaussian-splat"
         aria-label="Enter the 3D Gaussian Splat Scene Viewer"
       >

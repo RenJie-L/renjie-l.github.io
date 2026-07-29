@@ -1,0 +1,1153 @@
+---
+import {
+  ArrowLeft,
+  ExternalLink,
+  Languages,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from '@lucide/astro';
+import type { Locale } from '@/i18n/config';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'zh-CN' } = Astro.props;
+const isEnglish = locale === 'en';
+const assetRoot = '/assets/experiments/genshin/v1';
+const copy = isEnglish
+  ? {
+      back: 'Back to projects',
+      language: '查看中文版本',
+      navigation: 'Experience navigation',
+      loading: 'Loading world data',
+      preparing: 'Preparing the sky realm…',
+      deviceNote: 'For the best experience, use a desktop browser',
+      disclaimerTitle: 'Disclaimer',
+      disclaimer:
+        'This website is a non-commercial technical recreation inspired by the Genshin Impact login experience. It is not an official product and is not affiliated with HoYoverse or miHoYo.',
+      learning:
+        'All content is presented for WebGL learning, research, and technical demonstration.',
+      start: 'Start',
+      sourceVideo: 'Watch reference video',
+      enter: 'Click anywhere to enter',
+      soundOn: 'Mute sound',
+      soundOff: 'Enable sound',
+      rotateTitle: 'Rotate your device',
+      rotateCopy:
+        'This journey is composed for landscape. Rotate your device to continue.',
+      failedTitle: 'The sky realm could not be loaded',
+      failedFallback:
+        'Check WebGL support and your network connection, then try again.',
+      retry: 'Try again',
+      replay: 'Begin again',
+      complete: 'The journey continues beyond the light',
+      canvas: 'Genshin Impact WebGL login recreation',
+      noScript:
+        'This experience requires JavaScript and a WebGL-capable browser.',
+    }
+  : {
+      back: '返回项目',
+      language: 'View in English',
+      navigation: '体验页导航',
+      loading: '正在加载世界数据',
+      preparing: '正在构筑天空之境…',
+      deviceNote: '为了获得更好的体验，请在电脑端打开',
+      disclaimerTitle: '免责声明',
+      disclaimer:
+        '本网站是一个非商业技术复刻，设计与内容受到《原神》登录体验启发。本项目并非官方产品，与 HoYoverse 或米哈游没有关联。',
+      learning: '所有内容仅用于 WebGL 学习、研究与技术展示。',
+      start: '启动',
+      sourceVideo: '观看参考视频',
+      enter: '点击任意位置进入',
+      soundOn: '关闭声音',
+      soundOff: '开启声音',
+      rotateTitle: '请旋转设备',
+      rotateCopy: '这段旅程为横屏构图，请将设备旋转至横向后继续。',
+      failedTitle: '天空之境加载失败',
+      failedFallback: '请检查网络连接与浏览器 WebGL 支持，然后重试。',
+      retry: '重新加载',
+      replay: '再次启程',
+      complete: '旅程将在光芒彼端继续',
+      canvas: '原神登录场景 WebGL 复刻',
+      noScript: '此体验需要 JavaScript 和支持 WebGL 的浏览器。',
+    };
+---
+
+<section
+  class="genshin-experience"
+  data-genshin-root
+  data-state="loading"
+  data-locale={isEnglish ? 'en' : 'zh'}
+  aria-label={copy.canvas}
+>
+  <div class="sky-fallback" aria-hidden="true">
+    <span class="fallback-sun"></span>
+    <span class="fallback-cloud cloud-one"></span>
+    <span class="fallback-cloud cloud-two"></span>
+    <span class="fallback-cloud cloud-three"></span>
+  </div>
+  <canvas data-genshin-canvas aria-label={copy.canvas}></canvas>
+  <div class="whiteout" data-genshin-whiteout aria-hidden="true"></div>
+
+  <nav class="experience-nav" aria-label={copy.navigation}>
+    <a class="nav-pill" href={isEnglish ? '/en/projects' : '/projects'}>
+      <ArrowLeft size={16} />
+      <span>{copy.back}</span>
+    </a>
+    <a
+      class="nav-pill"
+      href={isEnglish ? '/experiments/genshin' : '/en/experiments/genshin'}
+      hreflang={isEnglish ? 'zh-CN' : 'en'}
+    >
+      <Languages size={16} />
+      <span>{copy.language}</span>
+    </a>
+  </nav>
+
+  <button
+    class="sound-button"
+    type="button"
+    data-sound-toggle
+    data-muted="false"
+    aria-label={copy.soundOn}
+    title={copy.soundOn}
+    hidden
+  >
+    <Volume2 class="sound-on" size={18} />
+    <VolumeX class="sound-off" size={18} />
+  </button>
+
+  <div class="loading-screen" data-genshin-loader aria-live="polite">
+    <div class="loading-content">
+      <img
+        class="genshin-logo"
+        src={`${assetRoot}/ui/Genshin.png`}
+        alt="Genshin Impact"
+        width="576"
+        height="448"
+      />
+      <div class="loading-copy">
+        <strong>{copy.loading}</strong>
+        <span data-load-status>{copy.preparing}</span>
+      </div>
+      <div
+        class="loading-bar"
+        role="progressbar"
+        aria-label={copy.loading}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        data-progressbar
+      >
+        <span class="loading-fill" data-load-bar></span>
+        <i class="bar-diamond diamond-start"></i>
+        <i class="bar-diamond diamond-end"></i>
+      </div>
+      <span class="loading-value" data-load-value>0%</span>
+      <p class="device-note">{copy.deviceNote}</p>
+    </div>
+  </div>
+
+  <div class="login-screen" data-genshin-login hidden>
+    <div class="brand-mark" aria-hidden="true">
+      <img src={`${assetRoot}/ui/Tex_0096.png`} alt="" />
+    </div>
+    <div class="login-shade" aria-hidden="true"></div>
+    <div class="disclaimer">
+      <strong>{copy.disclaimerTitle}</strong>
+      <p>{copy.disclaimer}</p>
+      <p>{copy.learning}</p>
+    </div>
+    <div class="login-actions">
+      <button
+        class="round-action start-action"
+        type="button"
+        data-genshin-start
+        aria-label={copy.start}
+        title={copy.start}
+      >
+        <img src={`${assetRoot}/ui/ClickMe.png`} alt="" />
+        <span>{copy.start}</span>
+      </button>
+      <a
+        class="round-action video-action"
+        href="https://www.bilibili.com/video/BV1E8411v7xy"
+        target="_blank"
+        rel="noreferrer"
+        aria-label={copy.sourceVideo}
+        title={copy.sourceVideo}
+      >
+        <img src={`${assetRoot}/ui/jump.png`} alt="" />
+        <ExternalLink class="fallback-action-icon" size={22} />
+        <span>{copy.sourceVideo}</span>
+      </a>
+    </div>
+  </div>
+
+  <button
+    class="portal-entry"
+    type="button"
+    data-portal-entry
+    aria-label={copy.enter}
+    hidden
+  >
+    <span class="portal-entry-band">
+      <img src={`${assetRoot}/ui/Entry.png`} alt="" />
+      <span>{copy.enter}</span>
+    </span>
+  </button>
+
+  <div class="error-screen" data-genshin-error hidden role="alert">
+    <div class="error-card">
+      <span class="error-glyph" aria-hidden="true"></span>
+      <h1>{copy.failedTitle}</h1>
+      <p data-error-message>{copy.failedFallback}</p>
+      <button type="button" data-genshin-retry>
+        <RotateCcw size={17} />
+        {copy.retry}
+      </button>
+    </div>
+  </div>
+
+  <div class="complete-screen" data-genshin-complete hidden aria-live="polite">
+    <p>{copy.complete}</p>
+    <button type="button" data-genshin-replay>
+      <RotateCcw size={16} />
+      {copy.replay}
+    </button>
+  </div>
+
+  <div class="rotate-screen" aria-hidden="true">
+    <div class="phone-icon"><span></span></div>
+    <strong>{copy.rotateTitle}</strong>
+    <p>{copy.rotateCopy}</p>
+  </div>
+
+  <noscript>
+    <p class="noscript-message">{copy.noScript}</p>
+  </noscript>
+</section>
+
+<script>
+  interface GenshinControllerLike {
+    init: (
+      onProgress?: (progress: number, status: string) => void,
+    ) => void | Promise<void>;
+    start: () => unknown;
+    enterPortal?: () => unknown;
+    setMuted?: (muted: boolean) => void;
+    destroy: () => void;
+  }
+
+  interface ProgressDetail {
+    value?: number;
+    progress?: number;
+    status?: string;
+    asset?: string;
+  }
+
+  let genshinController: GenshinControllerLike | undefined;
+  let activeRoot: HTMLElement | undefined;
+  let uiTimers: number[] = [];
+
+  const queueUi = (callback: () => void, delay: number) => {
+    const timer = window.setTimeout(callback, delay);
+    uiTimers.push(timer);
+    return timer;
+  };
+
+  const clearUiTimers = () => {
+    uiTimers.forEach((timer) => window.clearTimeout(timer));
+    uiTimers = [];
+  };
+
+  function setupGenshin() {
+    const root = document.querySelector<HTMLElement>('[data-genshin-root]');
+    if (!root || root.dataset.initialized === 'true') return;
+
+    root.dataset.initialized = 'true';
+    activeRoot = root;
+    const loader = root.querySelector<HTMLElement>('[data-genshin-loader]');
+    const login = root.querySelector<HTMLElement>('[data-genshin-login]');
+    const start = root.querySelector<HTMLButtonElement>('[data-genshin-start]');
+    const portalEntry = root.querySelector<HTMLButtonElement>(
+      '[data-portal-entry]',
+    );
+    const errorScreen = root.querySelector<HTMLElement>('[data-genshin-error]');
+    const errorMessage = root.querySelector<HTMLElement>(
+      '[data-error-message]',
+    );
+    const completeScreen = root.querySelector<HTMLElement>(
+      '[data-genshin-complete]',
+    );
+    const soundButton = root.querySelector<HTMLButtonElement>(
+      '[data-sound-toggle]',
+    );
+    const loadBar = root.querySelector<HTMLElement>('[data-load-bar]');
+    const loadValue = root.querySelector<HTMLElement>('[data-load-value]');
+    const loadStatus = root.querySelector<HTMLElement>('[data-load-status]');
+    const progressbar = root.querySelector<HTMLElement>('[data-progressbar]');
+    let ready = false;
+    let portalReady = false;
+    let muted = false;
+
+    const setProgress = (progress: number, status?: string) => {
+      const normalized = Math.max(
+        0,
+        Math.min(100, progress <= 1 ? progress * 100 : progress),
+      );
+      const rounded = Math.round(normalized);
+      if (loadBar) loadBar.style.width = `${normalized}%`;
+      if (loadValue) loadValue.textContent = `${rounded}%`;
+      if (loadStatus && status) loadStatus.textContent = status;
+      progressbar?.setAttribute('aria-valuenow', String(rounded));
+    };
+
+    const showLogin = () => {
+      if (ready || activeRoot !== root) return;
+      ready = true;
+      setProgress(100);
+      loader?.setAttribute('data-leaving', 'true');
+      queueUi(() => {
+        if (activeRoot !== root) return;
+        loader?.setAttribute('hidden', '');
+        login?.removeAttribute('hidden');
+        requestAnimationFrame(() =>
+          login?.setAttribute('data-visible', 'true'),
+        );
+        root.dataset.state = 'login';
+      }, 1150);
+    };
+
+    const showError = (error?: unknown) => {
+      root.dataset.state = 'error';
+      loader?.setAttribute('hidden', '');
+      login?.setAttribute('hidden', '');
+      portalEntry?.setAttribute('hidden', '');
+      errorScreen?.removeAttribute('hidden');
+      if (errorMessage && error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : typeof error === 'string'
+              ? error
+              : '';
+        if (message) errorMessage.textContent = message;
+      }
+    };
+
+    root.addEventListener('genshin:progress', (event) => {
+      const detail = (event as CustomEvent<ProgressDetail>).detail ?? {};
+      setProgress(
+        detail.value ?? detail.progress ?? 0,
+        detail.status ?? detail.asset,
+      );
+    });
+    root.addEventListener('genshin:ready', showLogin);
+    root.addEventListener('genshin:portal-forming', () => {
+      root.dataset.state = 'portal-forming';
+    });
+    root.addEventListener('genshin:portal-ready', () => {
+      portalReady = true;
+      root.dataset.state = 'portal-ready';
+      portalEntry?.removeAttribute('hidden');
+    });
+    root.addEventListener('genshin:entering', () => {
+      portalReady = false;
+      root.dataset.state = 'entering';
+      portalEntry?.setAttribute('hidden', '');
+    });
+    root.addEventListener('genshin:whiteout', () => {
+      root.dataset.state = 'whiteout';
+    });
+    root.addEventListener('genshin:complete', () => {
+      root.dataset.state = 'complete';
+      completeScreen?.removeAttribute('hidden');
+    });
+    root.addEventListener('genshin:error', (event) => {
+      const detail = (
+        event as CustomEvent<{ error?: unknown; message?: string }>
+      ).detail;
+      showError(detail?.error ?? detail?.message);
+    });
+
+    start?.addEventListener('click', async () => {
+      if (!ready || !genshinController) return;
+      start.disabled = true;
+      root.dataset.state = 'flying';
+      login?.removeAttribute('data-visible');
+      queueUi(() => login?.setAttribute('hidden', ''), 800);
+      soundButton?.removeAttribute('hidden');
+      try {
+        await genshinController.start();
+      } catch (error) {
+        showError(error);
+      }
+    });
+
+    const enterPortal = async () => {
+      if (!portalReady || !genshinController?.enterPortal) return;
+      portalReady = false;
+      portalEntry?.setAttribute('hidden', '');
+      root.dataset.state = 'entering';
+      try {
+        await genshinController.enterPortal();
+      } catch (error) {
+        showError(error);
+      }
+    };
+    portalEntry?.addEventListener('click', enterPortal);
+
+    soundButton?.addEventListener('click', () => {
+      muted = !muted;
+      soundButton.dataset.muted = String(muted);
+      const label = muted
+        ? root.dataset.locale === 'en'
+          ? 'Enable sound'
+          : '开启声音'
+        : root.dataset.locale === 'en'
+          ? 'Mute sound'
+          : '关闭声音';
+      soundButton.setAttribute('aria-label', label);
+      soundButton.title = label;
+      genshinController?.setMuted?.(muted);
+    });
+
+    const resetExperience = () => {
+      genshinController?.destroy();
+      genshinController = undefined;
+      clearUiTimers();
+      ready = false;
+      portalReady = false;
+      if (start) start.disabled = false;
+      errorScreen?.setAttribute('hidden', '');
+      completeScreen?.setAttribute('hidden', '');
+      login?.setAttribute('hidden', '');
+      login?.removeAttribute('data-visible');
+      portalEntry?.setAttribute('hidden', '');
+      soundButton?.setAttribute('hidden', '');
+      loader?.removeAttribute('hidden');
+      loader?.removeAttribute('data-leaving');
+      root.dataset.state = 'loading';
+      setProgress(0);
+      void boot();
+    };
+
+    root
+      .querySelector('[data-genshin-retry]')
+      ?.addEventListener('click', resetExperience);
+    root
+      .querySelector('[data-genshin-replay]')
+      ?.addEventListener('click', resetExperience);
+
+    const boot = async () => {
+      try {
+        const { GenshinController } =
+          await import('@/scripts/genshin/GenshinController');
+        if (activeRoot !== root) return;
+        const controller: GenshinControllerLike = new GenshinController(root);
+        genshinController = controller;
+        await controller.init(setProgress);
+        controller.setMuted?.(muted);
+        showLogin();
+      } catch (error) {
+        console.warn('Unable to initialize the Genshin experience.', error);
+        showError(error);
+      }
+    };
+    void boot();
+  }
+
+  function destroyGenshin() {
+    clearUiTimers();
+    genshinController?.destroy();
+    genshinController = undefined;
+    activeRoot = undefined;
+  }
+
+  document.addEventListener('astro:page-load', setupGenshin);
+  document.addEventListener('astro:before-swap', destroyGenshin);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupGenshin, { once: true });
+  } else {
+    setupGenshin();
+  }
+</script>
+
+<style>
+  :global(.genshin-page) {
+    overflow: hidden;
+    background: #9fc9ed;
+  }
+
+  :global(.genshin-page main) {
+    min-height: 100svh;
+  }
+
+  .genshin-experience {
+    --ink: #303030;
+    --blue-ink: #3d5268;
+    position: relative;
+    isolation: isolate;
+    min-height: 100svh;
+    overflow: hidden;
+    color: var(--ink);
+    background: #a9d0ef;
+    cursor:
+      url('/assets/experiments/genshin/v1/ui/T_Mouse.png') 3 3,
+      default;
+  }
+
+  [data-genshin-canvas],
+  .sky-fallback,
+  .whiteout {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  [data-genshin-canvas] {
+    z-index: 0;
+    display: block;
+    outline: none;
+    touch-action: none;
+  }
+
+  .sky-fallback {
+    z-index: -1;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 82%, #fff 0 4%, transparent 23%),
+      linear-gradient(180deg, #80b9ea 0%, #c9e4f7 47%, #f6fbff 100%);
+  }
+
+  .fallback-sun {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    width: min(48vw, 720px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 45%);
+    filter: blur(50px);
+    transform: translateX(-50%);
+  }
+
+  .fallback-cloud {
+    position: absolute;
+    height: 18%;
+    border-radius: 50%;
+    opacity: 0.64;
+    background: rgb(255 255 255 / 78%);
+    filter: blur(28px);
+  }
+
+  .cloud-one {
+    right: -8%;
+    bottom: 4%;
+    width: 54%;
+  }
+
+  .cloud-two {
+    bottom: 14%;
+    left: -10%;
+    width: 47%;
+  }
+
+  .cloud-three {
+    top: 28%;
+    right: 15%;
+    width: 28%;
+    height: 9%;
+    opacity: 0.32;
+  }
+
+  .whiteout {
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    background: white;
+    transition: opacity 1.1s cubic-bezier(0.5, 0, 0.8, 1);
+  }
+
+  [data-state='whiteout'] .whiteout,
+  [data-state='complete'] .whiteout {
+    opacity: 1;
+  }
+
+  .experience-nav {
+    position: absolute;
+    z-index: 40;
+    top: max(1rem, env(safe-area-inset-top));
+    left: max(1rem, env(safe-area-inset-left));
+    display: flex;
+    gap: 0.55rem;
+    transition: opacity 0.5s ease;
+  }
+
+  .nav-pill,
+  .sound-button {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border: 1px solid rgb(255 255 255 / 48%);
+    border-radius: 999px;
+    color: #34495d;
+    background: rgb(255 255 255 / 68%);
+    box-shadow: 0 0.35rem 1.4rem rgb(52 91 128 / 13%);
+    backdrop-filter: blur(12px);
+    transition:
+      color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  .nav-pill {
+    padding: 0.58rem 0.84rem;
+    font: 500 0.76rem/1 sans-serif;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-pill:hover,
+  .sound-button:hover {
+    color: #172838;
+    background: rgb(255 255 255 / 88%);
+    transform: translateY(-1px);
+  }
+
+  .sound-button {
+    position: absolute;
+    z-index: 40;
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
+    width: 2.5rem;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .sound-off,
+  [data-muted='true'] .sound-on {
+    display: none;
+  }
+
+  [data-muted='true'] .sound-off {
+    display: block;
+  }
+
+  .loading-screen,
+  .login-screen,
+  .error-screen,
+  .complete-screen,
+  .rotate-screen {
+    position: absolute;
+    inset: 0;
+  }
+
+  .loading-screen {
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    background: #fff;
+    opacity: 1;
+    transition: opacity 1s ease;
+  }
+
+  .loading-screen[data-leaving='true'] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loading-content {
+    display: flex;
+    width: min(76vw, 34rem);
+    flex-direction: column;
+    align-items: center;
+    animation: loading-arrive 1.2s ease both;
+  }
+
+  .genshin-logo {
+    width: min(45vmin, 25rem);
+    height: auto;
+    margin-bottom: clamp(1.5rem, 5vmin, 3rem);
+    object-fit: contain;
+  }
+
+  .loading-copy {
+    display: flex;
+    min-height: 2.5rem;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    color: #55606a;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  .loading-copy strong {
+    font-size: clamp(0.72rem, 1.4vmin, 0.9rem);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .loading-copy span {
+    margin-top: 0.28rem;
+    color: #899198;
+    font: 400 clamp(0.64rem, 1.15vmin, 0.76rem) / 1.4 sans-serif;
+  }
+
+  .loading-bar {
+    position: relative;
+    width: min(41vmin, 24rem);
+    height: max(0.42rem, 1.2vmin);
+    background: #c2c2c2;
+    clip-path: polygon(
+      0.45rem 0,
+      calc(100% - 0.45rem) 0,
+      100% 50%,
+      calc(100% - 0.45rem) 100%,
+      0.45rem 100%,
+      0 50%
+    );
+  }
+
+  .loading-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: #303030;
+    transition: width 180ms linear;
+  }
+
+  .bar-diamond {
+    position: absolute;
+    top: 50%;
+    width: max(0.52rem, 1.2vmin);
+    aspect-ratio: 1;
+    background: #303030;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    transform: translateY(-50%);
+  }
+
+  .diamond-start {
+    left: -1rem;
+  }
+
+  .diamond-end {
+    right: -1rem;
+  }
+
+  .loading-value {
+    margin-top: 0.8rem;
+    color: #6b7379;
+    font: 500 0.7rem/1 sans-serif;
+    letter-spacing: 0.1em;
+  }
+
+  .device-note {
+    margin: 0.55rem 0 0;
+    color: #545454;
+    font: 400 clamp(0.62rem, 1.4vmin, 0.8rem) / 1.5 sans-serif;
+  }
+
+  .login-screen {
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+  }
+
+  .login-screen[data-visible='true'] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .login-shade {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 36%;
+    background: linear-gradient(to top, rgb(24 34 44 / 58%), transparent);
+    pointer-events: none;
+  }
+
+  .brand-mark {
+    position: absolute;
+    top: clamp(3.8rem, 6vmin, 5.5rem);
+    right: 4%;
+    width: clamp(4.5rem, 14vmin, 8.5rem);
+    aspect-ratio: 1;
+    opacity: 0.9;
+  }
+
+  .brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .disclaimer {
+    position: absolute;
+    bottom: max(1.2rem, env(safe-area-inset-bottom));
+    left: max(1rem, env(safe-area-inset-left));
+    width: min(34rem, 48vw);
+    color: rgb(22 30 38 / 78%);
+    text-shadow: 0 1px 8px rgb(255 255 255 / 28%);
+    font: 400 clamp(0.58rem, 0.9vw, 0.72rem) / 1.55 sans-serif;
+  }
+
+  .disclaimer strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 650;
+  }
+
+  .disclaimer p {
+    margin: 0.18rem 0;
+  }
+
+  .login-actions {
+    position: absolute;
+    right: max(3.2%, env(safe-area-inset-right));
+    bottom: max(5%, env(safe-area-inset-bottom));
+    display: grid;
+    gap: clamp(0.65rem, 1.6vmin, 1rem);
+  }
+
+  .round-action {
+    position: relative;
+    display: grid;
+    width: clamp(3.7rem, 7vmin, 5.2rem);
+    aspect-ratio: 1;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    color: white;
+    background: transparent;
+    cursor: pointer;
+    transition: transform 180ms ease;
+  }
+
+  .round-action img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .round-action > span {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 0.75rem);
+    width: max-content;
+    max-width: 11rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.25rem;
+    color: white;
+    background: rgb(30 42 54 / 64%);
+    font: 500 0.68rem/1.2 sans-serif;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(0.3rem, -50%);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .round-action:hover,
+  .round-action:focus-visible {
+    transform: scale(1.1);
+  }
+
+  .round-action:active {
+    transform: scale(0.92);
+  }
+
+  .round-action:hover > span,
+  .round-action:focus-visible > span {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  .fallback-action-icon {
+    position: relative;
+    z-index: -1;
+  }
+
+  .portal-entry {
+    position: absolute;
+    z-index: 30;
+    inset: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    color: white;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .portal-entry-band {
+    position: absolute;
+    right: 2%;
+    bottom: max(4vmin, env(safe-area-inset-bottom));
+    left: 2%;
+    display: flex;
+    height: clamp(2.4rem, 4.5vmin, 3.2rem);
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgb(0 0 0 / 48%) 50%,
+      transparent
+    );
+    animation: portal-band 0.55s ease-out both;
+  }
+
+  .portal-entry-band img {
+    width: clamp(7rem, 11.25vmin, 9.5rem);
+    height: auto;
+    object-fit: contain;
+    animation: portal-label 0.85s ease-out both;
+  }
+
+  .portal-entry-band > span {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    clip: rect(0 0 0 0);
+  }
+
+  .error-screen {
+    z-index: 70;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background:
+      linear-gradient(rgb(187 218 242 / 78%), rgb(244 250 255 / 92%)),
+      radial-gradient(circle at 50% 30%, white, transparent 45%);
+    backdrop-filter: blur(12px);
+  }
+
+  .error-card {
+    width: min(30rem, 100%);
+    padding: clamp(1.8rem, 5vw, 3.2rem);
+    border: 1px solid rgb(255 255 255 / 78%);
+    color: #394d60;
+    text-align: center;
+    background: rgb(255 255 255 / 60%);
+    box-shadow: 0 1.5rem 5rem rgb(65 103 140 / 16%);
+  }
+
+  .error-glyph {
+    display: block;
+    width: 3rem;
+    aspect-ratio: 1;
+    margin: 0 auto 1.2rem;
+    border: 1px solid #758ca0;
+    transform: rotate(45deg);
+  }
+
+  .error-card h1 {
+    margin: 0;
+    font:
+      400 clamp(1.3rem, 3vw, 2rem) / 1.25 Georgia,
+      serif;
+  }
+
+  .error-card p {
+    margin: 0.85rem auto 1.4rem;
+    color: #667789;
+    font: 400 0.84rem/1.65 sans-serif;
+  }
+
+  .error-card button,
+  .complete-screen button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.72rem 1rem;
+    border: 1px solid rgb(58 77 95 / 30%);
+    border-radius: 0.2rem;
+    color: #3b4e60;
+    background: rgb(255 255 255 / 65%);
+    cursor: pointer;
+  }
+
+  .complete-screen {
+    z-index: 35;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.8rem;
+    padding-bottom: max(6vh, env(safe-area-inset-bottom));
+    color: #85909a;
+  }
+
+  .complete-screen p {
+    margin: 0;
+    font:
+      400 clamp(0.75rem, 1.6vmin, 1rem) / 1.4 Georgia,
+      serif;
+    letter-spacing: 0.1em;
+  }
+
+  .rotate-screen {
+    z-index: 100;
+    display: none;
+    place-items: center;
+    align-content: center;
+    padding: 2rem;
+    color: #3d5268;
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 35%, white, transparent 35%),
+      linear-gradient(160deg, #dceefb, #f8fbfd);
+  }
+
+  .rotate-screen strong {
+    margin-top: 1.5rem;
+    font:
+      400 1.35rem/1.2 Georgia,
+      serif;
+  }
+
+  .rotate-screen p {
+    max-width: 19rem;
+    margin: 0.65rem auto 0;
+    color: #708192;
+    font: 400 0.82rem/1.55 sans-serif;
+  }
+
+  .phone-icon {
+    width: 2.8rem;
+    height: 4.8rem;
+    border: 2px solid currentColor;
+    border-radius: 0.42rem;
+    animation: rotate-phone 2.2s ease-in-out infinite;
+  }
+
+  .phone-icon span {
+    display: block;
+    width: 0.28rem;
+    aspect-ratio: 1;
+    margin: 0.3rem auto;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .noscript-message {
+    position: absolute;
+    z-index: 90;
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    margin: 0;
+    padding: 0.75rem;
+    color: #334b60;
+    text-align: center;
+    background: rgb(255 255 255 / 82%);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  @keyframes loading-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(0.8rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes portal-band {
+    from {
+      opacity: 0;
+      transform: scaleY(0.1);
+    }
+    10% {
+      opacity: 1;
+      transform: scaleY(0.1);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes portal-label {
+    0%,
+    62% {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes rotate-phone {
+    0%,
+    15% {
+      transform: rotate(0);
+    }
+    45%,
+    75% {
+      transform: rotate(90deg);
+    }
+    to {
+      transform: rotate(0);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .nav-pill span {
+      display: none;
+    }
+
+    .nav-pill {
+      width: 2.5rem;
+      padding: 0;
+    }
+
+    .disclaimer {
+      width: 62vw;
+      font-size: 0.54rem;
+      line-height: 1.4;
+    }
+
+    .brand-mark {
+      top: 3.5rem;
+    }
+  }
+
+  @media (orientation: portrait) and (max-width: 720px) {
+    .rotate-screen {
+      display: grid;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
