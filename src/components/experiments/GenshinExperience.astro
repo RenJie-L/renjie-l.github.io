@@ -30,6 +30,7 @@ const copy = isEnglish
       learning:
         'All content is presented for WebGL learning, research, and technical demonstration.',
       start: 'Start',
+      startHint: 'Click anywhere to start',
       sourceVideo: 'Watch reference video',
       enter: 'Click anywhere to enter',
       soundOn: 'Mute sound',
@@ -59,6 +60,7 @@ const copy = isEnglish
         '本网站是一个非商业技术复刻，设计与内容受到《原神》登录体验启发。本项目并非官方产品，与 HoYoverse 或米哈游没有关联。',
       learning: '所有内容仅用于 WebGL 学习、研究与技术展示。',
       start: '启动',
+      startHint: '点击屏幕开始',
       sourceVideo: '观看参考视频',
       enter: '点击任意位置进入',
       soundOn: '关闭声音',
@@ -160,6 +162,11 @@ const copy = isEnglish
       <p>{copy.disclaimer}</p>
       <p>{copy.learning}</p>
     </div>
+    <p class="start-hint">
+      <span aria-hidden="true">◇</span>
+      {copy.startHint}
+      <span aria-hidden="true">◇</span>
+    </p>
     <div class="login-actions">
       <button
         class="round-action start-action"
@@ -373,8 +380,8 @@ const copy = isEnglish
       showError(detail?.error ?? detail?.message);
     });
 
-    start?.addEventListener('click', async () => {
-      if (!ready || !genshinController) return;
+    const startExperience = async () => {
+      if (!ready || !genshinController || !start || start.disabled) return;
       start.disabled = true;
       root.dataset.state = 'flying';
       login?.removeAttribute('data-visible');
@@ -385,6 +392,15 @@ const copy = isEnglish
       } catch (error) {
         showError(error);
       }
+    };
+
+    start?.addEventListener('click', () => {
+      void startExperience();
+    });
+    login?.addEventListener('click', (event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('a, button')) return;
+      void startExperience();
     });
 
     const enterPortal = async () => {
@@ -766,6 +782,7 @@ const copy = isEnglish
   .login-screen[data-visible='true'] {
     opacity: 1;
     pointer-events: auto;
+    cursor: pointer;
   }
 
   .login-shade {
@@ -811,6 +828,35 @@ const copy = isEnglish
 
   .disclaimer p {
     margin: 0.18rem 0;
+  }
+
+  .start-hint {
+    position: absolute;
+    z-index: 2;
+    bottom: max(5%, env(safe-area-inset-bottom));
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.55rem 1.15rem;
+    border: 1px solid rgb(255 255 255 / 42%);
+    border-radius: 999px;
+    color: white;
+    text-shadow: 0 1px 8px rgb(24 46 68 / 55%);
+    background: rgb(38 59 78 / 30%);
+    box-shadow: 0 0.4rem 1.5rem rgb(20 41 60 / 12%);
+    backdrop-filter: blur(8px);
+    font: 500 clamp(0.72rem, 1.2vw, 0.88rem) / 1 sans-serif;
+    letter-spacing: 0.12em;
+    pointer-events: none;
+    transform: translateX(-50%);
+    animation: start-hint-pulse 2.2s ease-in-out infinite;
+  }
+
+  .start-hint span {
+    color: rgb(255 255 255 / 72%);
+    font-size: 0.7em;
   }
 
   .login-actions {
@@ -1072,6 +1118,18 @@ const copy = isEnglish
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  @keyframes start-hint-pulse {
+    0%,
+    100% {
+      opacity: 0.72;
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-0.18rem);
     }
   }
 
