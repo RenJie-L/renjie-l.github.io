@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ExternalLink } from '@lucide/astro';
+import { ArrowLeft, ArrowRight, ExternalLink } from '@lucide/astro';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
@@ -35,17 +35,23 @@ const toc = headings.filter(
       <div class="project-actions">
         {
           project.data.links
-            .filter((link: { url: string; label: string }) =>
-              link.url.startsWith('http'),
+            .filter(
+              (link: { url: string; label: string }) =>
+                link.url !== `/projects/${project.id}`,
             )
             .map((link: { url: string; label: string }) => (
               <a
                 class="button"
                 href={link.url}
-                target="_blank"
-                rel="noreferrer"
+                target={link.url.startsWith('http') ? '_blank' : undefined}
+                rel={link.url.startsWith('http') ? 'noreferrer' : undefined}
               >
-                {link.label} <ExternalLink size={14} />
+                {link.label}{' '}
+                {link.url.startsWith('http') ? (
+                  <ExternalLink size={14} />
+                ) : (
+                  <ArrowRight size={14} />
+                )}
               </a>
             ))
         }

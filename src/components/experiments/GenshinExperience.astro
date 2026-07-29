@@ -49,7 +49,7 @@ const copy = isEnglish
         'This experience requires JavaScript and a WebGL-capable browser.',
     }
   : {
-      back: '返回项目',
+      back: '查看项目详情',
       language: 'View in English',
       navigation: '体验页导航',
       loading: '正在加载世界数据',
@@ -94,7 +94,10 @@ const copy = isEnglish
   <div class="whiteout" data-genshin-whiteout aria-hidden="true"></div>
 
   <nav class="experience-nav" aria-label={copy.navigation}>
-    <a class="nav-pill" href={isEnglish ? '/en/projects' : '/projects'}>
+    <a
+      class="nav-pill"
+      href={isEnglish ? '/en/projects' : '/projects/genshin-webgl'}
+    >
       <ArrowLeft size={16} />
       <span>{copy.back}</span>
     </a>

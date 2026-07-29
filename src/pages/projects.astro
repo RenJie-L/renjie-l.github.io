@@ -5,6 +5,9 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { byProjectNewest } from '@/lib/content';
 
 const projects = (await getCollection('projects')).sort(byProjectNewest);
+const getProjectPageUrl = (project: (typeof projects)[number]) =>
+  project.data.links.find((link) => link.url === `/projects/${project.id}`)
+    ?.url ?? project.data.links[0]?.url;
 ---
 
 <BaseLayout title="项目" description="Renjie 的工程与研究项目。" hasTranslation>
@@ -28,8 +31,8 @@ const projects = (await getCollection('projects')).sort(byProjectNewest);
             {project.data.cover && (
               <a
                 class="project-cover"
-                href={project.data.links[0]?.url}
-                aria-label={`进入${project.data.title}`}
+                href={getProjectPageUrl(project)}
+                aria-label={`查看${project.data.title}`}
               >
                 <img
                   src={project.data.cover.src}
@@ -45,7 +48,11 @@ const projects = (await getCollection('projects')).sort(byProjectNewest);
                     <span>
                       {project.data.period} · {project.data.role}
                     </span>
-                    <h2>{project.data.title}</h2>
+                    <h2>
+                      <a href={getProjectPageUrl(project)}>
+                        {project.data.title}
+                      </a>
+                    </h2>
                     <p>{project.data.description}</p>
                   </>
                 </div>
@@ -196,6 +203,12 @@ const projects = (await getCollection('projects')).sort(byProjectNewest);
     margin: 0.45rem 0;
     font-size: 1.45rem;
     letter-spacing: -0.025em;
+  }
+  .project-card h2 a {
+    color: inherit;
+  }
+  .project-card h2 a:hover {
+    color: var(--accent);
   }
   .project-card p {
     max-width: 700px;

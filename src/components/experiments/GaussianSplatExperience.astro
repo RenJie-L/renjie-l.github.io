@@ -77,7 +77,7 @@ const copy = isEnglish
       },
     }
   : {
-      back: '返回项目',
+      back: '查看项目详情',
       language: 'View in English',
       eyebrow: '空间计算实验 · 02',
       title: 'Gaussian Splat',
@@ -149,7 +149,10 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     class="experience-nav"
     aria-label={isEnglish ? 'Experience navigation' : '体验页导航'}
   >
-    <a class="nav-pill" href={isEnglish ? '/en/projects' : '/projects'}>
+    <a
+      class="nav-pill"
+      href={isEnglish ? '/en/projects' : '/projects/gaussian-splat-viewer'}
+    >
       <ArrowLeft size={16} /><span>{copy.back}</span>
     </a>
     <a
