@@ -3,7 +3,7 @@ import {
   ArrowLeft,
   Expand,
   Languages,
-  Move3D,
+  Move3d,
   Pause,
   Play,
   RotateCcw,
@@ -188,7 +188,7 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
   </div>
 
   <div class="viewer-hud" data-splat-hud hidden>
-    <p><Move3D size={15} />{copy.interaction}</p>
+    <p><Move3d size={15} />{copy.interaction}</p>
     <div class="viewer-actions">
       <CustomSelect
         class="scene-switcher-select"
@@ -485,11 +485,17 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
   import type { GaussianSplatPanel } from '@/scripts/gaussian-splat/GaussianSplatPanel';
   let splatScene: GaussianSplatScene | undefined;
   let splatPanel: GaussianSplatPanel | undefined;
+  let pendingSplatScene: GaussianSplatScene | undefined;
+  let splatMountVersion = 0;
 
   function setupSplatExperience() {
     const root = document.querySelector<HTMLElement>('[data-splat-root]');
     if (!root || root.dataset.initialized === 'true') return;
+    destroySplatExperience();
     root.dataset.initialized = 'true';
+    const mountVersion = ++splatMountVersion;
+    const isMounted = () =>
+      mountVersion === splatMountVersion && root.isConnected;
     const loadButton =
       root.querySelector<HTMLButtonElement>('[data-load-splat]');
     const intro = root.querySelector<HTMLElement>('[data-splat-intro]');
@@ -525,25 +531,31 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
 
     const runWithProgress = async (
       fn: (onProgress: (p: number, s: string) => void) => Promise<void>,
-    ) => {
+    ): Promise<boolean> => {
+      if (!isMounted()) return false;
       root.dataset.state = 'loading';
       loader?.removeAttribute('hidden');
       if (loadBar) loadBar.style.width = '0%';
       if (loadValue) loadValue.textContent = '0%';
       try {
         await fn((progress, status) => {
+          if (!isMounted()) return;
           if (loadBar) loadBar.style.width = `${progress}%`;
           if (loadValue) loadValue.textContent = `${progress}%`;
           if (loadStatus) loadStatus.textContent = status;
         });
+        if (!isMounted()) return false;
         root.dataset.state = 'active';
         errorMessage?.setAttribute('hidden', '');
+        return true;
       } catch (error) {
+        if (!isMounted()) return false;
         console.warn('Unable to load Gaussian splat scene.', error);
         root.dataset.state = 'error';
         errorMessage?.removeAttribute('hidden');
+        return false;
       } finally {
-        loader?.setAttribute('hidden', '');
+        if (isMounted()) loader?.setAttribute('hidden', '');
       }
     };
 
@@ -552,28 +564,62 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     });
 
     loadButton?.addEventListener('click', async () => {
+      if (!isMounted()) return;
       loadButton.disabled = true;
-      await runWithProgress(async (onProgress) => {
-        const [{ GaussianSplatScene }, { GaussianSplatPanel }] =
-          await Promise.all([
-            import('@/scripts/gaussian-splat/GaussianSplatScene'),
-            import('@/scripts/gaussian-splat/GaussianSplatPanel'),
-          ]);
-        splatScene = new GaussianSplatScene(root);
-        await splatScene.init(onProgress);
-        splatPanel = new GaussianSplatPanel(root, (p) =>
-          splatScene?.applyParams(p),
-        );
-        panelEl?.setAttribute('aria-hidden', 'false');
-        intro?.setAttribute('hidden', '');
-        hud?.removeAttribute('hidden');
-        splatScene.start();
+      const loaded = await runWithProgress(async (onProgress) => {
+        let scene: GaussianSplatScene | undefined;
+        let panel: GaussianSplatPanel | undefined;
+        const disposeCandidate = () => {
+          panel?.dispose();
+          if (panel && splatPanel === panel) splatPanel = undefined;
+          if (!scene) return;
+          if (pendingSplatScene === scene) pendingSplatScene = undefined;
+          if (splatScene === scene) splatScene = undefined;
+          scene.destroy();
+        };
+
+        try {
+          const [{ GaussianSplatScene }, { GaussianSplatPanel }] =
+            await Promise.all([
+              import('@/scripts/gaussian-splat/GaussianSplatScene'),
+              import('@/scripts/gaussian-splat/GaussianSplatPanel'),
+            ]);
+          if (!isMounted()) return;
+
+          scene = new GaussianSplatScene(root);
+          pendingSplatScene = scene;
+          await scene.init(onProgress);
+          if (!isMounted()) {
+            disposeCandidate();
+            return;
+          }
+
+          panel = new GaussianSplatPanel(root, (params) =>
+            scene?.applyParams(params),
+          );
+          if (!isMounted()) {
+            disposeCandidate();
+            return;
+          }
+
+          if (pendingSplatScene === scene) pendingSplatScene = undefined;
+          splatScene = scene;
+          splatPanel = panel;
+          panelEl?.setAttribute('aria-hidden', 'false');
+          intro?.setAttribute('hidden', '');
+          hud?.removeAttribute('hidden');
+          scene.start();
+        } catch (error) {
+          disposeCandidate();
+          throw error;
+        }
       });
-      if (root.dataset.state !== 'active') loadButton.disabled = false;
+      if (isMounted() && !loaded) loadButton.disabled = false;
     });
 
     const switchScene = async (id: string) => {
-      if (!splatScene || splatScene.getSceneId() === id) return;
+      const scene = splatScene;
+      if (!isMounted() || !scene || scene.getSceneId() === id) return;
       const originalText = sceneLoadingLabel?.textContent ?? '';
       if (sceneLoadingLabel && sceneLoadingLabel.dataset.sceneLoadingText) {
         sceneLoadingLabel.textContent =
@@ -581,9 +627,18 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       }
       if (sceneSelect) sceneSelect.disabled = true;
       sceneSwitcher?.classList.add('is-disabled');
-      await runWithProgress(async (onProgress) => {
-        await splatScene!.loadScene(id, onProgress);
-      });
+      const loaded = await runWithProgress((onProgress) =>
+        scene.loadScene(id, onProgress),
+      );
+      if (!isMounted() || splatScene !== scene) return;
+      if (!loaded && scene.getSceneId() !== id) {
+        // 加载失败时继续展示旧场景，并将下拉框还原为实际正在显示的场景。
+        root.dataset.state = 'active';
+        if (sceneSelect) {
+          sceneSelect.value = scene.getSceneId();
+          sceneSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
       if (sceneSelect) sceneSelect.disabled = false;
       sceneSwitcher?.classList.remove('is-disabled');
       if (sceneLoadingLabel) sceneLoadingLabel.textContent = originalText;
@@ -613,10 +668,15 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
   }
 
   function destroySplatExperience() {
+    splatMountVersion += 1;
     splatPanel?.dispose();
     splatPanel = undefined;
-    splatScene?.destroy();
+    const scenes = new Set<GaussianSplatScene>();
+    if (splatScene) scenes.add(splatScene);
+    if (pendingSplatScene) scenes.add(pendingSplatScene);
+    scenes.forEach((scene) => scene.destroy());
     splatScene = undefined;
+    pendingSplatScene = undefined;
   }
 
   document.addEventListener('astro:page-load', setupSplatExperience);

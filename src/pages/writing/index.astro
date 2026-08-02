@@ -26,13 +26,25 @@ const categories = [
       </p>
     </div>
   </div>
-  <section class="writing-layout container">
-    <aside>
-      <p>主题</p><button class="active filter" data-category="all"
-        >全部 <span>{articles.length}</span></button
+  <section class="writing-layout container" data-writing-filter-root>
+    <aside aria-label="文章主题">
+      <p>主题</p><button
+        class="active filter"
+        type="button"
+        data-category="all"
+        data-label="全部"
+        aria-controls="article-list"
+        aria-pressed="true">全部 <span>{articles.length}</span></button
       >{
         categories.map((category) => (
-          <button class="filter" data-category={category}>
+          <button
+            class="filter"
+            type="button"
+            data-category={category}
+            data-label={category}
+            aria-controls="article-list"
+            aria-pressed="false"
+          >
             {category}
             <span>
               {
@@ -43,8 +55,9 @@ const categories = [
           </button>
         ))
       }
+      <p class="filter-status" data-filter-status aria-live="polite"></p>
     </aside>
-    <div class="article-list">
+    <div id="article-list" class="article-list">
       {
         articles.map((article) => (
           <div data-article-category={article.data.category}>
@@ -56,21 +69,79 @@ const categories = [
   </section>
 </BaseLayout>
 <script>
-  const filters = [...document.querySelectorAll<HTMLButtonElement>('.filter')];
-  filters.forEach((button) =>
-    button.addEventListener('click', () => {
-      const category = button.dataset.category;
-      filters.forEach((item) =>
-        item.classList.toggle('active', item === button),
+  let cleanupWritingFilters: (() => void) | undefined;
+
+  function setupWritingFilters() {
+    cleanupWritingFilters?.();
+
+    const root = document.querySelector<HTMLElement>(
+      '[data-writing-filter-root]',
+    );
+    if (!root) return;
+
+    const filters = [...root.querySelectorAll<HTMLButtonElement>('.filter')];
+    const articles = [
+      ...root.querySelectorAll<HTMLElement>('[data-article-category]'),
+    ];
+    const status = root.querySelector<HTMLElement>('[data-filter-status]');
+    const controller = new AbortController();
+
+    const applyFilter = (category: string, announce = false) => {
+      const selected =
+        filters.find((button) => button.dataset.category === category) ??
+        filters[0];
+      if (!selected) return;
+
+      filters.forEach((button) => {
+        const active = button === selected;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+
+      let visibleCount = 0;
+      articles.forEach((article) => {
+        const visible =
+          category === 'all' || article.dataset.articleCategory === category;
+        article.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      if (announce && status) {
+        status.textContent = `${selected.dataset.label ?? category}：显示 ${visibleCount} 篇文章`;
+      }
+    };
+
+    filters.forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => applyFilter(button.dataset.category ?? 'all', true),
+        { signal: controller.signal },
       );
-      document
-        .querySelectorAll<HTMLElement>('[data-article-category]')
-        .forEach((article) => {
-          article.hidden =
-            category !== 'all' && article.dataset.articleCategory !== category;
-        });
-    }),
-  );
+    });
+
+    const initialCategory =
+      filters.find((button) => button.classList.contains('active'))?.dataset
+        .category ?? 'all';
+    applyFilter(initialCategory);
+
+    cleanupWritingFilters = () => {
+      controller.abort();
+      cleanupWritingFilters = undefined;
+    };
+  }
+
+  document.addEventListener('astro:page-load', setupWritingFilters);
+  document.addEventListener('astro:before-swap', () => {
+    cleanupWritingFilters?.();
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupWritingFilters, {
+      once: true,
+    });
+  } else {
+    setupWritingFilters();
+  }
 </script>
 <style>
   .writing-layout {
@@ -114,6 +185,16 @@ const categories = [
   }
   .filter span {
     font-size: 0.75rem;
+  }
+  .filter-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
   @media (max-width: 760px) {
     .writing-layout {

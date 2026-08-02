@@ -39,10 +39,18 @@ const fallbackAlternatePath =
     ? '/'
     : Astro.url.pathname.startsWith('/writing')
       ? '/en/writing'
-      : '/en/';
+      : Astro.url.pathname.startsWith('/projects')
+        ? '/en/projects'
+        : '/en/';
 const languageHref = hasTranslation
   ? directAlternatePath
   : fallbackAlternatePath;
+// The English writing and archive indexes are currently placeholders, so they
+// should remain navigable from the language switcher without claiming a
+// one-to-one translation to search engines.
+const hasEquivalentTranslation =
+  hasTranslation &&
+  !/^\/(?:en\/)?(?:writing|archive)\/?$/.test(Astro.url.pathname);
 const zhUrl = new URL(
   locale === 'zh-CN' ? Astro.url.pathname : directAlternatePath,
   Astro.site,
@@ -63,7 +71,7 @@ const enUrl = new URL(
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     {
-      hasTranslation && (
+      hasEquivalentTranslation && (
         <>
           <link rel="alternate" hreflang="zh-CN" href={zhUrl} />
           <link rel="alternate" hreflang="en" href={enUrl} />

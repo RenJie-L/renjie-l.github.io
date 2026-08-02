@@ -36,6 +36,11 @@ const initialIndex = Math.max(
   options.findIndex((o) => o.value === initialValue),
 );
 const initialLabel = options[initialIndex]?.label ?? '';
+const idFragment = (dataParam ?? name ?? initialValue ?? 'options').replace(
+  /[^a-zA-Z0-9_-]/g,
+  '-',
+);
+const dropdownId = `custom-select-options-${idFragment}`;
 ---
 
 <div
@@ -49,9 +54,12 @@ const initialLabel = options[initialIndex]?.label ?? '';
   ]}
   data-custom-select
   tabindex={disabled ? -1 : 0}
-  role="listbox"
+  role="combobox"
   aria-haspopup="listbox"
   aria-expanded="false"
+  aria-controls={dropdownId}
+  aria-activedescendant={`${dropdownId}-option-${initialIndex}`}
+  aria-label={label ?? initialLabel}
   {...rest}
 >
   {label && <span class="custom-select-label">{label}</span>}
@@ -78,6 +86,7 @@ const initialLabel = options[initialIndex]?.label ?? '';
   </select>
 
   <ul
+    id={dropdownId}
     class="custom-select-dropdown"
     data-custom-select-dropdown
     role="listbox"
@@ -86,6 +95,7 @@ const initialLabel = options[initialIndex]?.label ?? '';
     {
       options.map((o, i) => (
         <li
+          id={`${dropdownId}-option-${i}`}
           role="option"
           data-value={o.value}
           data-index={i}
@@ -104,9 +114,20 @@ const initialLabel = options[initialIndex]?.label ?? '';
 </div>
 
 <script>
+  const selectCleanups = new Set<() => void>();
+
   function initCustomSelect(root: HTMLElement) {
     if (root.dataset.initialized === 'true') return;
     root.dataset.initialized = 'true';
+
+    const controller = new AbortController();
+    let hideTimer: number | undefined;
+    const cleanup = () => {
+      controller.abort();
+      if (hideTimer !== undefined) window.clearTimeout(hideTimer);
+      selectCleanups.delete(cleanup);
+    };
+    selectCleanups.add(cleanup);
 
     const nativeSelect = root.querySelector<HTMLSelectElement>(
       '[data-custom-select-native]',
@@ -127,13 +148,18 @@ const initialLabel = options[initialIndex]?.label ?? '';
     if (activeIndex < 0) activeIndex = 0;
 
     const updateActive = (index: number, fireEvent = false) => {
+      if (!optionEls.length) return;
       activeIndex = index;
       optionEls.forEach((el, i) => {
         const isActive = i === index;
         el.classList.toggle('is-active', isActive);
         el.setAttribute('aria-selected', isActive ? 'true' : 'false');
       });
-      const opt = optionEls[index];
+      const activeOption = optionEls[index];
+      if (activeOption?.id) {
+        root.setAttribute('aria-activedescendant', activeOption.id);
+      }
+      const opt = activeOption;
       if (opt && valueEl) {
         const label =
           opt.querySelector<HTMLElement>('.custom-select-option-label')
@@ -151,6 +177,7 @@ const initialLabel = options[initialIndex]?.label ?? '';
 
     const openDropdown = () => {
       if (open || !dropdown || root.classList.contains('is-disabled')) return;
+      if (hideTimer !== undefined) window.clearTimeout(hideTimer);
       open = true;
       root.setAttribute('aria-expanded', 'true');
       root.classList.add('is-open');
@@ -158,7 +185,7 @@ const initialLabel = options[initialIndex]?.label ?? '';
       requestAnimationFrame(() => {
         dropdown.classList.add('is-open');
       });
-      setTimeout(() => {
+      window.setTimeout(() => {
         optionEls[activeIndex]?.scrollIntoView({ block: 'nearest' });
       }, 10);
     };
@@ -169,7 +196,7 @@ const initialLabel = options[initialIndex]?.label ?? '';
       root.setAttribute('aria-expanded', 'false');
       root.classList.remove('is-open');
       dropdown.classList.remove('is-open');
-      setTimeout(() => {
+      hideTimer = window.setTimeout(() => {
         if (!open) dropdown.hidden = true;
       }, 180);
     };
@@ -184,63 +211,91 @@ const initialLabel = options[initialIndex]?.label ?? '';
       closeDropdown();
     };
 
-    root.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (root.classList.contains('is-disabled')) return;
-      const option = (e.target as HTMLElement).closest('[data-value]');
-      if (option) {
-        const idx = Number((option as HTMLElement).dataset.index);
-        if (!Number.isNaN(idx)) selectOption(idx);
-      } else {
-        toggleDropdown();
-      }
-    });
+    root.addEventListener(
+      'click',
+      (e) => {
+        if (root.classList.contains('is-disabled')) return;
+        const option = (e.target as HTMLElement).closest('[data-value]');
+        if (option) {
+          const idx = Number((option as HTMLElement).dataset.index);
+          if (!Number.isNaN(idx)) selectOption(idx);
+        } else {
+          toggleDropdown();
+        }
+      },
+      { signal: controller.signal },
+    );
 
     optionEls.forEach((opt) => {
-      opt.addEventListener('mouseenter', () => {
-        optionEls.forEach((o) => o.classList.remove('is-hovered'));
-        opt.classList.add('is-hovered');
-      });
+      opt.addEventListener(
+        'mouseenter',
+        () => {
+          optionEls.forEach((o) => o.classList.remove('is-hovered'));
+          opt.classList.add('is-hovered');
+        },
+        { signal: controller.signal },
+      );
     });
 
-    root.addEventListener('keydown', (e) => {
-      if (root.classList.contains('is-disabled')) return;
-      switch (e.key) {
-        case 'Enter':
-        case ' ':
-          e.preventDefault();
-          if (!open) openDropdown();
-          else selectOption(activeIndex);
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          if (!open) openDropdown();
-          else {
-            const next = (activeIndex + 1) % optionEls.length;
-            updateActive(next);
-            optionEls[next]?.scrollIntoView({ block: 'nearest' });
-          }
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          if (!open) openDropdown();
-          else {
-            const prev =
-              (activeIndex - 1 + optionEls.length) % optionEls.length;
-            updateActive(prev);
-            optionEls[prev]?.scrollIntoView({ block: 'nearest' });
-          }
-          break;
-        case 'Escape':
-          e.preventDefault();
-          closeDropdown();
-          break;
-      }
-    });
+    root.addEventListener(
+      'keydown',
+      (e) => {
+        if (root.classList.contains('is-disabled') || !optionEls.length) return;
+        switch (e.key) {
+          case 'Enter':
+          case ' ':
+            e.preventDefault();
+            if (!open) openDropdown();
+            else selectOption(activeIndex);
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            if (!open) openDropdown();
+            else {
+              const next = (activeIndex + 1) % optionEls.length;
+              updateActive(next);
+              optionEls[next]?.scrollIntoView({ block: 'nearest' });
+            }
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            if (!open) openDropdown();
+            else {
+              const prev =
+                (activeIndex - 1 + optionEls.length) % optionEls.length;
+              updateActive(prev);
+              optionEls[prev]?.scrollIntoView({ block: 'nearest' });
+            }
+            break;
+          case 'Home':
+            e.preventDefault();
+            updateActive(0);
+            optionEls[0]?.scrollIntoView({ block: 'nearest' });
+            break;
+          case 'End':
+            e.preventDefault();
+            updateActive(optionEls.length - 1);
+            optionEls.at(-1)?.scrollIntoView({ block: 'nearest' });
+            break;
+          case 'Escape':
+            e.preventDefault();
+            closeDropdown();
+            break;
+          case 'Tab':
+            closeDropdown();
+            break;
+        }
+      },
+      { signal: controller.signal },
+    );
 
-    document.addEventListener('click', (e) => {
-      if (open && !root.contains(e.target as Node)) closeDropdown();
-    });
+    document.addEventListener(
+      'pointerdown',
+      (e) => {
+        if (open && !root.contains(e.target as Node)) closeDropdown();
+      },
+      { signal: controller.signal },
+    );
 
     // 监听原生 select 的外部 value 变更（例如参数面板 reset 时）
     const syncFromNative = () => {
@@ -250,7 +305,9 @@ const initialLabel = options[initialIndex]?.label ?? '';
       );
       if (idx >= 0 && idx !== activeIndex) updateActive(idx);
     };
-    nativeSelect?.addEventListener('change', syncFromNative);
+    nativeSelect?.addEventListener('change', syncFromNative, {
+      signal: controller.signal,
+    });
   }
 
   function initAll() {
@@ -261,8 +318,13 @@ const initialLabel = options[initialIndex]?.label ?? '';
       .forEach(initCustomSelect);
   }
 
+  function destroyAll() {
+    [...selectCleanups].forEach((cleanup) => cleanup());
+  }
+
   // ClientRouter 导航结束后触发（含首次加载）
   document.addEventListener('astro:page-load', initAll);
+  document.addEventListener('astro:before-swap', destroyAll);
   // 兜底：模块脚本是 defer 的，可能晚于 astro:page-load 执行。
   // 此时 DOM 已就绪，直接初始化未处理的实例。
   if (document.readyState !== 'loading') {

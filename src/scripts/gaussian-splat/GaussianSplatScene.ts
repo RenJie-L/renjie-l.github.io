@@ -56,11 +56,13 @@ export class GaussianSplatScene {
   private renderer?: THREE.WebGLRenderer;
   private spark?: SparkRenderer;
   private splat?: SplatMesh;
+  private pendingSplat?: SplatMesh;
   private currentConfig?: SplatSceneConfig;
   private currentSceneId: string = DEFAULT_SCENE_ID;
   private controls?: OrbitControls;
   private resizeObserver?: ResizeObserver;
   private frameId = 0;
+  private sceneLoadVersion = 0;
   private disposed = false;
   private autoRotate = true;
   private movementSpeed = 1;
@@ -108,6 +110,19 @@ export class GaussianSplatScene {
     onProgress: ProgressCallback,
     initialSceneId: string = DEFAULT_SCENE_ID,
   ) {
+    try {
+      await this.initialize(onProgress, initialSceneId);
+    } catch (error) {
+      // init() 可能在 renderer、controls 或 splat 任一阶段失败；统一回收已经创建的资源。
+      this.destroy();
+      throw error;
+    }
+  }
+
+  private async initialize(
+    onProgress: ProgressCallback,
+    initialSceneId: string,
+  ) {
     onProgress(4, 'Initializing WebGL renderer…');
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -141,7 +156,7 @@ export class GaussianSplatScene {
   }
 
   /**
-   * 切换场景。释放旧 splat 的 GPU 资源后加载新场景，并应用其 transform。
+   * 切换场景。新 splat 完整初始化后才替换旧场景，失败时保留当前画面以便重试。
    * renderer / camera / controls / spark 复用，避免视角与上下文丢失。
    */
   async loadScene(
@@ -150,17 +165,13 @@ export class GaussianSplatScene {
   ): Promise<void> {
     const config = findSceneConfig(sceneId);
     if (!config) throw new Error(`Unknown splat scene: ${sceneId}`);
+    if (this.disposed) return;
     if (this.currentSceneId === sceneId && this.splat) return;
 
-    // 丢掉旧 splat：从场景图移除 + dispose 释放 GPU 资源
-    if (this.splat) {
-      this.scene.remove(this.splat);
-      this.splat.dispose();
-      this.splat = undefined;
-    }
-
-    this.currentConfig = config;
-    this.currentSceneId = sceneId;
+    // 新请求会取代仍在下载的候选项，但不会影响当前正在显示的 splat。
+    const loadVersion = ++this.sceneLoadVersion;
+    this.pendingSplat?.dispose();
+    this.pendingSplat = undefined;
 
     const sizeHint = config.sizeBytes ?? 8_000_000;
     const sizeMB = (sizeHint / 1024 / 1024).toFixed(1);
@@ -173,6 +184,7 @@ export class GaussianSplatScene {
       // 同时保留原始 splat，供包围盒取景与关闭 LoD 时使用。
       nonLod: true,
       onProgress: (event) => {
+        if (this.disposed || loadVersion !== this.sceneLoadVersion) return;
         const ratio = event.lengthComputable
           ? event.loaded / event.total
           : Math.min(event.loaded / sizeHint, 1);
@@ -182,19 +194,55 @@ export class GaussianSplatScene {
         );
       },
     });
+    this.pendingSplat = splat;
 
-    // 应用 transform：scale → quaternion（先于加入场景，避免一帧闪烁）。
-    // position 留到 frameSplat() 里居中后再叠加。
-    const { scale, quaternion } = config.transform;
-    if (scale !== undefined) splat.scale.setScalar(scale);
-    if (quaternion) splat.quaternion.set(...quaternion);
-    this.splat = splat;
-    this.scene.add(splat);
+    try {
+      // 应用 transform：scale → quaternion（先于加入场景，避免一帧闪烁）。
+      // position 留到 frameSplat() 里居中后再叠加。
+      const { scale, quaternion } = config.transform;
+      if (scale !== undefined) splat.scale.setScalar(scale);
+      if (quaternion) splat.quaternion.set(...quaternion);
+      await splat.initialized;
+    } catch (error) {
+      if (this.pendingSplat === splat) this.pendingSplat = undefined;
+      splat.dispose();
+      // 销毁或被后续请求替代时，不把取消的旧请求当作加载错误。
+      if (this.disposed || loadVersion !== this.sceneLoadVersion) return;
+      throw error;
+    }
 
-    await splat.initialized;
-    if (this.disposed) return;
-    onProgress(90, 'Entering the capture point…');
-    this.frameSplat();
+    if (this.pendingSplat === splat) this.pendingSplat = undefined;
+    if (this.disposed || loadVersion !== this.sceneLoadVersion) {
+      splat.dispose();
+      return;
+    }
+
+    const previousSplat = this.splat;
+    const previousConfig = this.currentConfig;
+    const previousSceneId = this.currentSceneId;
+
+    try {
+      // 保留旧 splat 直到新场景已完成取景，保证切换过程是原子的。
+      this.scene.add(splat);
+      this.splat = splat;
+      this.currentConfig = config;
+      this.currentSceneId = sceneId;
+      onProgress(90, 'Entering the capture point…');
+      this.frameSplat();
+    } catch (error) {
+      this.scene.remove(splat);
+      this.splat = previousSplat;
+      this.currentConfig = previousConfig;
+      this.currentSceneId = previousSceneId;
+      splat.dispose();
+      if (previousSplat && previousConfig) this.frameSplat();
+      throw error;
+    }
+
+    if (previousSplat) {
+      this.scene.remove(previousSplat);
+      previousSplat.dispose();
+    }
     onProgress(100, 'Scene ready');
   }
 
@@ -413,6 +461,7 @@ export class GaussianSplatScene {
 
   destroy() {
     this.disposed = true;
+    this.sceneLoadVersion += 1;
     cancelAnimationFrame(this.frameId);
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
@@ -421,7 +470,10 @@ export class GaussianSplatScene {
     this.clearPressedKeys();
     this.resizeObserver?.disconnect();
     this.controls?.dispose();
+    this.pendingSplat?.dispose();
+    this.pendingSplat = undefined;
     this.splat?.dispose();
+    this.splat = undefined;
     this.spark?.dispose();
     this.renderer?.dispose();
     this.scene.clear();

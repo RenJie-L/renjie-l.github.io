@@ -4,4 +4,9 @@ dist/
 .DS_Store
 .pagefind/
 .vscode/
-
+.env*
+!.env.example
+coverage/
+playwright-report/
+test-results/
+*.log

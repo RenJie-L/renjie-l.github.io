@@ -123,93 +123,183 @@ const toc = headings.filter(
   </article>
 </BaseLayout>
 <script>
-  const mermaidSources = new Map<HTMLElement, string>();
-  document
-    .querySelectorAll<HTMLElement>('.prose pre.mermaid')
-    .forEach((pre) => {
-      const source = pre.textContent ?? '';
-      mermaidSources.set(pre, source);
-      const wrapper = document.createElement('div');
-      wrapper.className = 'mermaid-wrapper';
-      pre.parentNode?.insertBefore(wrapper, pre);
-      wrapper.appendChild(pre);
-      const toggleButton = document.createElement('button');
-      toggleButton.className = 'toggle-source';
-      toggleButton.type = 'button';
-      toggleButton.innerHTML = '<span>查看源代码</span>';
-      wrapper.appendChild(toggleButton);
-      const sourceContainer = document.createElement('div');
-      sourceContainer.className = 'mermaid-source';
-      sourceContainer.hidden = true;
-      const sourcePre = document.createElement('pre');
-      sourcePre.className = 'mermaid-source-code';
-      const sourceCode = document.createElement('code');
-      sourceCode.textContent = source;
-      sourcePre.appendChild(sourceCode);
-      sourceContainer.appendChild(sourcePre);
-      wrapper.appendChild(sourceContainer);
-      toggleButton.addEventListener('click', () => {
-        sourceContainer.hidden = !sourceContainer.hidden;
-        toggleButton.querySelector('span')!.textContent = sourceContainer.hidden
-          ? '查看源代码'
-          : '隐藏源代码';
-        toggleButton.classList.toggle('active');
-      });
-    });
-  document.querySelectorAll<HTMLElement>('.prose pre').forEach((pre) => {
-    const button = document.createElement('button');
-    button.className = 'copy-code';
-    button.type = 'button';
-    button.setAttribute('aria-label', '复制代码');
-    button.innerHTML = '<span>复制</span>';
-    button.addEventListener('click', async () => {
-      const source = mermaidSources.get(pre);
-      const value = source ?? pre.querySelector('code')?.textContent ?? '';
-      try {
-        await navigator.clipboard.writeText(value);
-      } catch {
-        const textarea = document.createElement('textarea');
-        textarea.value = value;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.append(textarea);
-        textarea.select();
-        (
-          document as unknown as { execCommand(commandId: string): boolean }
-        ).execCommand('copy');
-        textarea.remove();
+  let cleanupWritingEnhancements: (() => void) | undefined;
+
+  function setupWritingEnhancements() {
+    cleanupWritingEnhancements?.();
+
+    const writingShell = document.querySelector<HTMLElement>('.writing-shell');
+    const prose = writingShell?.querySelector<HTMLElement>('.prose');
+    if (!writingShell || !prose) return;
+
+    const controller = new AbortController();
+    const copyTimers = new Map<HTMLButtonElement, number>();
+
+    prose.querySelectorAll<HTMLElement>('pre.mermaid').forEach((pre, index) => {
+      let wrapper = pre.closest<HTMLElement>('.mermaid-wrapper');
+
+      if (!wrapper) {
+        const source = pre.textContent ?? '';
+        wrapper = document.createElement('div');
+        wrapper.className = 'mermaid-wrapper';
+        pre.parentNode?.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const toggleButton = document.createElement('button');
+        toggleButton.className = 'toggle-source';
+        toggleButton.type = 'button';
+        const toggleLabel = document.createElement('span');
+        toggleLabel.textContent = '查看源代码';
+        toggleButton.append(toggleLabel);
+        wrapper.append(toggleButton);
+
+        const sourceContainer = document.createElement('div');
+        sourceContainer.className = 'mermaid-source';
+        sourceContainer.id = `mermaid-source-${index}`;
+        sourceContainer.hidden = true;
+        const sourcePre = document.createElement('pre');
+        sourcePre.className = 'mermaid-source-code';
+        const sourceCode = document.createElement('code');
+        sourceCode.textContent = source;
+        sourcePre.append(sourceCode);
+        sourceContainer.append(sourcePre);
+        wrapper.append(sourceContainer);
       }
-      button.querySelector('span')!.textContent = '已复制';
-      setTimeout(() => {
-        button.querySelector('span')!.textContent = '复制';
-      }, 1800);
+
+      const toggleButton =
+        wrapper.querySelector<HTMLButtonElement>('.toggle-source');
+      const sourceContainer =
+        wrapper.querySelector<HTMLElement>('.mermaid-source');
+      if (!toggleButton || !sourceContainer) return;
+
+      if (!sourceContainer.id) sourceContainer.id = `mermaid-source-${index}`;
+      toggleButton.setAttribute('aria-controls', sourceContainer.id);
+      toggleButton.setAttribute(
+        'aria-expanded',
+        String(!sourceContainer.hidden),
+      );
+      toggleButton.addEventListener(
+        'click',
+        () => {
+          sourceContainer.hidden = !sourceContainer.hidden;
+          const visible = !sourceContainer.hidden;
+          const label = toggleButton.querySelector('span');
+          if (label) label.textContent = visible ? '隐藏源代码' : '查看源代码';
+          toggleButton.classList.toggle('active', visible);
+          toggleButton.setAttribute('aria-expanded', String(visible));
+        },
+        { signal: controller.signal },
+      );
     });
-    pre.append(button);
-  });
-  const links = [
-    ...document.querySelectorAll<HTMLAnchorElement>('.desktop-toc a'),
-  ];
-  const sections = links
-    .map((link) =>
-      document.getElementById(decodeURIComponent(link.hash.slice(1))),
-    )
-    .filter(Boolean);
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          links.forEach((link) =>
-            link.classList.toggle(
-              'active',
-              link.hash === `#${entry.target.id}`,
-            ),
-          );
+
+    prose
+      .querySelectorAll<HTMLElement>('pre:not(.mermaid-source-code)')
+      .forEach((pre) => {
+        let button = pre.querySelector<HTMLButtonElement>('.copy-code');
+        if (!button) {
+          button = document.createElement('button');
+          button.className = 'copy-code';
+          button.type = 'button';
+          button.setAttribute('aria-label', '复制代码');
+          const label = document.createElement('span');
+          label.textContent = '复制';
+          button.append(label);
+          pre.append(button);
         }
+
+        button.addEventListener(
+          'click',
+          () => {
+            void copyCode(pre, button!, copyTimers);
+          },
+          { signal: controller.signal },
+        );
       });
-    },
-    { rootMargin: '-15% 0px -75%' },
-  );
-  sections.forEach((section) => observer.observe(section!));
+
+    const links = [
+      ...writingShell.querySelectorAll<HTMLAnchorElement>('.desktop-toc a'),
+    ];
+    const sections = links
+      .map((link) =>
+        document.getElementById(decodeURIComponent(link.hash.slice(1))),
+      )
+      .filter((section): section is HTMLElement => section !== null);
+    const observer =
+      'IntersectionObserver' in window
+        ? new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                links.forEach((link) =>
+                  link.classList.toggle(
+                    'active',
+                    decodeURIComponent(link.hash.slice(1)) === entry.target.id,
+                  ),
+                );
+              });
+            },
+            { rootMargin: '-15% 0px -75%' },
+          )
+        : undefined;
+    sections.forEach((section) => observer?.observe(section));
+
+    cleanupWritingEnhancements = () => {
+      controller.abort();
+      observer?.disconnect();
+      copyTimers.forEach((timer) => window.clearTimeout(timer));
+      copyTimers.clear();
+      cleanupWritingEnhancements = undefined;
+    };
+  }
+
+  async function copyCode(
+    pre: HTMLElement,
+    button: HTMLButtonElement,
+    copyTimers: Map<HTMLButtonElement, number>,
+  ) {
+    const mermaidSource = pre
+      .closest('.mermaid-wrapper')
+      ?.querySelector('.mermaid-source-code')?.textContent;
+    const value = mermaidSource ?? pre.querySelector('code')?.textContent ?? '';
+
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = value;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.append(textarea);
+      textarea.select();
+      (
+        document as unknown as { execCommand(commandId: string): boolean }
+      ).execCommand('copy');
+      textarea.remove();
+    }
+
+    const label = button.querySelector('span');
+    if (label) label.textContent = '已复制';
+    const previousTimer = copyTimers.get(button);
+    if (previousTimer !== undefined) window.clearTimeout(previousTimer);
+    const timer = window.setTimeout(() => {
+      if (label) label.textContent = '复制';
+      copyTimers.delete(button);
+    }, 1800);
+    copyTimers.set(button, timer);
+  }
+
+  document.addEventListener('astro:page-load', setupWritingEnhancements);
+  document.addEventListener('astro:before-swap', () => {
+    cleanupWritingEnhancements?.();
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupWritingEnhancements, {
+      once: true,
+    });
+  } else {
+    setupWritingEnhancements();
+  }
 </script>
 <style is:global>
   .writing-header {

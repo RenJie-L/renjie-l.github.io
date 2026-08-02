@@ -261,6 +261,7 @@ const copy = isEnglish
   let genshinController: GenshinControllerLike | undefined;
   let activeRoot: HTMLElement | undefined;
   let uiTimers: number[] = [];
+  let cleanupGenshinSetup: (() => void) | undefined;
 
   const queueUi = (callback: () => void, delay: number) => {
     const timer = window.setTimeout(callback, delay);
@@ -279,6 +280,9 @@ const copy = isEnglish
 
     root.dataset.initialized = 'true';
     activeRoot = root;
+    const landscapeQuery = window.matchMedia('(orientation: landscape)');
+    let disposed = false;
+    let booting = false;
     const loader = root.querySelector<HTMLElement>('[data-genshin-loader]');
     const login = root.querySelector<HTMLElement>('[data-genshin-login]');
     const start = root.querySelector<HTMLButtonElement>('[data-genshin-start]');
@@ -316,7 +320,7 @@ const copy = isEnglish
     };
 
     const showLogin = () => {
-      if (ready || activeRoot !== root) return;
+      if (ready || activeRoot !== root || !landscapeQuery.matches) return;
       ready = true;
       setProgress(100);
       loader?.setAttribute('data-leaving', 'true');
@@ -332,6 +336,7 @@ const copy = isEnglish
     };
 
     const showError = (error?: unknown) => {
+      if (disposed || activeRoot !== root) return;
       root.dataset.state = 'error';
       loader?.setAttribute('hidden', '');
       login?.setAttribute('hidden', '');
@@ -461,29 +466,77 @@ const copy = isEnglish
       .querySelector('[data-genshin-replay]')
       ?.addEventListener('click', resetExperience);
 
-    const boot = async () => {
+    async function boot() {
+      if (
+        disposed ||
+        !landscapeQuery.matches ||
+        activeRoot !== root ||
+        genshinController ||
+        booting
+      ) {
+        return;
+      }
+
+      booting = true;
       try {
         const { GenshinController } =
           await import('@/scripts/genshin/GenshinController');
-        if (activeRoot !== root) return;
+        if (disposed || !landscapeQuery.matches || activeRoot !== root) return;
         const controller: GenshinControllerLike = new GenshinController(root);
         genshinController = controller;
         await controller.init(setProgress);
+        if (
+          disposed ||
+          !landscapeQuery.matches ||
+          activeRoot !== root ||
+          genshinController !== controller
+        ) {
+          controller.destroy();
+          if (genshinController === controller) genshinController = undefined;
+          return;
+        }
         controller.setMuted?.(muted);
         showLogin();
       } catch (error) {
         console.warn('Unable to initialize the Genshin experience.', error);
+        if (genshinController) {
+          genshinController.destroy();
+          genshinController = undefined;
+        }
         showError(error);
+      } finally {
+        booting = false;
+      }
+    }
+
+    const handleOrientationChange = () => {
+      if (landscapeQuery.matches) {
+        void boot();
+      } else {
+        // The portrait overlay replaces the scene on small screens, so release
+        // its renderer and media instead of keeping an invisible experience alive.
+        resetExperience();
       }
     };
-    void boot();
+    landscapeQuery.addEventListener('change', handleOrientationChange);
+    cleanupGenshinSetup = () => {
+      disposed = true;
+      landscapeQuery.removeEventListener('change', handleOrientationChange);
+    };
+
+    // On portrait phones the rotate overlay is the experience. Defer the
+    // WebGL module and its model downloads until the device is horizontal.
+    if (landscapeQuery.matches) void boot();
   }
 
   function destroyGenshin() {
+    cleanupGenshinSetup?.();
+    cleanupGenshinSetup = undefined;
     clearUiTimers();
-    genshinController?.destroy();
+    const controller = genshinController;
     genshinController = undefined;
     activeRoot = undefined;
+    controller?.destroy();
   }
 
   document.addEventListener('astro:page-load', setupGenshin);

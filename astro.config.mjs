@@ -1,10 +1,14 @@
 import mdx from '@astrojs/mdx';
+import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 import mermaid from 'astro-mermaid';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
+
+const hasStandaloneLocaleIndex = (url) =>
+  /\/(?:en\/)?(?:writing|archive)\/?$/.test(new URL(url).pathname);
 
 export default defineConfig({
   site: 'https://renjie-l.github.io',
@@ -24,11 +28,20 @@ export default defineConfig({
         defaultLocale: 'zh-CN',
         locales: { 'zh-CN': 'zh-CN', en: 'en' },
       },
+      // These are navigable locale indexes, not translations of one another.
+      // Avoid emitting false xhtml alternates in the generated sitemap.
+      serialize(item) {
+        return hasStandaloneLocaleIndex(item.url)
+          ? { ...item, links: undefined }
+          : item;
+      },
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    processor: unified({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+    }),
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
       wrap: true,

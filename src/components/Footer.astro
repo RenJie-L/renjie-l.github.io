@@ -28,20 +28,6 @@ const t = ui[locale];
           href="mailto:renjie-l@foxmail.com">Email</a
         >
       </nav>
-      <!-- 保留统计节点继续累计数据，访问量达到展示条件后移除 hidden 即可。 -->
-      <p class="site-stats" aria-live="polite" hidden>
-        <span id="busuanzi_container_site_pv" style="display: none;">
-          {locale === 'en' ? 'Total views' : '总访问量'}
-          <span id="busuanzi_value_site_pv"></span>
-          {locale === 'en' ? '' : ' 次'}
-        </span>
-        <span id="busuanzi_container_site_uv" style="display: none;">
-          <span class="stats-separator" aria-hidden="true">·</span>
-          {locale === 'en' ? 'Total visitors' : '总访客数'}
-          <span id="busuanzi_value_site_uv"></span>
-          {locale === 'en' ? '' : ' 人'}
-        </span>
-      </p>
     </div>
   </div>
 </footer>
@@ -88,16 +74,9 @@ const t = ui[locale];
   .footer-links a:hover {
     color: var(--text);
   }
-  .copyright,
-  .site-stats {
+  .copyright {
     margin: 0;
     font-size: 0.82rem;
-  }
-  .site-stats {
-    text-align: right;
-  }
-  .stats-separator {
-    margin-inline: 0.35rem;
   }
 
   @media (max-width: 760px) {
@@ -109,15 +88,5 @@ const t = ui[locale];
     .footer-side {
       justify-items: start;
     }
-    .site-stats {
-      text-align: left;
-    }
   }
 </style>
-
-<script
-  is:inline
-  data-astro-rerun
-  defer
-  src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
-></script>

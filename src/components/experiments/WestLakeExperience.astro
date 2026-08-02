@@ -194,12 +194,18 @@ const localized = (value: { zh: string; en: string }) =>
   import type { ChapterId } from '@/scripts/west-lake/types';
 
   let westLakeScene: WestLakeScene | undefined;
+  let pendingWestLakeScene: WestLakeScene | undefined;
   let keyHandler: ((event: KeyboardEvent) => void) | undefined;
+  let westLakeMountVersion = 0;
 
   function setupWestLake() {
     const root = document.querySelector<HTMLElement>('[data-west-lake-root]');
     if (!root || root.dataset.initialized === 'true') return;
+    destroyWestLake();
     root.dataset.initialized = 'true';
+    const mountVersion = ++westLakeMountVersion;
+    const isMounted = () =>
+      mountVersion === westLakeMountVersion && root.isConnected;
     const enter = root.querySelector<HTMLButtonElement>('[data-enter-scene]');
     const intro = root.querySelector<HTMLElement>('[data-intro-panel]');
     const loader = root.querySelector<HTMLElement>('[data-scene-loader]');
@@ -310,6 +316,7 @@ const localized = (value: { zh: string; en: string }) =>
     document.addEventListener('keydown', keyHandler);
 
     enter?.addEventListener('click', async () => {
+      if (!isMounted()) return;
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
         root.dataset.state = 'static';
         intro?.setAttribute('hidden', '');
@@ -319,15 +326,36 @@ const localized = (value: { zh: string; en: string }) =>
       enter.disabled = true;
       root.dataset.state = 'loading';
       loader?.removeAttribute('hidden');
+      reducedMessage?.setAttribute('hidden', '');
+      if (loadBar) loadBar.style.width = '0%';
+      if (loadValue) loadValue.textContent = '0%';
+      let scene: WestLakeScene | undefined;
+      const disposeCandidate = () => {
+        if (!scene) return;
+        if (pendingWestLakeScene === scene) pendingWestLakeScene = undefined;
+        if (westLakeScene === scene) westLakeScene = undefined;
+        scene.destroy();
+      };
       try {
         const { WestLakeScene: Scene } =
           await import('@/scripts/west-lake/WestLakeScene');
-        westLakeScene = new Scene(root);
-        westLakeScene.init((progress, status) => {
+        if (!isMounted()) return;
+
+        scene = new Scene(root);
+        pendingWestLakeScene = scene;
+        scene.init((progress, status) => {
+          if (!isMounted()) return;
           if (loadBar) loadBar.style.width = `${progress}%`;
           if (loadValue) loadValue.textContent = `${progress}%`;
           if (loadStatus) loadStatus.textContent = status;
         });
+        if (!isMounted()) {
+          disposeCandidate();
+          return;
+        }
+
+        if (pendingWestLakeScene === scene) pendingWestLakeScene = undefined;
+        westLakeScene = scene;
         root.dataset.state = 'active';
         intro?.setAttribute('hidden', '');
         loader?.setAttribute('hidden', '');
@@ -335,12 +363,15 @@ const localized = (value: { zh: string; en: string }) =>
         rail?.removeAttribute('hidden');
         if (quality)
           quality.textContent = root.dataset.quality?.toUpperCase() ?? 'FULL';
-        westLakeScene.start();
+        scene.start();
       } catch (error) {
+        disposeCandidate();
+        if (!isMounted()) return;
         console.warn('West Lake scene switched to the static poster.', error);
         root.dataset.state = 'static';
         loader?.setAttribute('hidden', '');
         reducedMessage?.removeAttribute('hidden');
+        enter.disabled = false;
       }
     });
     root.querySelector('[data-skip-intro]')?.addEventListener('click', () => {
@@ -349,10 +380,15 @@ const localized = (value: { zh: string; en: string }) =>
   }
 
   function destroyWestLake() {
+    westLakeMountVersion += 1;
     if (keyHandler) document.removeEventListener('keydown', keyHandler);
     keyHandler = undefined;
-    westLakeScene?.destroy();
+    const scenes = new Set<WestLakeScene>();
+    if (westLakeScene) scenes.add(westLakeScene);
+    if (pendingWestLakeScene) scenes.add(pendingWestLakeScene);
+    scenes.forEach((scene) => scene.destroy());
     westLakeScene = undefined;
+    pendingWestLakeScene = undefined;
   }
 
   document.addEventListener('astro:page-load', setupWestLake);

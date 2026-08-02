@@ -208,10 +208,11 @@ export class Game {
 
   private prepareAudio(): void {
     this.bgm = new Audio(GENSHIN_ASSETS.audio.bgm);
-    this.bgm.preload = 'auto';
+    // Audio remains optional until the visitor explicitly starts the scene.
+    this.bgm.preload = 'metadata';
     this.bgm.loop = true;
     this.effect = new Audio();
-    this.effect.preload = 'auto';
+    this.effect.preload = 'none';
   }
 
   private playAudio(
