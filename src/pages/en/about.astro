@@ -7,21 +7,30 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   locale="en"
   hasTranslation
   title="About"
-  description="About Renjie, a frontend engineer exploring AI agents and reinforcement learning."
+  description="About Renjie, a software engineer focused on Web 3D, real-time rendering, and complex frontend systems."
 >
   <div class="page-intro">
     <div class="container">
       <p class="eyebrow">About</p><h1>
-        Connecting ideas to reality through engineering.
+        Turning complex 3D technology into reliable products.
       </h1>
     </div>
   </div>
   <div class="about-layout container">
     <aside>
       <p class="about-lede">
-        I'm Renjie, a frontend engineer exploring AI-assisted development, agent
-        engineering, and reinforcement learning. I enjoy breaking down complex
-        problems and turning them into reliable, useful products.
+        I'm Renjie, a software engineer specializing in Web 3D and real-time
+        rendering. For more than three years, I have used React, TypeScript, and
+        WebGL to build complex 3D editors, rendering SDKs, and cloud-streamed
+        products—owning work from architecture and cross-team collaboration to
+        production reliability.
+      </p>
+      <p class="about-note">
+        I like approaching graphics, frontend engineering, and product problems
+        as one system. I care about visual and interaction quality, but equally
+        about extensibility, reuse, and long-term maintainability. I am also
+        exploring how AI-assisted development and agent engineering can improve
+        delivery in large codebases.
       </p><div class="contact-links">
         <a class="button" href="mailto:renjie-l@foxmail.com"
           ><Mail size={16} /> Email</a
@@ -33,10 +42,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         <p class="eyebrow">Focus</p><h2>Areas of focus</h2><div
           class="focus-tags"
         >
-          <span>Frontend Engineering</span><span>React / TypeScript</span><span
+          <span>Web 3D / Real-time Rendering</span><span
+            >React / TypeScript</span
+          ><span>Three.js / WebGL / GLSL</span><span
+            >3D Editors & SDK Architecture</span
+          ><span>Gaussian Splatting</span><span>Cloud Streaming</span><span
             >AI-assisted Development</span
-          ><span>AI Agent Engineering</span><span>Developer Experience</span
-          ><span>Reinforcement Learning</span>
+          ><span>Agent Engineering</span>
         </div>
       </section>
       <section>
@@ -44,8 +56,54 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
           class="timeline"
         >
           <article>
-            <span>2023.04 — Present</span><h3>Qunhe Technology (Coohom)</h3><p>
-              Software Development Engineer
+            <span>2024.10 — Present</span><h3>
+              Large-scale 3D Design & Content Platform
+            </h3><p>
+              Senior Software Development Engineer · Technical Lead for Web 3D
+              and Real-time Rendering
+            </p>
+          </article><article>
+            <span>2023.04 — 2024.10</span><h3>
+              Large-scale 3D Design & Content Platform
+            </h3><p>
+              Software Development Engineer · Core Frontend Engineer for Cloud
+              and Real-time Rendering
+            </p>
+          </article>
+        </div>
+      </section>
+      <section>
+        <p class="eyebrow">Selected work</p><h2>Selected work</h2><div
+          class="work-grid"
+        >
+          <article class="detail-card">
+            <span>AI-powered 3D Content Creation Platform</span><h3>
+              A reusable 3D creation framework and internal SDK
+            </h3><p>
+              Led core development of an AI-powered 3D content platform and
+              packaged scene, character, prop, animation, capture, and AI
+              enhancement capabilities into a shared framework used by 5+
+              product lines. A unified task and asset architecture reduced the
+              cost of adding new asset types by about 60%.
+            </p>
+          </article><article class="detail-card">
+            <span>Real-time Rendering Editor</span><h3>
+              Responsive editing for large 3D scenes
+            </h3><p>
+              Helped build a dual-engine editor combining local WebGL preview
+              with cloud GPU streaming. Incremental light synchronization cut
+              data transfer by 90%+, selection optimizations improved marquee
+              performance by about 4×, and the work contributed to 20% WAU
+              growth.
+            </p>
+          </article><article class="detail-card">
+            <span>Multi-platform Cloud Rendering</span><h3>
+              Complex workflows, monetization, and reliability
+            </h3><p>
+              Built interruptible rendering workflows, WebGL2 lighting preview,
+              and multi-currency billing for five host products, then extracted
+              a reusable payment SDK. Core-path monitoring grew from 0 to 55%,
+              while more than 80% of redundant requests were eliminated.
             </p>
           </article>
         </div>
@@ -67,23 +125,44 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         <p class="eyebrow">Research</p><h2>Research & practice</h2><article
           class="detail-card"
         >
-          <span>2022.03 — 2023.06</span><h3>
+          <span>2020.09 — 2023.06</span><h3>
             Swing-Free Trajectory Generation for UAV Suspended Loads
           </h3><p>
-            A research project using reinforcement learning to generate
-            swing-free flight trajectories and validate them on a physical UAV
-            platform.
+            Used deep reinforcement learning to generate swing-free flight
+            trajectories for UAVs carrying suspended loads, then validated the
+            approach on a physical UAV platform. The work shaped the way I
+            approach complex systems today: model, experiment, and verify.
           </p>
         </article>
       </section>
       <section>
-        <p class="eyebrow">Publication</p><h2>Publication</h2><p
-          class="publication"
+        <p class="eyebrow">Publication</p><h2>Publication</h2><a
+          class="publication publication-link"
+          href="https://ieeexplore.ieee.org/abstract/document/10055333"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Renjie, L., & Fan, Y. (2022). Deep Reinforcement Learning-based
-          Swing-Free Trajectories Planning Algorithm for UAV with a Suspended
-          Load. <em>China Automation Congress 2022.</em>
-        </p>
+          First author · Deep Reinforcement Learning-based Swing-Free
+          Trajectories Planning Algorithm for UAV with a Suspended Load. <em
+            >China Automation Congress 2022.</em
+          >
+        </a>
+      </section>
+      <section>
+        <p class="eyebrow">Awards</p><h2>Awards</h2><ul class="awards">
+          <li>
+            <time>2022</time>Silver Award, Zhejiang “Internet+” Innovation and
+            Entrepreneurship Competition
+          </li><li>
+            <time>2021</time>First Prize, East China Division, China Graduate
+            Electronics Design Contest
+          </li><li>
+            <time>2021</time>China Scholarship Council sponsored-study
+            qualification
+          </li><li>
+            <time>2020</time>Graduate Academic Scholarship
+          </li>
+        </ul>
       </section>
     </div>
   </div>
@@ -105,6 +184,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     font-size: 1.2rem;
     line-height: 1.8;
     margin: 0;
+  }
+  .about-note {
+    color: var(--muted);
+    line-height: 1.8;
+    margin: 1.2rem 0 0;
   }
   .contact-links {
     display: flex;
@@ -173,6 +257,40 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     border: 1px solid var(--line);
     border-radius: 14px;
     background: var(--surface);
+  }
+  .work-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .work-grid .detail-card p {
+    line-height: 1.75;
+  }
+  .publication-link {
+    display: block;
+    line-height: 1.7;
+    transition: color 160ms ease;
+  }
+  .publication-link:hover {
+    color: var(--accent);
+  }
+  .awards {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+  }
+  .awards li {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 0.5rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .awards time {
+    color: var(--muted);
+    font:
+      0.82rem ui-monospace,
+      monospace;
   }
   @media (max-width: 760px) {
     .about-layout {

@@ -16,8 +16,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   <div class="about-layout container">
     <aside>
       <p class="about-lede">
-        Hi，我是 Renjie，一名软件开发工程师，持续探索 AI 编程、Agent Engineering
-        与强化学习。喜欢把复杂问题拆解清楚，再做成可靠、好用的产品。
+        Hi，我是 Renjie，一名专注 Web 3D 与实时渲染的软件开发工程师。过去 3
+        年多，我持续使用 React、TypeScript、WebGL 构建复杂的三维编辑器、渲染 SDK
+        与云端流式渲染产品，也负责从架构设计、跨团队协作到上线稳定性的完整交付。
+      </p>
+      <p class="about-note">
+        既关注渲染效果和交互体验，也在意系统是否易于扩展、复用和长期维护。目前也在探索
+        AI 编程与 Agent Engineering 如何提升大型项目的研发效率。
       </p><div class="contact-links">
         <a class="button" href="mailto:renjie-l@foxmail.com"
           ><Mail size={16} /> Email</a
@@ -27,16 +32,52 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     <div class="about-content">
       <section>
         <p class="eyebrow">Focus</p><h2>关注方向</h2><div class="focus-tags">
-          <span>Frontend Engineering</span><span>React / TypeScript</span><span
-            >AI-assisted Development</span
-          ><span>AI Agent Engineering</span><span>Developer Experience</span
-          ><span>Reinforcement Learning</span>
+          <span>Web 3D / 实时渲染</span><span>React / TypeScript</span><span
+            >Three.js / WebGL / GLSL</span
+          ><span>3D 编辑器与 SDK 架构</span><span>Gaussian Splatting</span><span
+            >云端流式渲染</span
+          ><span>AI-assisted Development</span><span>Agent Engineering</span>
         </div>
       </section>
       <section>
         <p class="eyebrow">Work</p><h2>工作经历</h2><div class="timeline">
           <article>
-            <span>2023.04 — 至今</span><h3>群核科技</h3><p>软件开发工程师</p>
+            <span>2024.10 — 至今</span><h3>大型三维设计与内容平台</h3><p>
+              高级软件开发工程师 · Web 3D 与实时渲染技术负责人
+            </p>
+          </article><article>
+            <span>2023.04 — 2024.10</span><h3>大型三维设计与内容平台</h3><p>
+              软件开发工程师 · 云渲染与实时渲染核心前端开发
+            </p>
+          </article>
+        </div>
+      </section>
+      <section>
+        <p class="eyebrow">Selected work</p><h2>代表性实践</h2><div
+          class="work-grid"
+        >
+          <article class="detail-card">
+            <span>AI 驱动的 3D 内容创作平台</span><h3>
+              通用 3D 创作框架与内部 SDK
+            </h3><p>
+              负责 AI 驱动 3D
+              内容创作平台的核心建设，将场景、角色、道具、动作、截图与 AI
+              增强等能力沉淀为通用框架，接入 5+
+              内部产品线；通过统一任务调度和资产状态域重构，让新增资产类型的开发成本降低约
+              60%。
+            </p>
+          </article><article class="detail-card">
+            <span>实时渲染编辑器</span><h3>大型三维场景的实时编辑体验</h3><p>
+              参与“本地 WebGL 预览 + 云端 GPU
+              流式渲染”双引擎编辑器建设。设计光源增量同步和选择性能优化方案，使数据传输量降低
+              90%+、框选性能提升约 4 倍，并推动实时渲染 WAU 增长 20%。
+            </p>
+          </article><article class="detail-card">
+            <span>多端云渲染平台</span><h3>复杂流程、商业化与稳定性建设</h3><p>
+              面向 5 个业务端，建设可中断渲染状态机、WebGL2
+              实时光照预览与多币种组合计费能力，并沉淀跨端支付
+              SDK；核心链路监控覆盖率从 0 提升至 55%，治理无效请求 80%+。
+            </p>
           </article>
         </div>
       </section>
@@ -57,28 +98,32 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         <p class="eyebrow">Research</p><h2>研究与实践</h2><article
           class="detail-card"
         >
-          <span>2022.03 — 2023.06</span><h3>
+          <span>2020.09 — 2023.06</span><h3>
             基于强化学习的无人机负载无摆动轨迹生成
           </h3><p>
-            浙江省新苗人才计划项目。针对无人机悬挂负载易摆动的问题，通过强化学习算法生成无摆动飞行轨迹，并在实际无人机系统中验证有效性。
+            针对无人机悬挂负载易摆动的问题，使用深度强化学习生成无摆动飞行轨迹，并在实际无人机系统中完成验证。这段经历也塑造了我处理复杂系统问题时“建模、实验、验证”的工作方式。
           </p>
         </article>
       </section>
       <section>
-        <p class="eyebrow">Publication</p><h2>学术论文</h2><p
-          class="publication"
+        <p class="eyebrow">Publication</p><h2>学术论文</h2><a
+          class="publication publication-link"
+          href="https://ieeexplore.ieee.org/abstract/document/10055333"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Renjie, L., & Fan, Y. (2022). Deep Reinforcement Learning-based
-          Swing-Free Trajectories Planning Algorithm for UAV with a Suspended
-          Load. <em>China Automation Congress 2022.</em>
-        </p>
+          第一作者 · Deep Reinforcement Learning-based Swing-Free Trajectories
+          Planning Algorithm for UAV with a Suspended Load. <em
+            >China Automation Congress 2022.</em
+          >
+        </a>
       </section>
       <section>
         <p class="eyebrow">Awards</p><h2>竞赛与奖项</h2><ul class="awards">
           <li><time>2022</time>第八届浙江省“互联网+”创新创业大赛 银奖</li><li>
             <time>2021</time>第十六届中国研究生电子设计竞赛 华东赛区一等奖
-          </li><li><time>2021</time>研究生学业奖学金（前 10%）</li><li>
-            <time>2020</time>研究生学业奖学金（前 20%）
+          </li><li><time>2021</time>国家留学基金委公派留学资格</li><li>
+            <time>2020</time>研究生学业奖学金
           </li>
         </ul>
       </section>
@@ -101,6 +146,11 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     font-size: 1.2rem;
     line-height: 1.8;
     margin: 0;
+  }
+  .about-note {
+    color: var(--muted);
+    line-height: 1.8;
+    margin: 1.2rem 0 0;
   }
   .contact-links {
     display: flex;
@@ -169,6 +219,21 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     border: 1px solid var(--line);
     border-radius: 14px;
     background: var(--surface);
+  }
+  .work-grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .work-grid .detail-card p {
+    line-height: 1.75;
+  }
+  .publication-link {
+    display: block;
+    line-height: 1.7;
+    transition: color 160ms ease;
+  }
+  .publication-link:hover {
+    color: var(--accent);
   }
   .awards {
     list-style: none;
