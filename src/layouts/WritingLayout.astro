@@ -193,7 +193,9 @@ const toc = headings.filter(
     });
 
     prose
-      .querySelectorAll<HTMLElement>('pre:not(.mermaid-source-code)')
+      .querySelectorAll<HTMLElement>(
+        'pre:not(.mermaid):not(.mermaid-source-code)',
+      )
       .forEach((pre) => {
         let button = pre.querySelector<HTMLButtonElement>('.copy-code');
         if (!button) {
