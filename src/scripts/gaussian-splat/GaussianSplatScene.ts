@@ -1,6 +1,15 @@
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GaussianFlyController } from './GaussianFlyController';
+import {
+  DEFAULT_PARAMS,
+  PERFORMANCE_PROFILE,
+  QUALITY_PROFILE,
+  type CameraMode,
+  type GaussianParams,
+  type PerformanceMode,
+} from './GaussianSplatSettings';
 import {
   DEFAULT_SCENE_ID,
   findSceneConfig,
@@ -17,37 +26,6 @@ const DEFAULT_FRAMING = {
   maxDistanceRatio: 0.22,
 } as const;
 
-// 面板可调节的参数集合；与 GaussianSplatPanel 的 DEFAULTS 保持一致。
-export interface GaussianParams {
-  // SplatMesh 实例属性
-  opacity: number; // 0..1
-  recolor: string; // 十六进制颜色，内部转 THREE.Color
-  maxSh: 0 | 1 | 2 | 3; // 球谐阶数，改后需 updateGenerator()
-  // SparkRenderer 外观
-  maxStdDev: number; // 2.0..3.0
-  focalAdjustment: number; // 0.5..3.0
-  falloff: number; // 0..1
-  minAlpha: number; // 0..0.05
-  minPixelRadius: number;
-  maxPixelRadius: number;
-  preBlurAmount: number; // 0..1
-  sortRadial: boolean;
-  enable2DGS: boolean;
-  // LoD
-  lodSplatScale: number; // 0.25..4.0
-  lodRenderScale: number; // 1..5
-  // 景深
-  focalDistance: number;
-  apertureAngle: number;
-  // 注视点
-  coneFov0: number;
-  coneFov: number;
-  coneFoveate: number;
-  behindFoveate: number;
-}
-
-const MOVEMENT_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'KeyQ', 'KeyE']);
-
 export class GaussianSplatScene {
   private readonly root: HTMLElement;
   private readonly canvas: HTMLCanvasElement;
@@ -60,40 +38,21 @@ export class GaussianSplatScene {
   private currentConfig?: SplatSceneConfig;
   private currentSceneId: string = DEFAULT_SCENE_ID;
   private controls?: OrbitControls;
+  private flyControls?: GaussianFlyController;
   private resizeObserver?: ResizeObserver;
   private frameId = 0;
   private sceneLoadVersion = 0;
   private disposed = false;
   private autoRotate = true;
+  private cameraMode: CameraMode = 'orbit';
+  private performanceMode: PerformanceMode = 'quality';
+  private inputEnabled = true;
   private movementSpeed = 1;
-  private readonly pressedKeys = new Set<string>();
-  private readonly moveDirection = new THREE.Vector3();
   private readonly forwardDirection = new THREE.Vector3();
-  private readonly rightDirection = new THREE.Vector3();
+  private orbitDistance = 1;
+  private readonly userParams: GaussianParams = { ...DEFAULT_PARAMS };
   private defaultCameraPosition = new THREE.Vector3(0, 0, 5);
   private defaultTarget = new THREE.Vector3();
-
-  private readonly handleKeyDown = (event: KeyboardEvent) => {
-    if (!MOVEMENT_KEYS.has(event.code)) return;
-    const target = event.target as HTMLElement | null;
-    if (
-      target?.matches('input, textarea, select') ||
-      target?.isContentEditable
-    ) {
-      return;
-    }
-    event.preventDefault();
-    this.stopAutoRotate();
-    this.pressedKeys.add(event.code);
-  };
-
-  private readonly handleKeyUp = (event: KeyboardEvent) => {
-    this.pressedKeys.delete(event.code);
-  };
-
-  private readonly clearPressedKeys = () => {
-    this.pressedKeys.clear();
-  };
 
   private readonly stopAutoRotate = () => {
     this.setAutoRotate(false);
@@ -130,9 +89,7 @@ export class GaussianSplatScene {
       alpha: false,
       powerPreference: 'high-performance',
     });
-    this.renderer.setPixelRatio(
-      Math.min(window.devicePixelRatio, innerWidth < 768 ? 1.25 : 1.75),
-    );
+    this.applyPixelRatio();
     this.renderer.setClearColor(0x090b0f, 1);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -144,6 +101,7 @@ export class GaussianSplatScene {
     this.controls.screenSpacePanning = true;
     this.controls.autoRotate = this.autoRotate;
     this.controls.autoRotateSpeed = 0.55;
+    this.flyControls = new GaussianFlyController(this.camera, this.canvas);
 
     this.spark = new SparkRenderer({ renderer: this.renderer });
     this.scene.add(this.spark);
@@ -229,6 +187,7 @@ export class GaussianSplatScene {
       this.currentSceneId = sceneId;
       onProgress(90, 'Entering the capture point…');
       this.frameSplat();
+      this.applyEffectiveParams(this.userParams);
     } catch (error) {
       this.scene.remove(splat);
       this.splat = previousSplat;
@@ -270,6 +229,7 @@ export class GaussianSplatScene {
     this.camera.near = Math.max(worldScale / 10_000, 0.001);
     this.camera.far = Math.max(worldScale * 12, 100);
     this.movementSpeed = worldScale * 0.04;
+    this.flyControls?.setMovementSpeed(this.movementSpeed);
     this.camera.updateProjectionMatrix();
 
     const cam = this.currentConfig.camera;
@@ -293,56 +253,14 @@ export class GaussianSplatScene {
     this.controls.enablePan = false;
     // minDistance/maxDistance 用 worldScale 估算，保证可缩放范围合理
     const dist = this.defaultCameraPosition.distanceTo(this.defaultTarget);
+    this.orbitDistance = Math.max(dist, 0.01);
     this.controls.minDistance = dist * 0.1;
     this.controls.maxDistance = worldScale * 0.5;
     this.controls.update();
   }
 
   private setupInput() {
-    window.addEventListener('keydown', this.handleKeyDown);
-    window.addEventListener('keyup', this.handleKeyUp);
-    window.addEventListener('blur', this.clearPressedKeys);
     this.controls?.addEventListener('start', this.stopAutoRotate);
-  }
-
-  private updateKeyboardMovement(deltaTime: number) {
-    if (!this.controls || this.pressedKeys.size === 0) return;
-
-    this.camera.getWorldDirection(this.forwardDirection);
-    this.forwardDirection.y = 0;
-    if (this.forwardDirection.lengthSq() < 0.0001) {
-      this.forwardDirection.set(0, 0, -1);
-    } else {
-      this.forwardDirection.normalize();
-    }
-
-    this.rightDirection.set(1, 0, 0).applyQuaternion(this.camera.quaternion);
-    this.rightDirection.y = 0;
-    this.rightDirection.normalize();
-
-    this.moveDirection.set(0, 0, 0);
-    if (this.pressedKeys.has('KeyW')) {
-      this.moveDirection.add(this.forwardDirection);
-    }
-    if (this.pressedKeys.has('KeyS')) {
-      this.moveDirection.sub(this.forwardDirection);
-    }
-    if (this.pressedKeys.has('KeyD')) {
-      this.moveDirection.add(this.rightDirection);
-    }
-    if (this.pressedKeys.has('KeyA')) {
-      this.moveDirection.sub(this.rightDirection);
-    }
-    if (this.pressedKeys.has('KeyQ')) this.moveDirection.y += 1;
-    if (this.pressedKeys.has('KeyE')) this.moveDirection.y -= 1;
-    if (this.moveDirection.lengthSq() === 0) return;
-
-    this.stopAutoRotate();
-    this.moveDirection
-      .normalize()
-      .multiplyScalar(this.movementSpeed * deltaTime);
-    this.camera.position.add(this.moveDirection);
-    this.controls.target.add(this.moveDirection);
   }
 
   private setupResize() {
@@ -354,6 +272,7 @@ export class GaussianSplatScene {
     if (!this.renderer) return;
     const width = this.root.clientWidth;
     const height = this.root.clientHeight;
+    this.applyPixelRatio();
     this.camera.aspect = width / Math.max(height, 1);
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height, false);
@@ -365,8 +284,8 @@ export class GaussianSplatScene {
       if (this.disposed || !this.renderer) return;
       const deltaTime = Math.min((time - previousTime) / 1000, 0.05);
       previousTime = time;
-      this.updateKeyboardMovement(deltaTime);
-      this.controls?.update();
+      this.flyControls?.update(deltaTime);
+      if (this.cameraMode === 'orbit') this.controls?.update();
       this.renderer.render(this.scene, this.camera);
       this.frameId = requestAnimationFrame(render);
     };
@@ -378,16 +297,112 @@ export class GaussianSplatScene {
     this.camera.position.copy(this.defaultCameraPosition);
     this.controls.target.copy(this.defaultTarget);
     this.controls.update();
+    if (this.cameraMode === 'fly') this.camera.lookAt(this.defaultTarget);
   }
 
   toggleAutoRotate() {
+    if (this.cameraMode === 'fly') return false;
     this.setAutoRotate(!this.autoRotate);
     return this.autoRotate;
   }
 
+  getCameraMode(): CameraMode {
+    return this.cameraMode;
+  }
+
+  setCameraMode(mode: CameraMode): void {
+    if (!this.controls || this.cameraMode === mode) return;
+
+    if (mode === 'fly') {
+      this.orbitDistance = Math.max(
+        this.camera.position.distanceTo(this.controls.target),
+        0.01,
+      );
+      this.setAutoRotate(false);
+      this.controls.enabled = false;
+      this.flyControls?.setEnabled(true);
+    } else {
+      this.flyControls?.setEnabled(false);
+      this.camera.getWorldDirection(this.forwardDirection).normalize();
+      this.controls.target
+        .copy(this.camera.position)
+        .addScaledVector(this.forwardDirection, this.orbitDistance);
+      this.controls.enabled = this.inputEnabled;
+      this.controls.update();
+    }
+
+    this.cameraMode = mode;
+    this.root.dispatchEvent(
+      new CustomEvent<CameraMode>('splat-camera-mode-change', {
+        detail: mode,
+      }),
+    );
+  }
+
+  getPerformanceMode(): PerformanceMode {
+    return this.performanceMode;
+  }
+
+  setPerformanceMode(mode: PerformanceMode): void {
+    if (this.performanceMode === mode) return;
+    this.performanceMode = mode;
+    this.applyPixelRatio();
+    this.resize();
+    this.applyEffectiveParams({
+      lodSplatScale: this.userParams.lodSplatScale,
+      lodRenderScale: this.userParams.lodRenderScale,
+    });
+    if (this.spark) {
+      this.spark.minSortIntervalMs =
+        mode === 'performance'
+          ? PERFORMANCE_PROFILE.minSortIntervalMs
+          : QUALITY_PROFILE.minSortIntervalMs;
+      this.spark.sortDirty = true;
+      this.spark.setDirty();
+    }
+    this.root.dispatchEvent(
+      new CustomEvent<PerformanceMode>('splat-performance-mode-change', {
+        detail: mode,
+      }),
+    );
+  }
+
+  setInputEnabled(enabled: boolean): void {
+    this.inputEnabled = enabled;
+    if (this.controls) {
+      this.controls.enabled = enabled && this.cameraMode === 'orbit';
+    }
+    this.flyControls?.setInputEnabled(enabled);
+  }
+
   // 应用面板下发的参数。所有副作用集中在此处，UI 层不直接读写渲染器字段。
   applyParams(params: Partial<GaussianParams>): void {
+    Object.assign(this.userParams, params);
+    this.applyEffectiveParams(params);
+  }
+
+  private applyEffectiveParams(params: Partial<GaussianParams>): void {
     if (!this.spark || !this.splat) return;
+    const effectiveParams = { ...params };
+    if (params.lodSplatScale !== undefined) {
+      effectiveParams.lodSplatScale =
+        this.performanceMode === 'performance'
+          ? Math.max(
+              0.25,
+              params.lodSplatScale *
+                PERFORMANCE_PROFILE.lodSplatScaleMultiplier,
+            )
+          : params.lodSplatScale;
+    }
+    if (params.lodRenderScale !== undefined) {
+      effectiveParams.lodRenderScale =
+        this.performanceMode === 'performance'
+          ? Math.max(
+              params.lodRenderScale,
+              PERFORMANCE_PROFILE.minLodRenderScale,
+            )
+          : params.lodRenderScale;
+    }
     const splat = this.splat as SplatMesh & {
       opacity: number;
       recolor: THREE.Color;
@@ -396,16 +411,21 @@ export class GaussianSplatScene {
     };
     const spark = this.spark;
 
-    if (params.opacity !== undefined) splat.opacity = params.opacity;
-    if (params.recolor !== undefined) {
+    if (effectiveParams.opacity !== undefined) {
+      splat.opacity = effectiveParams.opacity;
+    }
+    if (effectiveParams.recolor !== undefined) {
       try {
-        splat.recolor.set(params.recolor);
+        splat.recolor.set(effectiveParams.recolor);
       } catch {
         /* 非法颜色字符串则忽略 */
       }
     }
-    if (params.maxSh !== undefined && splat.maxSh !== params.maxSh) {
-      splat.maxSh = params.maxSh;
+    if (
+      effectiveParams.maxSh !== undefined &&
+      splat.maxSh !== effectiveParams.maxSh
+    ) {
+      splat.maxSh = effectiveParams.maxSh;
       splat.updateGenerator();
     }
 
@@ -427,28 +447,47 @@ export class GaussianSplatScene {
       'behindFoveate',
     ] as const;
     for (const key of scalarKeys) {
-      const value = params[key];
+      const value = effectiveParams[key];
       if (value !== undefined) spark[key] = value;
     }
-    if (params.sortRadial !== undefined) spark.sortRadial = params.sortRadial;
-    if (params.enable2DGS !== undefined) spark.enable2DGS = params.enable2DGS;
+    if (effectiveParams.sortRadial !== undefined) {
+      spark.sortRadial = effectiveParams.sortRadial;
+    }
+    if (effectiveParams.enable2DGS !== undefined) {
+      spark.enable2DGS = effectiveParams.enable2DGS;
+    }
 
     // LoD 参数需要显式标记遍历结果失效；排序模式也需要触发重排。
     if (
-      params.lodSplatScale !== undefined ||
-      params.lodRenderScale !== undefined ||
-      params.coneFov0 !== undefined ||
-      params.coneFov !== undefined ||
-      params.coneFoveate !== undefined ||
-      params.behindFoveate !== undefined
+      effectiveParams.lodSplatScale !== undefined ||
+      effectiveParams.lodRenderScale !== undefined ||
+      effectiveParams.coneFov0 !== undefined ||
+      effectiveParams.coneFov !== undefined ||
+      effectiveParams.coneFoveate !== undefined ||
+      effectiveParams.behindFoveate !== undefined
     ) {
       spark.lodDirty = true;
     }
-    if (params.sortRadial !== undefined) spark.sortDirty = true;
+    if (effectiveParams.sortRadial !== undefined) spark.sortDirty = true;
     spark.setDirty();
   }
 
+  private applyPixelRatio(): void {
+    if (!this.renderer) return;
+    const isMobile = this.root.clientWidth < 768;
+    const cap =
+      this.performanceMode === 'performance'
+        ? isMobile
+          ? PERFORMANCE_PROFILE.mobilePixelRatioCap
+          : PERFORMANCE_PROFILE.desktopPixelRatioCap
+        : isMobile
+          ? QUALITY_PROFILE.mobilePixelRatioCap
+          : QUALITY_PROFILE.desktopPixelRatioCap;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, cap));
+  }
+
   private setAutoRotate(enabled: boolean) {
+    if (enabled && this.cameraMode === 'fly') return;
     if (this.autoRotate === enabled) return;
     this.autoRotate = enabled;
     if (this.controls) this.controls.autoRotate = enabled;
@@ -463,13 +502,10 @@ export class GaussianSplatScene {
     this.disposed = true;
     this.sceneLoadVersion += 1;
     cancelAnimationFrame(this.frameId);
-    window.removeEventListener('keydown', this.handleKeyDown);
-    window.removeEventListener('keyup', this.handleKeyUp);
-    window.removeEventListener('blur', this.clearPressedKeys);
     this.controls?.removeEventListener('start', this.stopAutoRotate);
-    this.clearPressedKeys();
     this.resizeObserver?.disconnect();
     this.controls?.dispose();
+    this.flyControls?.dispose();
     this.pendingSplat?.dispose();
     this.pendingSplat = undefined;
     this.splat?.dispose();

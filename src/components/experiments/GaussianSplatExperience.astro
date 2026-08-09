@@ -1,9 +1,13 @@
 ---
 import {
   ArrowLeft,
+  CircleQuestionMark,
   Expand,
+  Gauge,
   Languages,
   Move3d,
+  Navigation,
+  Orbit,
   Pause,
   Play,
   RotateCcw,
@@ -31,11 +35,35 @@ const copy = isEnglish
       enter: 'Load 3D scene',
       note: 'SPZ · Spark · Three.js · 7.6 MB',
       loading: 'Loading spatial scene',
-      interaction: 'Drag to look · WASD move · Q/E ascend/descend',
+      interactionOrbit: 'Drag to orbit · Scroll to zoom',
+      interactionFly: 'Drag to look · WASD move · Q/E ascend/descend',
+      cameraMode: 'Camera mode',
+      orbit: 'Orbit',
+      fly: 'Fly',
       reset: 'Reset view',
       pause: 'Pause rotation',
       play: 'Auto rotate',
       fullscreen: 'Fullscreen',
+      quality: 'Quality',
+      performance: 'Performance',
+      enablePerformance: 'Enable performance mode',
+      disablePerformance: 'Use quality mode',
+      help: {
+        toggle: 'Help',
+        title: 'Explore the scene',
+        close: 'Close help',
+        orbitTitle: 'Orbit camera',
+        orbitText: 'Drag to orbit around the scene and scroll to zoom.',
+        flyTitle: 'Fly camera',
+        flyText:
+          'Drag to look, use W/A/S/D to move, Q/E to change height, and hold Shift to accelerate.',
+        performanceTitle: 'Performance mode',
+        performanceText:
+          'Reduces render resolution and LoD density without changing your saved tuning values.',
+        shortcuts: 'Shortcuts',
+        resetText: 'Reset the current view',
+        fullscreenText: 'Toggle fullscreen',
+      },
       scene: 'Scene',
       sceneLoading: 'Switching scene…',
       failed:
@@ -85,11 +113,35 @@ const copy = isEnglish
       enter: '加载 3D 场景',
       note: 'SPZ · Spark · Three.js · 7.6 MB',
       loading: '正在加载空间场景',
-      interaction: '拖动环视 · WASD 移动 · Q 上升 / E 下降',
+      interactionOrbit: '拖动环视 · 滚轮缩放',
+      interactionFly: '拖动转向 · WASD 移动 · Q 上升 / E 下降',
+      cameraMode: '相机模式',
+      orbit: '环绕',
+      fly: '飞行',
       reset: '重置视角',
       pause: '暂停旋转',
       play: '自动旋转',
       fullscreen: '全屏',
+      quality: '画质',
+      performance: '性能',
+      enablePerformance: '开启性能模式',
+      disablePerformance: '切换到画质模式',
+      help: {
+        toggle: '帮助',
+        title: '场景操作指南',
+        close: '关闭帮助',
+        orbitTitle: '环绕相机',
+        orbitText: '拖动鼠标环绕场景，使用滚轮缩放视图。',
+        flyTitle: '飞行相机',
+        flyText:
+          '拖动鼠标改变方向，W/A/S/D 移动，Q/E 调整高度，按住 Shift 加速。',
+        performanceTitle: '性能模式',
+        performanceText:
+          '降低渲染分辨率和 LoD 密度，但不会修改已保存的调参数据。',
+        shortcuts: '快捷键',
+        resetText: '重置当前视角',
+        fullscreenText: '切换全屏',
+      },
       scene: '场景',
       sceneLoading: '正在切换场景…',
       failed: '场景加载失败，请检查浏览器 WebGL 支持后重试。',
@@ -188,7 +240,14 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
   </div>
 
   <div class="viewer-hud" data-splat-hud hidden>
-    <p><Move3d size={15} />{copy.interaction}</p>
+    <p>
+      <Move3d size={15} />
+      <span
+        data-splat-interaction
+        data-orbit-label={copy.interactionOrbit}
+        data-fly-label={copy.interactionFly}>{copy.interactionOrbit}</span
+      >
+    </p>
     <div class="viewer-actions">
       <CustomSelect
         class="scene-switcher-select"
@@ -199,6 +258,24 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
         value={sceneOptions[0]?.id}
         data-scene-select
       />
+      <div class="camera-mode-group" role="group" aria-label={copy.cameraMode}>
+        <button
+          type="button"
+          data-camera-mode="orbit"
+          aria-pressed="true"
+          title={copy.orbit}
+        >
+          <Orbit size={16} /><span>{copy.orbit}</span>
+        </button>
+        <button
+          type="button"
+          data-camera-mode="fly"
+          aria-pressed="false"
+          title={copy.fly}
+        >
+          <Navigation size={16} /><span>{copy.fly}</span>
+        </button>
+      </div>
       <button type="button" data-reset-view title={copy.reset}>
         <RotateCcw size={16} /><span>{copy.reset}</span>
       </button>
@@ -214,14 +291,84 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
         <Play class="play-icon" size={16} />
         <span data-rotation-label>{copy.pause}</span>
       </button>
+      <button
+        type="button"
+        data-performance-mode
+        data-quality-label={copy.quality}
+        data-performance-label={copy.performance}
+        data-enable-label={copy.enablePerformance}
+        data-disable-label={copy.disablePerformance}
+        aria-pressed="false"
+        title={copy.enablePerformance}
+      >
+        <Gauge size={16} /><span data-performance-mode-label
+          >{copy.quality}</span
+        >
+      </button>
       <button type="button" data-toggle-panel title={copy.panel.toggle}>
         <SlidersHorizontal size={16} /><span>{copy.panel.toggle}</span>
+      </button>
+      <button type="button" data-open-help title={copy.help.toggle}>
+        <CircleQuestionMark size={16} /><span>{copy.help.toggle}</span>
       </button>
       <button type="button" data-fullscreen title={copy.fullscreen}>
         <Expand size={16} /><span>{copy.fullscreen}</span>
       </button>
     </div>
   </div>
+
+  <dialog
+    class="help-dialog"
+    data-help-dialog
+    aria-labelledby="splat-help-title"
+  >
+    <div class="help-card">
+      <header class="help-head">
+        <div>
+          <p>{copy.cameraMode}</p>
+          <h2 id="splat-help-title">{copy.help.title}</h2>
+        </div>
+        <button type="button" data-close-help title={copy.help.close}>
+          <X size={17} />
+        </button>
+      </header>
+      <div class="help-body">
+        <section>
+          <Orbit size={19} />
+          <div>
+            <h3>{copy.help.orbitTitle}</h3>
+            <p>{copy.help.orbitText}</p>
+          </div>
+        </section>
+        <section>
+          <Navigation size={19} />
+          <div>
+            <h3>{copy.help.flyTitle}</h3>
+            <p>{copy.help.flyText}</p>
+          </div>
+        </section>
+        <section>
+          <Gauge size={19} />
+          <div>
+            <h3>{copy.help.performanceTitle}</h3>
+            <p>{copy.help.performanceText}</p>
+          </div>
+        </section>
+        <section class="shortcut-section">
+          <Move3d size={19} />
+          <div>
+            <h3>{copy.help.shortcuts}</h3>
+            <dl>
+              <div><dt><kbd>R</kbd></dt><dd>{copy.help.resetText}</dd></div>
+              <div>
+                <dt><kbd>F</kbd></dt><dd>{copy.help.fullscreenText}</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      </div>
+    </div>
+  </dialog>
 
   <aside
     class="splat-panel"
@@ -483,10 +630,27 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
 <script>
   import type { GaussianSplatScene } from '@/scripts/gaussian-splat/GaussianSplatScene';
   import type { GaussianSplatPanel } from '@/scripts/gaussian-splat/GaussianSplatPanel';
+  import {
+    getDefaultPerformanceMode,
+    PERFORMANCE_MODE_STORAGE_KEY,
+    type CameraMode,
+    type PerformanceMode,
+  } from '@/scripts/gaussian-splat/GaussianSplatSettings';
   let splatScene: GaussianSplatScene | undefined;
   let splatPanel: GaussianSplatPanel | undefined;
   let pendingSplatScene: GaussianSplatScene | undefined;
+  let splatCleanup: (() => void) | undefined;
   let splatMountVersion = 0;
+
+  function loadPerformanceMode(): PerformanceMode {
+    try {
+      const stored = localStorage.getItem(PERFORMANCE_MODE_STORAGE_KEY);
+      if (stored === 'quality' || stored === 'performance') return stored;
+    } catch {
+      /* localStorage unavailable; use the device-oriented default */
+    }
+    return getDefaultPerformanceMode();
+  }
 
   function setupSplatExperience() {
     const root = document.querySelector<HTMLElement>('[data-splat-root]');
@@ -508,6 +672,18 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     const rotationButton = root.querySelector<HTMLButtonElement>(
       '[data-toggle-rotation]',
     );
+    const cameraButtons =
+      root.querySelectorAll<HTMLButtonElement>('[data-camera-mode]');
+    const performanceButton = root.querySelector<HTMLButtonElement>(
+      '[data-performance-mode]',
+    );
+    const interactionLabel = root.querySelector<HTMLElement>(
+      '[data-splat-interaction]',
+    );
+    const helpButton =
+      root.querySelector<HTMLButtonElement>('[data-open-help]');
+    const helpDialog =
+      root.querySelector<HTMLDialogElement>('[data-help-dialog]');
     const panelEl = root.querySelector<HTMLElement>('[data-splat-panel]');
     const sceneSelect = root.querySelector<HTMLSelectElement>(
       '[data-scene-select] select',
@@ -518,6 +694,7 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     const sceneLoadingLabel = root.querySelector<HTMLElement>(
       '[data-splat-loader] strong',
     );
+    const initialPerformanceMode = loadPerformanceMode();
 
     const updateRotationButton = (playing: boolean) => {
       if (!rotationButton) return;
@@ -528,6 +705,45 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       const label = rotationButton.querySelector('[data-rotation-label]');
       if (label) label.textContent = playing ? pauseLabel : playLabel;
     };
+
+    const updateCameraMode = (mode: CameraMode) => {
+      cameraButtons.forEach((button) => {
+        button.setAttribute(
+          'aria-pressed',
+          String(button.dataset.cameraMode === mode),
+        );
+      });
+      if (interactionLabel) {
+        interactionLabel.textContent =
+          mode === 'fly'
+            ? (interactionLabel.dataset.flyLabel ?? '')
+            : (interactionLabel.dataset.orbitLabel ?? '');
+      }
+      if (rotationButton) {
+        rotationButton.disabled = mode === 'fly';
+        rotationButton.setAttribute('aria-disabled', String(mode === 'fly'));
+      }
+    };
+
+    const updatePerformanceMode = (mode: PerformanceMode) => {
+      if (!performanceButton) return;
+      const enabled = mode === 'performance';
+      performanceButton.setAttribute('aria-pressed', String(enabled));
+      performanceButton.title = enabled
+        ? (performanceButton.dataset.disableLabel ?? '')
+        : (performanceButton.dataset.enableLabel ?? '');
+      const label = performanceButton.querySelector<HTMLElement>(
+        '[data-performance-mode-label]',
+      );
+      if (label) {
+        label.textContent = enabled
+          ? (performanceButton.dataset.performanceLabel ?? '')
+          : (performanceButton.dataset.qualityLabel ?? '');
+      }
+    };
+
+    updateCameraMode('orbit');
+    updatePerformanceMode(initialPerformanceMode);
 
     const runWithProgress = async (
       fn: (onProgress: (p: number, s: string) => void) => Promise<void>,
@@ -561,6 +777,18 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
 
     root.addEventListener('splat-auto-rotate-change', (event) => {
       updateRotationButton((event as CustomEvent<boolean>).detail);
+    });
+    root.addEventListener('splat-camera-mode-change', (event) => {
+      updateCameraMode((event as CustomEvent<CameraMode>).detail);
+    });
+    root.addEventListener('splat-performance-mode-change', (event) => {
+      const mode = (event as CustomEvent<PerformanceMode>).detail;
+      updatePerformanceMode(mode);
+      try {
+        localStorage.setItem(PERFORMANCE_MODE_STORAGE_KEY, mode);
+      } catch {
+        /* Keep the in-memory preference when storage is unavailable. */
+      }
     });
 
     loadButton?.addEventListener('click', async () => {
@@ -605,6 +833,8 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
           if (pendingSplatScene === scene) pendingSplatScene = undefined;
           splatScene = scene;
           splatPanel = panel;
+          scene.setPerformanceMode(initialPerformanceMode);
+          updatePerformanceMode(scene.getPerformanceMode());
           panelEl?.setAttribute('aria-hidden', 'false');
           intro?.setAttribute('hidden', '');
           hud?.removeAttribute('hidden');
@@ -649,6 +879,25 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       void switchScene(id);
     });
 
+    cameraButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const mode = button.dataset.cameraMode;
+        if (mode === 'orbit' || mode === 'fly') {
+          splatScene?.setCameraMode(mode);
+        }
+      });
+    });
+
+    performanceButton?.addEventListener('click', () => {
+      const scene = splatScene;
+      if (!scene) return;
+      scene.setPerformanceMode(
+        scene.getPerformanceMode() === 'performance'
+          ? 'quality'
+          : 'performance',
+      );
+    });
+
     root.querySelector('[data-reset-view]')?.addEventListener('click', () => {
       splatScene?.resetView();
     });
@@ -661,14 +910,57 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     root.querySelector('[data-close-panel]')?.addEventListener('click', () => {
       splatPanel?.setOpen(false);
     });
-    root.querySelector('[data-fullscreen]')?.addEventListener('click', () => {
+    const toggleFullscreen = () => {
       if (document.fullscreenElement) void document.exitFullscreen();
       else void root.requestFullscreen();
+    };
+    root
+      .querySelector('[data-fullscreen]')
+      ?.addEventListener('click', toggleFullscreen);
+
+    helpButton?.addEventListener('click', () => {
+      if (!helpDialog || helpDialog.open) return;
+      splatScene?.setInputEnabled(false);
+      helpDialog.showModal();
     });
+    root.querySelector('[data-close-help]')?.addEventListener('click', () => {
+      helpDialog?.close();
+    });
+    helpDialog?.addEventListener('click', (event) => {
+      if (event.target === helpDialog) helpDialog.close();
+    });
+    helpDialog?.addEventListener('close', () => {
+      splatScene?.setInputEnabled(true);
+      if (isMounted()) helpButton?.focus();
+    });
+
+    const handleShortcut = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey || helpDialog?.open) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.matches('input, textarea, select, button') ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
+      if (event.code === 'KeyR') {
+        event.preventDefault();
+        splatScene?.resetView();
+      } else if (event.code === 'KeyF') {
+        event.preventDefault();
+        toggleFullscreen();
+      }
+    };
+    window.addEventListener('keydown', handleShortcut);
+    splatCleanup = () => window.removeEventListener('keydown', handleShortcut);
   }
 
   function destroySplatExperience() {
     splatMountVersion += 1;
+    splatCleanup?.();
+    splatCleanup = undefined;
     splatPanel?.dispose();
     splatPanel = undefined;
     const scenes = new Set<GaussianSplatScene>();
@@ -737,6 +1029,9 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     opacity: 0;
     touch-action: none;
     transition: opacity 0.8s ease;
+  }
+  [data-splat-canvas][data-fly-looking='true'] {
+    cursor: grabbing;
   }
   [data-state='active'] [data-splat-canvas] {
     opacity: 1;
@@ -928,14 +1223,170 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
   }
   .viewer-actions {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 0.45rem;
   }
   .viewer-actions button {
     cursor: pointer;
   }
+  .viewer-actions button:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+  }
+  .camera-mode-group {
+    display: inline-flex;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 999px;
+    background: rgb(12 15 20 / 74%);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 20%);
+    backdrop-filter: blur(14px);
+    pointer-events: auto;
+  }
+  .camera-mode-group button {
+    min-height: 40px;
+    padding: 0.6rem 0.75rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .camera-mode-group button + button {
+    border-left: 1px solid rgb(255 255 255 / 10%);
+  }
+  .camera-mode-group button[aria-pressed='true'],
+  .viewer-actions [data-performance-mode][aria-pressed='true'] {
+    color: #081012;
+    background: #a7e3df;
+  }
+  .camera-mode-group button[aria-pressed='true']:hover,
+  .viewer-actions [data-performance-mode][aria-pressed='true']:hover {
+    background: #c3f2ed;
+  }
   [data-playing='true'] .play-icon,
   [data-playing='false'] .pause-icon {
     display: none;
+  }
+  .help-dialog {
+    width: min(560px, calc(100% - 2rem));
+    max-width: none;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    color: #f5f4ef;
+    background: transparent;
+  }
+  .help-dialog::backdrop {
+    background: rgb(3 5 8 / 68%);
+    backdrop-filter: blur(6px);
+  }
+  .help-card {
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 18px;
+    background: rgb(12 15 20 / 96%);
+    box-shadow: 0 28px 80px rgb(0 0 0 / 48%);
+  }
+  .help-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem 1rem;
+    border-bottom: 1px solid rgb(255 255 255 / 9%);
+  }
+  .help-head p {
+    margin: 0 0 0.25rem;
+    color: #7fc7ca;
+    font:
+      650 0.68rem ui-monospace,
+      monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .help-head h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .help-head button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 9px;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+  }
+  .help-head button:hover {
+    background: rgb(255 255 255 / 7%);
+  }
+  .help-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0.45rem 1.2rem 0.85rem;
+  }
+  .help-body section {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 0.7rem;
+    padding: 0.85rem 0.8rem 0.85rem 0;
+    border-bottom: 1px solid rgb(255 255 255 / 7%);
+  }
+  .help-body section:nth-child(even) {
+    padding-right: 0;
+    padding-left: 0.8rem;
+  }
+  .help-body section:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+  .help-body section > svg {
+    margin-top: 0.1rem;
+    color: #a7e3df;
+  }
+  .help-body h3 {
+    margin: 0 0 0.3rem;
+    font-size: 0.82rem;
+  }
+  .help-body p,
+  .help-body dd {
+    margin: 0;
+    color: rgb(245 244 239 / 60%);
+    font-size: 0.76rem;
+    line-height: 1.55;
+  }
+  .help-body dl,
+  .help-body dt,
+  .help-body dd {
+    margin: 0;
+  }
+  .help-body dl > div {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+  }
+  .help-body kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 22px;
+    padding: 0 0.3rem;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 5px;
+    color: rgb(245 244 239 / 82%);
+    background: rgb(255 255 255 / 7%);
+    font:
+      0.68rem ui-monospace,
+      monospace;
   }
   .error-message {
     position: absolute;
@@ -1224,7 +1675,10 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       align-items: flex-end;
     }
     .viewer-hud > p {
-      max-width: 150px;
+      display: none;
+    }
+    .viewer-actions {
+      width: 100%;
     }
     .viewer-actions button span {
       display: none;
@@ -1256,6 +1710,22 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       left: auto;
       right: 18px;
       transform: none;
+    }
+    .help-body {
+      grid-template-columns: 1fr;
+    }
+    .help-body section,
+    .help-body section:nth-child(even) {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgb(255 255 255 / 7%);
+    }
+    .help-body section:last-child {
+      border-bottom: 0;
+    }
+  }
+  @media (pointer: coarse) {
+    .camera-mode-group {
+      display: none;
     }
   }
   @media (prefers-reduced-motion: reduce) {
