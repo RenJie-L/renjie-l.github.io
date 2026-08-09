@@ -1,30 +1,6 @@
-import type { GaussianParams } from './GaussianSplatScene';
+import { DEFAULT_PARAMS, type GaussianParams } from './GaussianSplatSettings';
 
 const STORAGE_KEY = 'gaussian-splat-params';
-
-// 面板默认值；与 GaussianSplatScene 初始化时的渲染器/对象默认值保持一致。
-export const DEFAULT_PARAMS: GaussianParams = {
-  opacity: 1,
-  recolor: '#ffffff',
-  maxSh: 3,
-  maxStdDev: Math.sqrt(8),
-  focalAdjustment: 1,
-  falloff: 1,
-  minAlpha: 0.5 / 255,
-  minPixelRadius: 0,
-  maxPixelRadius: 512,
-  preBlurAmount: 0,
-  sortRadial: true,
-  enable2DGS: false,
-  lodSplatScale: 1,
-  lodRenderScale: 1,
-  focalDistance: 0,
-  apertureAngle: 0,
-  coneFov0: 90,
-  coneFov: 120,
-  coneFoveate: 0.4,
-  behindFoveate: 0.2,
-};
 
 // 会触发 LoD / 排序重算的昂贵参数，单独 debounce 以避免拖动时卡顿。
 const EXPENSIVE_KEYS = new Set<keyof GaussianParams>([
