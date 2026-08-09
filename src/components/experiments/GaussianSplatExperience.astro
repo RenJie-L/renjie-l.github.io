@@ -674,6 +674,9 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     );
     const cameraButtons =
       root.querySelectorAll<HTMLButtonElement>('[data-camera-mode]');
+    const toolbarButtons = root.querySelectorAll<HTMLButtonElement>(
+      '.viewer-actions > button, .camera-mode-group > button',
+    );
     const performanceButton = root.querySelector<HTMLButtonElement>(
       '[data-performance-mode]',
     );
@@ -695,6 +698,7 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       '[data-splat-loader] strong',
     );
     const initialPerformanceMode = loadPerformanceMode();
+    let restoreHelpButtonFocus = false;
 
     const updateRotationButton = (playing: boolean) => {
       if (!rotationButton) return;
@@ -918,8 +922,9 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       .querySelector('[data-fullscreen]')
       ?.addEventListener('click', toggleFullscreen);
 
-    helpButton?.addEventListener('click', () => {
+    helpButton?.addEventListener('click', (event) => {
       if (!helpDialog || helpDialog.open) return;
+      restoreHelpButtonFocus = event.detail === 0;
       splatScene?.setInputEnabled(false);
       helpDialog.showModal();
     });
@@ -931,7 +936,14 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     });
     helpDialog?.addEventListener('close', () => {
       splatScene?.setInputEnabled(true);
-      if (isMounted()) helpButton?.focus();
+      if (isMounted() && restoreHelpButtonFocus) helpButton?.focus();
+      restoreHelpButtonFocus = false;
+    });
+
+    toolbarButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        if (event.detail > 0) button.blur();
+      });
     });
 
     const handleShortcut = (event: KeyboardEvent) => {
