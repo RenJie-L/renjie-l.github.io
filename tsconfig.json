@@ -7,5 +7,5 @@
       "@lucide/astro": ["node_modules/@lucide/astro/src/lucide-astro.ts"]
     }
   },
-  "exclude": ["dist", "public"]
+  "exclude": ["dist", "public", "apps/harness-gateway"]
 }

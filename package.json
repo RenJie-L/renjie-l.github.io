@@ -13,12 +13,15 @@
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
+    "harness:check": "tsc --project apps/harness-gateway/tsconfig.json",
+    "harness:dev": "wrangler dev --config apps/harness-gateway/wrangler.jsonc",
+    "harness:deploy": "wrangler deploy --config apps/harness-gateway/wrangler.jsonc",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "audit": "npm audit --registry=https://registry.npmjs.org",
     "test": "node --test tests/*.test.mjs",
-    "validate": "npm run lint && npm run format:check && npm run check",
+    "validate": "npm run lint && npm run format:check && npm run check && npm run harness:check",
     "check:staged": "lint-staged",
     "precommit": "npm run check:staged && npm run check",
     "prepare": "husky"
@@ -56,7 +59,8 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0"
+    "typescript-eslint": "^8.38.0",
+    "wrangler": "^4.123.0"
   },
   "lint-staged": {
     "*.{js,mjs,cjs,ts,astro}": [

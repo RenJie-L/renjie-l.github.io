@@ -2,9 +2,11 @@
 import { ArrowRight, ExternalLink } from '@lucide/astro';
 import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { byProjectNewest } from '@/lib/content';
+import { byProjectNewest, publishedOnly } from '@/lib/content';
 
-const projects = (await getCollection('projects')).sort(byProjectNewest);
+const projects = (await getCollection('projects'))
+  .filter(publishedOnly)
+  .sort(byProjectNewest);
 const getProjectPageUrl = (project: (typeof projects)[number]) =>
   project.data.links.find((link) => link.url === `/projects/${project.id}`)
     ?.url ?? project.data.links[0]?.url;
