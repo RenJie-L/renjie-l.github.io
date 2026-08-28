@@ -1,0 +1,39 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "renjie-harness-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-15",
+  "workers_dev": true,
+  "vars": {
+    "DEEPSEEK_API_URL": "https://api.deepseek.com/chat/completions",
+    "DEEPSEEK_MODEL": "deepseek-chat",
+    "ALLOWED_ORIGINS": "https://renjie-l.github.io,http://localhost:4321,http://127.0.0.1:4321",
+    "KNOWLEDGE_URL": "https://renjie-l.github.io/harness-knowledge.json",
+    "MAX_OUTPUT_TOKENS": "1200",
+    "MAX_TURN_MS": "55000",
+  },
+  "secrets": {
+    "required": ["DEEPSEEK_API_KEY"],
+  },
+  "ratelimits": [
+    {
+      "name": "VISITOR_RATE_LIMITER",
+      "namespace_id": "73001",
+      "simple": {
+        "limit": 8,
+        "period": 60,
+      },
+    },
+    {
+      "name": "NETWORK_RATE_LIMITER",
+      "namespace_id": "73002",
+      "simple": {
+        "limit": 60,
+        "period": 60,
+      },
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+}

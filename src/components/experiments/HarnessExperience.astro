@@ -1,0 +1,768 @@
+---
+import {
+  ArrowLeft,
+  Bot,
+  Braces,
+  RotateCcw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+} from '@lucide/astro';
+
+const configuredApiUrl = import.meta.env.PUBLIC_HARNESS_API_URL?.trim();
+const apiUrl =
+  configuredApiUrl || (import.meta.env.DEV ? 'http://localhost:8787' : '');
+---
+
+<section
+  class="harness-experience"
+  data-harness-root
+  data-api-url={apiUrl}
+  data-busy="false"
+  data-status="offline"
+>
+  <header class="harness-hero">
+    <div class="container">
+      <a class="back-link" href="/projects">
+        <ArrowLeft size={15} /> 返回项目列表
+      </a>
+
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Agent Runtime Experiment · 04</p>
+          <h1>Personal Site<br /><span>Harness</span></h1>
+          <p class="hero-description">
+            它不只是回答问题：模型会搜索站内内容、读取文章和项目，并把每次工具调用实时展示出来。
+          </p>
+        </div>
+
+        <div class="principles" aria-label="Harness 设计原则">
+          <div><ShieldCheck size={17} /><span>只读工具白名单</span></div>
+          <div><Braces size={17} /><span>事件驱动的执行轨迹</span></div>
+          <div><Wrench size={17} /><span>真实 Tool Calling 循环</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="harness-workspace container">
+    <section class="chat-panel" aria-label="与 Personal Site Harness 对话">
+      <header class="panel-header">
+        <div class="agent-identity">
+          <span class="agent-mark" aria-hidden="true"><Bot size={18} /></span>
+          <div>
+            <strong>Site Agent</strong>
+            <span>DeepSeek · read-only</span>
+          </div>
+        </div>
+        <div class="agent-status" role="status" aria-live="polite">
+          <span data-harness-status-dot data-state="offline"></span>
+          <span data-harness-status-text>
+            {apiUrl ? '正在连接' : 'API 等待配置'}
+          </span>
+        </div>
+      </header>
+
+      <div class="message-list" data-harness-messages aria-live="polite">
+        <article class="harness-message assistant">
+          <span class="message-role">Harness</span>
+          <p class="message-content">
+            你好，我可以根据这个网站已经公开的文章、项目和个人资料回答问题。你也可以在右侧观察我调用了哪些工具。
+          </p>
+        </article>
+
+        <div class="quick-prompts" aria-label="示例问题">
+          <button
+            type="button"
+            data-harness-prompt="有哪些和 Web 3D、实时渲染相关的项目？"
+          >
+            <Sparkles size={14} /> 3D 项目
+          </button>
+          <button
+            type="button"
+            data-harness-prompt="总结一下 DeepSeek Harness 那篇文章的主要观点。"
+          >
+            <Search size={14} /> Harness 文章
+          </button>
+          <button
+            type="button"
+            data-harness-prompt="Renjie 主要关注哪些技术方向？请附上相关页面。"
+          >
+            <Bot size={14} /> 技术方向
+          </button>
+        </div>
+      </div>
+
+      <form class="composer" data-harness-form>
+        <label class="sr-only" for="harness-message">输入问题</label>
+        <textarea
+          id="harness-message"
+          data-harness-input
+          rows="1"
+          maxlength="2000"
+          placeholder="询问文章、项目或技术方向…"></textarea>
+        <div class="composer-actions">
+          <span>Enter 发送 · Shift + Enter 换行</span>
+          <button class="send-button" type="submit" data-harness-submit>
+            发送 <span aria-hidden="true">↗</span>
+          </button>
+          <button class="stop-button" type="button" data-harness-stop hidden>
+            停止 <span aria-hidden="true">■</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="trace-panel" aria-label="Agent 执行轨迹">
+      <header class="panel-header">
+        <div>
+          <p class="trace-eyebrow">Runtime trace</p>
+          <h2>执行轨迹</h2>
+        </div>
+        <button
+          class="clear-button"
+          type="button"
+          data-harness-clear
+          aria-label="清空当前对话"
+        >
+          <RotateCcw size={15} /> 清空
+        </button>
+      </header>
+
+      <div class="trace-list" data-harness-trace>
+        <div class="trace-empty" data-harness-trace-empty>
+          <span><Braces size={21} /></span>
+          <strong>等待下一次工具调用</strong>
+          <p>模型搜索或读取站内内容时，参数和结果会出现在这里。</p>
+        </div>
+      </div>
+
+      <footer class="trace-footer">
+        <ShieldCheck size={15} />
+        <span>只能访问构建时发布的公开内容，无法执行 Shell 或修改文件。</span>
+      </footer>
+    </aside>
+  </div>
+
+  <footer class="experiment-note container">
+    <span>Agent Loop</span><span>DeepSeek Tool Calls</span><span>SSE</span><span
+      >Cloudflare Workers</span
+    ><span>Astro Content Collections</span>
+  </footer>
+</section>
+
+<script>
+  import { HarnessExperienceController } from '@/scripts/harness/client';
+
+  let harnessController: HarnessExperienceController | undefined;
+
+  function setupHarnessExperience() {
+    const root = document.querySelector<HTMLElement>('[data-harness-root]');
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+    harnessController = new HarnessExperienceController(root);
+  }
+
+  function destroyHarnessExperience() {
+    harnessController?.destroy();
+    harnessController = undefined;
+  }
+
+  document.addEventListener('astro:page-load', setupHarnessExperience);
+  document.addEventListener('astro:before-swap', destroyHarnessExperience);
+</script>
+
+<style is:global>
+  .harness-page main {
+    overflow: hidden;
+  }
+  .harness-experience {
+    --harness-ink: #17201d;
+    --harness-muted: #66716c;
+    --harness-line: #dfe6e1;
+    --harness-surface: #fff;
+    --harness-soft: #f1f6f2;
+    --harness-accent: #1f7a52;
+    --harness-accent-soft: #daf2e4;
+    --harness-purple: #6357c8;
+    min-height: calc(100vh - 80px);
+    padding-bottom: 4rem;
+    color: var(--harness-ink);
+    background:
+      radial-gradient(
+        circle at 82% 8%,
+        rgb(99 87 200 / 10%),
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 12% 24%,
+        rgb(31 122 82 / 9%),
+        transparent 26rem
+      ),
+      #f7faf8;
+  }
+  [data-theme='dark'] .harness-experience {
+    --harness-ink: #edf4f0;
+    --harness-muted: #96a49d;
+    --harness-line: #293631;
+    --harness-surface: #111815;
+    --harness-soft: #17231e;
+    --harness-accent: #78d3a5;
+    --harness-accent-soft: #173829;
+    background:
+      radial-gradient(
+        circle at 82% 8%,
+        rgb(116 103 220 / 12%),
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 12% 24%,
+        rgb(61 171 116 / 10%),
+        transparent 26rem
+      ),
+      #0d1210;
+  }
+  .harness-hero {
+    padding: clamp(3.25rem, 7vw, 6.5rem) 0 clamp(2rem, 5vw, 3.5rem);
+  }
+  .harness-hero .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: clamp(2rem, 5vw, 4.5rem);
+    color: var(--harness-muted);
+    font-size: 0.84rem;
+  }
+  .harness-hero .back-link:hover {
+    color: var(--harness-ink);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(270px, 0.6fr);
+    align-items: end;
+    gap: clamp(2rem, 7vw, 6rem);
+  }
+  .harness-hero h1 {
+    max-width: 760px;
+    margin: 0;
+    font-size: clamp(3.3rem, 9vw, 7.4rem);
+    line-height: 0.88;
+    letter-spacing: -0.075em;
+  }
+  .harness-hero h1 span {
+    color: var(--harness-accent);
+  }
+  .hero-description {
+    max-width: 640px;
+    margin: 1.8rem 0 0;
+    color: var(--harness-muted);
+    font-size: clamp(1rem, 2vw, 1.18rem);
+  }
+  .principles {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .principles div {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--harness-line);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--harness-surface) 84%, transparent);
+    color: var(--harness-muted);
+    font-size: 0.85rem;
+    backdrop-filter: blur(12px);
+  }
+  .principles svg {
+    color: var(--harness-accent);
+  }
+  .harness-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.75fr) minmax(310px, 0.75fr);
+    overflow: hidden;
+    min-height: 700px;
+    border: 1px solid var(--harness-line);
+    border-radius: 22px;
+    background: var(--harness-surface);
+    box-shadow: 0 30px 80px rgb(26 54 41 / 10%);
+  }
+  [data-theme='dark'] .harness-workspace {
+    box-shadow: 0 30px 80px rgb(0 0 0 / 28%);
+  }
+  .chat-panel,
+  .trace-panel {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+  .chat-panel {
+    border-right: 1px solid var(--harness-line);
+  }
+  .panel-header {
+    display: flex;
+    min-height: 76px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--harness-line);
+  }
+  .agent-identity,
+  .agent-status,
+  .tool-card-head,
+  .clear-button,
+  .trace-footer {
+    display: flex;
+    align-items: center;
+  }
+  .agent-identity {
+    gap: 0.72rem;
+  }
+  .agent-mark {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 11px;
+    color: #fff;
+    background: var(--harness-accent);
+  }
+  .agent-identity > div {
+    display: grid;
+    gap: 0.05rem;
+  }
+  .agent-identity strong {
+    font-size: 0.92rem;
+  }
+  .agent-identity div span,
+  .agent-status {
+    color: var(--harness-muted);
+    font-size: 0.72rem;
+  }
+  .agent-status {
+    gap: 0.45rem;
+  }
+  [data-harness-status-dot] {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #9aa39f;
+  }
+  [data-harness-status-dot][data-state='ready'] {
+    background: #2dbb75;
+    box-shadow: 0 0 0 4px rgb(45 187 117 / 12%);
+  }
+  [data-harness-status-dot][data-state='running'] {
+    background: #e0a128;
+    box-shadow: 0 0 0 4px rgb(224 161 40 / 13%);
+    animation: harness-pulse 1.2s ease-in-out infinite;
+  }
+  .message-list {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 1.2rem;
+    overflow-y: auto;
+    padding: clamp(1.25rem, 4vw, 2.2rem);
+    background:
+      linear-gradient(var(--harness-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--harness-line) 1px, transparent 1px);
+    background-color: color-mix(
+      in srgb,
+      var(--harness-soft) 52%,
+      var(--harness-surface)
+    );
+    background-size: 32px 32px;
+  }
+  .harness-message {
+    width: fit-content;
+    max-width: min(78%, 640px);
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--harness-line);
+    border-radius: 15px;
+    background: var(--harness-surface);
+    box-shadow: 0 9px 24px rgb(28 49 40 / 5%);
+  }
+  .harness-message.user {
+    align-self: flex-end;
+    border-color: color-mix(
+      in srgb,
+      var(--harness-accent) 28%,
+      var(--harness-line)
+    );
+    background: var(--harness-accent-soft);
+  }
+  .message-role {
+    display: block;
+    margin-bottom: 0.28rem;
+    color: var(--harness-accent);
+    font:
+      700 0.62rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .harness-message.user .message-role {
+    color: var(--harness-muted);
+    text-align: right;
+  }
+  .message-content {
+    margin: 0;
+    color: var(--harness-ink);
+    font-size: 0.92rem;
+    line-height: 1.72;
+    white-space: pre-wrap;
+  }
+  .message-sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.42rem;
+    margin-top: 0.85rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--harness-line);
+  }
+  .message-sources > span {
+    width: 100%;
+    color: var(--harness-muted);
+    font-size: 0.67rem;
+  }
+  .message-sources a {
+    padding: 0.25rem 0.48rem;
+    border-radius: 6px;
+    color: var(--harness-accent);
+    background: var(--harness-accent-soft);
+    font-size: 0.72rem;
+  }
+  .quick-prompts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .quick-prompts button,
+  .clear-button {
+    border: 1px solid var(--harness-line);
+    color: var(--harness-muted);
+    background: var(--harness-surface);
+    cursor: pointer;
+  }
+  .quick-prompts button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.73rem;
+  }
+  .quick-prompts button:hover,
+  .clear-button:hover {
+    border-color: var(--harness-accent);
+    color: var(--harness-accent);
+  }
+  .composer {
+    padding: 0.9rem 1rem 1rem;
+    border-top: 1px solid var(--harness-line);
+    background: var(--harness-surface);
+  }
+  .composer textarea {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    max-height: 144px;
+    resize: none;
+    padding: 0.65rem 0.7rem;
+    border: 0;
+    outline: 0;
+    color: var(--harness-ink);
+    background: transparent;
+    line-height: 1.5;
+  }
+  .composer textarea::placeholder {
+    color: var(--harness-muted);
+  }
+  .composer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.25rem 0.25rem 0;
+  }
+  .composer-actions > span {
+    color: var(--harness-muted);
+    font-size: 0.67rem;
+  }
+  .send-button,
+  .stop-button {
+    min-width: 84px;
+    padding: 0.55rem 0.85rem;
+    border: 0;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--harness-accent);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .stop-button {
+    background: #a54d4d;
+  }
+  .trace-panel {
+    background: var(--harness-soft);
+  }
+  .trace-panel .panel-header h2,
+  .trace-eyebrow {
+    margin: 0;
+  }
+  .trace-panel .panel-header h2 {
+    font-size: 1rem;
+  }
+  .trace-eyebrow {
+    color: var(--harness-purple);
+    font:
+      700 0.62rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .clear-button {
+    gap: 0.35rem;
+    padding: 0.42rem 0.58rem;
+    border-radius: 8px;
+    font-size: 0.72rem;
+  }
+  .clear-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .trace-list {
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+    padding: 1rem;
+  }
+  .trace-empty {
+    display: grid;
+    max-width: 230px;
+    place-items: center;
+    margin: auto;
+    color: var(--harness-muted);
+    text-align: center;
+  }
+  .trace-empty[hidden] {
+    display: none;
+  }
+  .trace-empty > span {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--harness-line);
+    border-radius: 14px;
+    color: var(--harness-purple);
+    background: var(--harness-surface);
+  }
+  .trace-empty strong {
+    color: var(--harness-ink);
+    font-size: 0.83rem;
+  }
+  .trace-empty p {
+    margin: 0.35rem 0 0;
+    font-size: 0.72rem;
+    line-height: 1.6;
+  }
+  .tool-card {
+    position: relative;
+    overflow: hidden;
+    padding: 0.8rem;
+    border: 1px solid var(--harness-line);
+    border-radius: 12px;
+    background: var(--harness-surface);
+  }
+  .tool-card::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--harness-accent);
+    content: '';
+  }
+  .tool-card.running::before {
+    background: #d39a2c;
+  }
+  .tool-card.failed::before {
+    background: #b95151;
+  }
+  .tool-card-head {
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .tool-card-head strong {
+    font-size: 0.8rem;
+  }
+  .tool-card-head span {
+    color: var(--harness-muted);
+    font-size: 0.65rem;
+  }
+  .tool-card pre {
+    overflow: auto;
+    max-height: 170px;
+    margin: 0.65rem 0 0;
+    padding: 0.65rem;
+    border-radius: 8px;
+    color: var(--harness-muted);
+    background: var(--harness-soft);
+    font-size: 0.66rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .tool-card details {
+    margin-top: 0.5rem;
+  }
+  .tool-card summary {
+    color: var(--harness-muted);
+    cursor: pointer;
+    font-size: 0.68rem;
+  }
+  .trace-footer {
+    gap: 0.55rem;
+    padding: 0.85rem 1rem;
+    border-top: 1px solid var(--harness-line);
+    color: var(--harness-muted);
+    font-size: 0.68rem;
+    line-height: 1.5;
+  }
+  .trace-footer svg {
+    flex: 0 0 auto;
+    color: var(--harness-accent);
+  }
+  .harness-notice {
+    align-self: center;
+    margin: 0;
+    padding: 0.42rem 0.7rem;
+    border-radius: 999px;
+    color: var(--harness-muted);
+    background: color-mix(in srgb, var(--harness-surface) 82%, transparent);
+    font-size: 0.7rem;
+  }
+  .harness-notice.error {
+    color: #a14343;
+    background: #fff0f0;
+  }
+  [data-theme='dark'] .harness-notice.error {
+    color: #e69a9a;
+    background: #321c1c;
+  }
+  .experiment-note {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    padding-top: 1rem;
+    color: var(--harness-muted);
+    font:
+      600 0.65rem ui-monospace,
+      SFMono-Regular,
+      Consolas,
+      monospace;
+  }
+  .experiment-note span:not(:last-child)::after {
+    margin-left: 1.25rem;
+    color: var(--harness-line);
+    content: '/';
+  }
+  .sr-only {
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    margin: -1px;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  @keyframes harness-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+  @media (max-width: 900px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .principles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .principles div {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .harness-workspace {
+      grid-template-columns: 1fr;
+    }
+    .chat-panel {
+      min-height: 650px;
+      border-right: 0;
+      border-bottom: 1px solid var(--harness-line);
+    }
+    .trace-panel {
+      min-height: 420px;
+    }
+  }
+  @media (max-width: 620px) {
+    .harness-hero {
+      padding-top: 2.4rem;
+    }
+    .harness-hero h1 {
+      font-size: clamp(3.1rem, 18vw, 5.2rem);
+    }
+    .principles {
+      grid-template-columns: 1fr;
+    }
+    .principles div {
+      align-items: center;
+      flex-direction: row;
+    }
+    .harness-workspace {
+      width: 100%;
+      border-right: 0;
+      border-left: 0;
+      border-radius: 0;
+    }
+    .chat-panel {
+      min-height: calc(100vh - 88px);
+    }
+    .panel-header {
+      padding-inline: 0.9rem;
+    }
+    .message-list {
+      padding: 1rem;
+    }
+    .harness-message {
+      max-width: 90%;
+    }
+    .composer-actions > span {
+      display: none;
+    }
+    .composer-actions {
+      justify-content: flex-end;
+    }
+    .experiment-note {
+      padding-inline: 1rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-harness-status-dot][data-state='running'] {
+      animation: none;
+    }
+  }
+</style>

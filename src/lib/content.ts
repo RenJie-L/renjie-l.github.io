@@ -9,7 +9,9 @@ export const byNewest = (a: Writing, b: Writing) =>
 export const byProjectNewest = (a: Project, b: Project) =>
   b.data.sortDate.valueOf() - a.data.sortDate.valueOf();
 
-export const publishedOnly = (entry: Writing) => !entry.data.draft;
+export const publishedOnly = <T extends { data: { draft: boolean } }>(
+  entry: T,
+) => !entry.data.draft;
 
 export const formatDate = (date: Date) =>
   new Intl.DateTimeFormat('zh-CN', {

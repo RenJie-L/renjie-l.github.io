@@ -16,11 +16,39 @@ test('the production build contains the primary routes and search bundle', async
     'en/projects/index.html',
     'experiments/genshin/index.html',
     'experiments/gaussian-splat/index.html',
+    'experiments/harness/index.html',
     'en/experiments/gaussian-splat/index.html',
+    'harness-knowledge.json',
     'pagefind/pagefind.js',
   ];
 
   await Promise.all(expectedFiles.map((file) => access(resolve(dist, file))));
+});
+
+test('Harness experience and public knowledge index are generated', async () => {
+  const [html, knowledge, projectsHtml] = await Promise.all([
+    readFile(resolve(dist, 'experiments/harness/index.html'), 'utf8'),
+    readFile(resolve(dist, 'harness-knowledge.json'), 'utf8'),
+    readFile(resolve(dist, 'projects/index.html'), 'utf8'),
+  ]);
+
+  assert.match(html, /data-harness-root/);
+  assert.match(html, /data-harness-form/);
+  assert.match(html, /data-harness-trace/);
+
+  const parsed = JSON.parse(knowledge);
+  assert.ok(parsed.documents.length > 0);
+  assert.ok(parsed.documents.every((document) => document.url.startsWith('/')));
+  assert.ok(
+    parsed.documents.every(
+      (document) => document.id !== 'personal-site-harness',
+    ),
+  );
+  assert.ok(parsed.documents.every((document) => !('draft' in document)));
+  assert.doesNotMatch(projectsHtml, /Personal Site Harness/);
+  await assert.rejects(
+    access(resolve(dist, 'projects/personal-site-harness/index.html')),
+  );
 });
 
 test('Gaussian splat experiences expose camera, performance, and localized help controls', async () => {

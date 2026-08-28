@@ -14,7 +14,7 @@ const featured = articles
   .filter((article) => article.data.featured)
   .slice(0, 3);
 const projects = (await getCollection('projects'))
-  .filter((project) => project.data.featured)
+  .filter((project) => publishedOnly(project) && project.data.featured)
   .sort(byProjectNewest);
 const directions = [
   {

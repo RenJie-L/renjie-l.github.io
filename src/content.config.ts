@@ -42,6 +42,7 @@ const projects = defineCollection({
       }),
     ),
     featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
     cover: z
       .object({
         src: z.string(),

@@ -1,0 +1,2 @@
+DEEPSEEK_API_KEY=replace-with-your-deepseek-api-key
+KNOWLEDGE_URL=http://localhost:4321/harness-knowledge.json
