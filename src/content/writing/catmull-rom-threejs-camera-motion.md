@@ -16,6 +16,8 @@ readingTime: 20
 language: 'zh-CN'
 ---
 
+![Catmull–Rom 与 Three.js 相机轨迹封面](https://user-platform-oss.kujiale.com/upms/direct/61baf11efd82aad6-1788954157021-1.png)
+
 在 3D 场景里，只要开始做“沿一条路径移动”，很快就会遇到一个非常基础的问题：
 
 > 已经有了一组关键点，怎样让相机、角色或物体平滑地经过这些点，而不是沿折线生硬地转弯？
