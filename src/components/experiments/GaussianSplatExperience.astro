@@ -15,7 +15,11 @@ import {
   X,
 } from '@lucide/astro';
 import type { Locale } from '@/i18n/config';
-import { SPLAT_SCENES } from '@/scripts/gaussian-splat/scenes';
+import {
+  DEFAULT_SCENE_ID,
+  SPLAT_SCENES,
+  findSceneConfig,
+} from '@/scripts/gaussian-splat/scenes';
 import CustomSelect from '@/components/CustomSelect.astro';
 
 interface Props {
@@ -24,6 +28,8 @@ interface Props {
 
 const { locale = 'zh-CN' } = Astro.props;
 const isEnglish = locale === 'en';
+const defaultSizeBytes = findSceneConfig(DEFAULT_SCENE_ID)?.sizeBytes;
+const sceneNote = `SPZ · Spark · Three.js${defaultSizeBytes ? ` · ${(defaultSizeBytes / 1024 / 1024).toFixed(1)} MB` : ''}`;
 const copy = isEnglish
   ? {
       back: 'Back to projects',
@@ -33,7 +39,7 @@ const copy = isEnglish
       description:
         'Explore a captured space reconstructed as millions of translucent 3D Gaussians.',
       enter: 'Load 3D scene',
-      note: 'SPZ · Spark · Three.js · 7.6 MB',
+      note: sceneNote,
       loading: 'Loading spatial scene',
       interactionOrbit: 'Drag to orbit · Scroll to zoom',
       interactionFly: 'Drag to look · WASD move · Q/E ascend/descend',
@@ -111,7 +117,7 @@ const copy = isEnglish
       title: 'Gaussian Splat',
       description: '探索由数百万半透明三维高斯重建而成的真实空间。',
       enter: '加载 3D 场景',
-      note: 'SPZ · Spark · Three.js · 7.6 MB',
+      note: sceneNote,
       loading: '正在加载空间场景',
       interactionOrbit: '拖动环视 · 滚轮缩放',
       interactionFly: '拖动转向 · WASD 移动 · Q 上升 / E 下降',
@@ -255,7 +261,7 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
         size="md"
         direction="up"
         options={sceneOptions.map((s) => ({ value: s.id, label: s.name }))}
-        value={sceneOptions[0]?.id}
+        value={DEFAULT_SCENE_ID}
         data-scene-select
       />
       <div class="camera-mode-group" role="group" aria-label={copy.cameraMode}>
@@ -753,6 +759,7 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       fn: (onProgress: (p: number, s: string) => void) => Promise<void>,
     ): Promise<boolean> => {
       if (!isMounted()) return false;
+      root.dataset.hasScene = String(Boolean(splatScene));
       root.dataset.state = 'loading';
       loader?.removeAttribute('hidden');
       if (loadBar) loadBar.style.width = '0%';
@@ -1025,6 +1032,8 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
       opacity 0.8s ease,
       transform 1.4s ease;
   }
+  [data-preview='true'].splat-experience::before,
+  [data-has-scene='true'].splat-experience::before,
   [data-state='active'].splat-experience::before {
     opacity: 0;
     transform: scale(1);
@@ -1045,6 +1054,8 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
   [data-splat-canvas][data-fly-looking='true'] {
     cursor: grabbing;
   }
+  [data-has-scene='true'] [data-splat-canvas],
+  [data-preview='true'] [data-splat-canvas],
   [data-state='active'] [data-splat-canvas] {
     opacity: 1;
   }
@@ -1185,6 +1196,22 @@ const sceneOptions = SPLAT_SCENES.map((s) => ({
     transform: translate(-50%, -50%);
     text-align: center;
   }
+  [data-has-scene='true'] .ambient,
+  [data-preview='true'] .ambient,
+  [data-preview='true'] .intro-panel {
+    display: none;
+  }
+  [data-preview='true'] .loader {
+    top: 5rem;
+    left: 1.2rem;
+    bottom: auto;
+    transform: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    background: rgb(9 11 15 / 80%);
+    pointer-events: none;
+  }
+
   .loader-mark {
     width: 34px;
     height: 34px;

@@ -1,5 +1,6 @@
 import { SparkRenderer, SplatMesh } from '@sparkjsdev/spark';
 import * as THREE from 'three';
+import { loadProgressiveSpz } from './loadProgressiveSpz';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GaussianFlyController } from './GaussianFlyController';
 import {
@@ -35,6 +36,8 @@ export class GaussianSplatScene {
   private spark?: SparkRenderer;
   private splat?: SplatMesh;
   private pendingSplat?: SplatMesh;
+  private preview?: SplatMesh;
+  private loadAbort?: AbortController;
   private currentConfig?: SplatSceneConfig;
   private currentSceneId: string = DEFAULT_SCENE_ID;
   private controls?: OrbitControls;
@@ -110,11 +113,12 @@ export class GaussianSplatScene {
     this.setupInput();
     this.resize();
 
+    this.start();
     await this.loadScene(initialSceneId, onProgress);
   }
 
   /**
-   * 切换场景。新 splat 完整初始化后才替换旧场景，失败时保留当前画面以便重试。
+   * 切换场景。流式场景先展示有数量上限的预览，完整模型就绪后接管；失败恢复旧场景。
    * renderer / camera / controls / spark 复用，避免视角与上下文丢失。
    */
   async loadScene(
@@ -128,6 +132,9 @@ export class GaussianSplatScene {
 
     // 新请求会取代仍在下载的候选项，但不会影响当前正在显示的 splat。
     const loadVersion = ++this.sceneLoadVersion;
+    this.loadAbort?.abort();
+    this.clearPreview();
+    this.loadAbort = new AbortController();
     this.pendingSplat?.dispose();
     this.pendingSplat = undefined;
 
@@ -135,13 +142,98 @@ export class GaussianSplatScene {
     const sizeMB = (sizeHint / 1024 / 1024).toFixed(1);
     onProgress(8, `Downloading ${sizeMB} MB SPZ scene…`);
 
+    let fileBytes: ArrayBuffer | undefined;
+    if (
+      config.loading === 'progressive-spz' &&
+      typeof DecompressionStream !== 'undefined' &&
+      typeof CompressionStream !== 'undefined'
+    ) {
+      try {
+        fileBytes = await loadProgressiveSpz({
+          url: config.url,
+          budget: matchMedia('(max-width: 768px)').matches ? 100_000 : 350_000,
+          signal: this.loadAbort.signal,
+          onProgress: (loaded, total) => {
+            const ratio = Math.min(loaded / (total || sizeHint), 1);
+            const label = this.preview
+              ? 'Preview available · downloading details'
+              : 'Downloading scene';
+            onProgress(
+              Math.round(8 + ratio * 76),
+              `${label}… ${(loaded / 1024 / 1024).toFixed(1)} MB`,
+            );
+          },
+          onPreview: async (bytes, bounds) => {
+            const candidate = new SplatMesh({ fileBytes: bytes, lod: false });
+            try {
+              await candidate.initialized;
+              if (this.disposed || loadVersion !== this.sceneLoadVersion) {
+                candidate.dispose();
+                return;
+              }
+              if (config.transform.scale !== undefined)
+                candidate.scale.setScalar(config.transform.scale);
+              if (config.transform.quaternion)
+                candidate.quaternion.set(...config.transform.quaternion);
+              if (this.preview) {
+                candidate.position.copy(this.preview.position);
+              } else {
+                const original = this.splat;
+                const originalConfig = this.currentConfig;
+                this.splat = candidate;
+                this.currentConfig = config;
+                try {
+                  this.frameSplat(
+                    new THREE.Box3(
+                      new THREE.Vector3(
+                        ...(bounds.slice(0, 3) as [number, number, number]),
+                      ),
+                      new THREE.Vector3(
+                        ...(bounds.slice(3) as [number, number, number]),
+                      ),
+                    ),
+                  );
+                } finally {
+                  this.splat = original;
+                  this.currentConfig = originalConfig;
+                }
+              }
+              const previousPreview = this.preview;
+              this.preview = candidate;
+              this.scene.add(candidate);
+              if (this.splat) this.splat.visible = false;
+              if (previousPreview) {
+                this.scene.remove(previousPreview);
+                previousPreview.dispose();
+              }
+              this.applyEffectiveParams(this.userParams, candidate);
+              this.spark?.setDirty();
+              this.root.dataset.preview = 'true';
+            } catch (error) {
+              candidate.dispose();
+              throw error;
+            }
+          },
+        });
+        onProgress(86, 'Preview available · preparing full quality and LoD…');
+      } catch (error) {
+        if (this.disposed || loadVersion !== this.sceneLoadVersion) return;
+        console.warn(
+          'Progressive SPZ failed; retrying with the standard loader.',
+          error,
+        );
+        onProgress(8, 'Retrying scene download…');
+      }
+    }
+    if (this.disposed || loadVersion !== this.sceneLoadVersion) return;
     const splat = new SplatMesh({
-      url: config.url,
+      ...(fileBytes ? { fileBytes } : { url: config.url }),
       // 构建 LoD 数据，否则面板中的细节层次与注视点参数没有作用。
       lod: true,
       // 同时保留原始 splat，供包围盒取景与关闭 LoD 时使用。
       nonLod: true,
       onProgress: (event) => {
+        if (fileBytes) return; // Download already finished; retain the optimization status.
         if (this.disposed || loadVersion !== this.sceneLoadVersion) return;
         const ratio = event.lengthComputable
           ? event.loaded / event.total
@@ -156,7 +248,7 @@ export class GaussianSplatScene {
 
     try {
       // 应用 transform：scale → quaternion（先于加入场景，避免一帧闪烁）。
-      // position 留到 frameSplat() 里居中后再叠加。
+      // position 在 frameSplat() 中设置，保留 SPZ 原始坐标原点。
       const { scale, quaternion } = config.transform;
       if (scale !== undefined) splat.scale.setScalar(scale);
       if (quaternion) splat.quaternion.set(...quaternion);
@@ -166,6 +258,8 @@ export class GaussianSplatScene {
       splat.dispose();
       // 销毁或被后续请求替代时，不把取消的旧请求当作加载错误。
       if (this.disposed || loadVersion !== this.sceneLoadVersion) return;
+      this.clearPreview();
+      if (this.splat && this.currentConfig) this.frameSplat();
       throw error;
     }
 
@@ -186,14 +280,16 @@ export class GaussianSplatScene {
       this.currentConfig = config;
       this.currentSceneId = sceneId;
       onProgress(90, 'Entering the capture point…');
-      this.frameSplat();
-      this.applyEffectiveParams(this.userParams);
+      if (this.preview) splat.position.copy(this.preview.position);
+      else this.frameSplat();
+      this.applyEffectiveParams(this.userParams, splat);
     } catch (error) {
       this.scene.remove(splat);
       this.splat = previousSplat;
       this.currentConfig = previousConfig;
       this.currentSceneId = previousSceneId;
       splat.dispose();
+      this.clearPreview();
       if (previousSplat && previousConfig) this.frameSplat();
       throw error;
     }
@@ -202,6 +298,7 @@ export class GaussianSplatScene {
       this.scene.remove(previousSplat);
       previousSplat.dispose();
     }
+    this.clearPreview();
     onProgress(100, 'Scene ready');
   }
 
@@ -209,19 +306,26 @@ export class GaussianSplatScene {
     return this.currentSceneId;
   }
 
-  private frameSplat() {
-    if (!this.splat || !this.controls || !this.currentConfig) return;
-    const box = this.splat.getBoundingBox();
-    if (box.isEmpty()) return;
+  private clearPreview() {
+    if (this.preview) {
+      this.scene.remove(this.preview);
+      this.preview.dispose();
+      this.preview = undefined;
+    }
+    if (this.splat) this.splat.visible = true;
+    delete this.root.dataset.preview;
+  }
 
-    const center = box.getCenter(new THREE.Vector3());
+  private frameSplat(bounds?: THREE.Box3) {
+    if (!this.splat || !this.controls || !this.currentConfig) return;
+    // 不按包围盒居中；仅应用显式配置的世界坐标偏移。
+    this.splat.position.set(
+      ...(this.currentConfig.transform.position ?? [0, 0, 0]),
+    );
+    const box = bounds ?? this.splat.getBoundingBox();
+    if (box.isEmpty()) return;
+    // 包围盒只用于估算取景尺度、裁剪面与移动速度，不改变模型坐标。
     const size = box.getSize(new THREE.Vector3());
-    const rotatedCenter = center.clone().applyQuaternion(this.splat.quaternion);
-    // 居中：把包围盒中心（旋转后）搬到原点
-    this.splat.position.copy(rotatedCenter).multiplyScalar(-1);
-    // 叠加 config.transform.position（在居中之后的额外偏移）
-    const pos = this.currentConfig.transform.position;
-    if (pos) this.splat.position.add(new THREE.Vector3(pos[0], pos[1], pos[2]));
 
     // 取景：优先用 config.camera 硬编码值，否则用 framing 比例算
     const sceneScale = Math.max(size.x, size.y, size.z, 0.5);
@@ -279,6 +383,7 @@ export class GaussianSplatScene {
   }
 
   start() {
+    if (this.frameId || this.disposed) return;
     let previousTime = performance.now();
     const render = (time: number) => {
       if (this.disposed || !this.renderer) return;
@@ -381,8 +486,11 @@ export class GaussianSplatScene {
     this.applyEffectiveParams(params);
   }
 
-  private applyEffectiveParams(params: Partial<GaussianParams>): void {
-    if (!this.spark || !this.splat) return;
+  private applyEffectiveParams(
+    params: Partial<GaussianParams>,
+    target: SplatMesh | undefined = this.preview ?? this.splat,
+  ): void {
+    if (!this.spark || !target) return;
     const effectiveParams = { ...params };
     if (params.lodSplatScale !== undefined) {
       effectiveParams.lodSplatScale =
@@ -403,7 +511,7 @@ export class GaussianSplatScene {
             )
           : params.lodRenderScale;
     }
-    const splat = this.splat as SplatMesh & {
+    const splat = target as SplatMesh & {
       opacity: number;
       recolor: THREE.Color;
       maxSh: number;
@@ -500,6 +608,8 @@ export class GaussianSplatScene {
 
   destroy() {
     this.disposed = true;
+    this.loadAbort?.abort();
+    this.clearPreview();
     this.sceneLoadVersion += 1;
     cancelAnimationFrame(this.frameId);
     this.controls?.removeEventListener('start', this.stopAutoRotate);
