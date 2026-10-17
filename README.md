@@ -4,7 +4,7 @@
 
 ## Local development
 
-要求 Node.js 22.12+ 与 npm 9.6+（仓库包含 `.nvmrc`）。
+要求 Node.js 22.22.3+（22.x）或 24.16+（24.x）与 npm 9.6+。仓库的 `.nvmrc` 和部署流程使用 Node.js 24。
 
 ```bash
 nvm use
@@ -29,6 +29,8 @@ npm test
 npm run precommit
 npm run validate
 ```
+
+KaTeX 同时供公式解析、Mermaid 和页面样式使用，通过 `overrides` 统一到直接依赖的版本。更新它时需要一起检查公式与图表渲染。
 
 ## Deployment
 

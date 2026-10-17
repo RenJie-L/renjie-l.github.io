@@ -1,9 +1,9 @@
 ---
-import { ArrowRight, Bot, Braces, Sparkles, Wrench } from '@lucide/astro';
+import { ArrowRight, Bot, Box, Sparkles, Workflow } from '@lucide/astro';
 import { getCollection } from 'astro:content';
 import ArticleCard from '@/components/ArticleCard.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { byNewest, byProjectNewest, publishedOnly } from '@/lib/content';
+import { byNewest, byFeaturedProject, publishedOnly } from '@/lib/content';
 
 const articles = (await getCollection('writing'))
   .filter(
@@ -15,22 +15,23 @@ const featured = articles
   .slice(0, 3);
 const projects = (await getCollection('projects'))
   .filter((project) => project.data.featured)
-  .sort(byProjectNewest);
+  .sort(byFeaturedProject)
+  .slice(0, 3);
 const directions = [
   {
-    icon: Braces,
-    title: 'Frontend Engineering',
-    text: 'React、TypeScript 与可持续演进的 Web 架构。',
+    icon: Box,
+    title: 'Web 3D & Rendering',
+    text: '三维编辑交互、Gaussian Splatting 与浏览器实时渲染。',
+  },
+  {
+    icon: Workflow,
+    title: 'Tool Platforms & SDKs',
+    text: '复杂状态、异步资产任务与可复用的三维创作框架。',
   },
   {
     icon: Bot,
-    title: 'AI Agent Engineering',
-    text: 'Agent 工作流、上下文工程与智能应用构建。',
-  },
-  {
-    icon: Wrench,
-    title: 'Developer Experience',
-    text: '让工程工具、流程和协作体验变得更顺畅。',
+    title: 'AI Applications',
+    text: '多模态内容工具、Agent 工作流与 AI 辅助研发实践。',
   },
 ];
 ---
@@ -39,24 +40,24 @@ const directions = [
   <section class="hero container">
     <div class="hero-copy">
       <p class="availability">
-        <span></span> Currently exploring AI Agent Engineering
+        <span></span> Building tools for 3D creation
       </p>
       <h1>Hi, I'm Renjie.</h1>
       <p class="hero-lede">
-        前端开发者，关注 AI 编程、Web 工程化与智能应用。<br
-        />我在这里分享技术实践、学习笔记和正在构建的项目。
+        专注 Web 3D、实时渲染与复杂工具平台开发。<br />构建三维编辑器、渲染 SDK
+        与智能内容工具，拥有 ROS 无人机研究与真机实验经历。
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="/writing"
-          >查看文章 <ArrowRight size={16} /></a
+        <a class="button primary" href="/projects"
+          >查看项目 <ArrowRight size={16} /></a
         ><a class="button" href="/about">了解我</a>
       </div>
     </div>
     <div class="hero-signal" aria-hidden="true">
       <span class="signal-label">Current stack</span><div class="signal-row">
-        <span>React</span><span>TypeScript</span><span>Astro</span>
+        <span>React</span><span>TypeScript</span><span>Three.js</span>
       </div><div class="signal-row offset">
-        <span>Agent</span><span>RL</span><span>DX</span>
+        <span>WebGL</span><span>SDK</span><span>ROS</span>
       </div>
     </div>
   </section>
@@ -67,6 +68,48 @@ const directions = [
         探索 AI Agent
         如何参与大型项目的理解、规划与交付，并把这些经验沉淀为可复用的工程方法。
       </p><Sparkles size={22} />
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div><p class="eyebrow">Selected projects</p><h2>精选项目</h2></div><a
+        class="text-link"
+        href="/projects">全部项目 <ArrowRight size={15} /></a
+      >
+    </div>
+    <div class="project-feature-list">
+      {
+        projects.map((project) => (
+          <article class="project-feature">
+            <>
+              <div>
+                <>
+                  <span class="project-period">
+                    {project.data.period} · {project.data.role}
+                  </span>
+                  <h3>
+                    <a href={project.data.links[0]?.url}>
+                      {project.data.title}
+                    </a>
+                  </h3>
+                  <p>{project.data.description}</p>
+                  {project.data.links[0] && (
+                    <a class="project-entry" href={project.data.links[0].url}>
+                      {project.data.links[0].label} <ArrowRight size={14} />
+                    </a>
+                  )}
+                </>
+              </div>
+              <div class="tech-list">
+                {project.data.technologies.map((item) => (
+                  <span>{item}</span>
+                ))}
+              </div>
+            </>
+          </article>
+        ))
+      }
     </div>
   </section>
 
@@ -103,42 +146,6 @@ const directions = [
     </div>
   </section>
 
-  <section class="section container">
-    <div class="section-heading">
-      <div><p class="eyebrow">Selected projects</p><h2>精选项目</h2></div><a
-        class="text-link"
-        href="/projects">全部项目 <ArrowRight size={15} /></a
-      >
-    </div>
-    <div class="project-feature-list">
-      {
-        projects.map((project) => (
-          <article class="project-feature">
-            <>
-              <div>
-                <>
-                  <span class="project-period">{project.data.period}</span>
-                  <h3>{project.data.title}</h3>
-                  <p>{project.data.description}</p>
-                  {project.data.links[0] && (
-                    <a class="project-entry" href={project.data.links[0].url}>
-                      {project.data.links[0].label} <ArrowRight size={14} />
-                    </a>
-                  )}
-                </>
-              </div>
-              <div class="tech-list">
-                {project.data.technologies.map((item) => (
-                  <span>{item}</span>
-                ))}
-              </div>
-            </>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
   <section class="section recent-section container">
     <div class="section-heading">
       <div><p class="eyebrow">Latest</p><h2>最近文章</h2></div>
@@ -155,7 +162,7 @@ const directions = [
 
 <style>
   .hero {
-    min-height: 650px;
+    min-height: 560px;
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
     gap: 4rem;
@@ -305,11 +312,14 @@ const directions = [
   }
   .project-feature {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 280px);
     gap: 2rem;
     align-items: end;
     padding: 1.7rem 0;
     border-bottom: 1px solid var(--line);
+  }
+  .project-feature h3 a:hover {
+    color: var(--accent);
   }
   .project-feature h3 {
     font-size: 1.3rem;

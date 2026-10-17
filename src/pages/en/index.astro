@@ -1,22 +1,22 @@
 ---
-import { ArrowRight, Bot, Braces, Sparkles, Wrench } from '@lucide/astro';
+import { ArrowRight, Bot, Box, Sparkles, Workflow } from '@lucide/astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const directions = [
   {
-    icon: Braces,
-    title: 'Frontend Engineering',
-    text: 'React, TypeScript, and web architecture built to evolve.',
+    icon: Box,
+    title: 'Web 3D & Rendering',
+    text: '3D editing, Gaussian splatting, and real-time browser rendering.',
+  },
+  {
+    icon: Workflow,
+    title: 'Tool Platforms & SDKs',
+    text: 'Complex state, asynchronous asset tasks, and reusable 3D creation frameworks.',
   },
   {
     icon: Bot,
-    title: 'AI Agent Engineering',
-    text: 'Agent workflows, context engineering, and intelligent applications.',
-  },
-  {
-    icon: Wrench,
-    title: 'Developer Experience',
-    text: 'Tools and workflows that help teams build with less friction.',
+    title: 'AI Applications',
+    text: 'Multimodal content tools, agent workflows, and AI-assisted development.',
   },
 ];
 ---
@@ -24,23 +24,24 @@ const directions = [
 <BaseLayout
   locale="en"
   hasTranslation
-  title="Renjie — Frontend & AI Engineering"
-  description="Frontend engineer exploring AI-assisted development, web engineering, and intelligent applications."
+  title="Renjie — Web 3D & Software Engineering"
+  description="Software engineer building Web 3D editors, rendering SDKs, and complex tool platforms, with ROS UAV research and physical flight experiments."
 >
   <section class="hero container">
     <div class="hero-copy">
       <p class="availability">
-        <span></span> Currently exploring AI Agent Engineering
+        <span></span> Building tools for 3D creation
       </p>
       <h1>Hi, I'm Renjie.</h1>
       <p class="hero-lede">
-        Frontend engineer focused on AI-assisted development, web engineering,
-        and intelligent applications.<br />I share technical practice, learning
-        notes, and the projects I am building.
+        Software engineer focused on Web 3D, real-time rendering, and complex
+        tool platforms.<br />
+        I build 3D editors, rendering SDKs, and intelligent content tools, with a
+        background in ROS UAV research and physical flight experiments.
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="/en/writing"
-          >Explore writing <ArrowRight size={16} /></a
+        <a class="button primary" href="/en/projects"
+          >Explore projects <ArrowRight size={16} /></a
         >
         <a class="button" href="/en/about">About me</a>
       </div>
@@ -48,10 +49,10 @@ const directions = [
     <div class="hero-signal" aria-hidden="true">
       <span class="signal-label">Current stack</span>
       <div class="signal-row">
-        <span>React</span><span>TypeScript</span><span>Astro</span>
+        <span>React</span><span>TypeScript</span><span>Three.js</span>
       </div>
       <div class="signal-row offset">
-        <span>Agent</span><span>RL</span><span>DX</span>
+        <span>WebGL</span><span>SDK</span><span>ROS</span>
       </div>
     </div>
   </section>
@@ -61,10 +62,81 @@ const directions = [
       <div><p class="eyebrow">Now</p><h2>Current focus</h2></div>
       <p>
         Exploring how AI agents can understand, plan, and deliver in large
-        software projects—and turning those lessons into reusable engineering
+        software projects, and turning those lessons into reusable engineering
         practices.
       </p>
       <Sparkles size={22} />
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Selected projects</p><h2>Engineering & research</h2>
+      </div>
+      <a class="text-link" href="/en/projects"
+        >View projects <ArrowRight size={15} /></a
+      >
+    </div>
+    <div class="project-feature-list">
+      <article class="project-feature">
+        <div>
+          <span class="project-period">2025.08 — Present · Technical Lead</span>
+          <h3>LuxReal 3D Studio</h3>
+          <p>
+            A reusable 3D creation SDK for 5+ product lines, with unified asset
+            tasks and Gaussian / Mesh editing.
+          </p>
+          <a
+            class="project-entry"
+            href="/projects/luxreal-3d-studio"
+            hreflang="zh-CN">Case study (中文) <ArrowRight size={14} /></a
+          >
+        </div>
+        <div class="tech-list">
+          <span>TypeScript</span><span>WebGL</span><span>3DGS</span><span
+            >SDK</span
+          >
+        </div>
+      </article>
+      <article class="project-feature">
+        <div>
+          <span class="project-period"
+            >2022.03 — 2023.06 · First Author / Researcher</span
+          >
+          <h3>UAV Load Swing Suppression</h3>
+          <p>
+            From DQN training to OptiTrack, ROS, MAVROS, and PX4 integration,
+            with indoor flight comparisons at approximately 250g and 500g.
+          </p>
+          <a
+            class="project-entry"
+            href="/projects/uav-swing-free-trajectory"
+            hreflang="zh-CN"
+            >Research case study (中文) <ArrowRight size={14} /></a
+          >
+        </div>
+        <div class="tech-list">
+          <span>DQN</span><span>PyTorch</span><span>ROS</span><span>MAVROS</span
+          >
+        </div>
+      </article>
+      <article class="project-feature">
+        <div>
+          <span class="project-period">2026.03 · Creative Developer</span>
+          <h3>3D Gaussian Splat Scene Viewer</h3>
+          <p>
+            An independent browser experiment for SPZ scene loading, camera
+            controls, and real-time rendering parameters.
+          </p>
+          <a class="project-entry" href="/en/experiments/gaussian-splat"
+            >Enter scene <ArrowRight size={14} /></a
+          >
+        </div>
+        <div class="tech-list">
+          <span>3DGS</span><span>Spark</span><span>Three.js</span>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -79,74 +151,36 @@ const directions = [
             <div class="direction-icon">
               <Icon size={21} />
             </div>
-            <h3>{title}</h3>
-            <p>{text}</p>
+            <>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </>
           </article>
         ))
       }
     </div>
   </section>
 
-  <section class="section container">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">Selected project</p><h2>Research in practice</h2>
-      </div>
-      <a class="text-link" href="/en/projects"
-        >View projects <ArrowRight size={15} /></a
-      >
-    </div>
-    <div class="project-feature-list">
-      <article class="project-feature">
-        <div>
-          <span class="project-period">2026.07 — Present</span>
-          <h3>West Lake WebGL Experience</h3>
-          <p>
-            An original digital ink-wash landscape built with procedural
-            geometry and shaders.
-          </p>
-          <a class="project-entry" href="/en/experiments/west-lake">
-            Enter scene <ArrowRight size={14} />
-          </a>
-        </div>
-        <div class="tech-list">
-          <span>Three.js</span><span>GLSL</span><span>GSAP</span>
-        </div>
-      </article>
-      <article class="project-feature">
-        <div>
-          <span class="project-period">2022.03 — 2023.06</span>
-          <h3>Reinforcement Learning for Swing-Free UAV Trajectories</h3>
-          <p>
-            A deep reinforcement learning approach for planning trajectories
-            that reduce suspended-load swing, validated on a physical UAV
-            system.
-          </p>
-        </div>
-        <div class="tech-list">
-          <span>RL</span><span>UAV</span><span>Python</span>
-        </div>
-      </article>
-    </div>
-  </section>
-
   <section class="section writing-cta container">
     <p class="eyebrow">Writing</p>
-    <h2>English articles are on the way.</h2>
+    <h2>Notes from engineering practice.</h2>
     <p>
-      The site interface is now bilingual. English translations of selected
-      articles will be published gradually.
+      I write about graphics, frontend architecture, and AI-assisted
+      development. Articles and detailed case studies are currently available
+      primarily in Chinese.
     </p>
     <div class="hero-actions">
-      <a class="button primary" href="/en/writing">English writing</a>
-      <a class="button" href="/writing" hreflang="zh-CN">Read in Chinese</a>
+      <a class="button primary" href="/writing" hreflang="zh-CN"
+        >Read in Chinese</a
+      >
+      <a class="button" href="/en/writing">English writing</a>
     </div>
   </section>
 </BaseLayout>
 
 <style>
   .hero {
-    min-height: 650px;
+    min-height: 560px;
     display: grid;
     grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
     gap: 4rem;
@@ -290,7 +324,7 @@ const directions = [
   }
   .project-feature {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 280px);
     gap: 2rem;
     align-items: end;
     padding: 1.7rem 0;

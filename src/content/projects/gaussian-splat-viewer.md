@@ -14,6 +14,7 @@ links:
   - label: '进入场景'
     url: '/experiments/gaussian-splat'
 featured: true
+featuredOrder: 3
 cover:
   src: '/assets/experiments/gaussian-splat/cover.jpg'
   alt: '由冷暖色高斯粒子重建而成的室内三维空间'
@@ -26,6 +27,8 @@ cover:
 项目不只验证“能否把场景显示出来”，还重点处理了真实产品中更容易被忽略的问题：大体积数据何时加载、不同坐标系如何对齐、如何自动找到合理的初始视角、切换场景时怎样释放旧资源，以及复杂参数如何在不阻塞画面的前提下实时调节。
 
 > 如果想先了解 3DGS 的表示方式、训练过程和渲染原理，可以阅读《[3D Gaussian Splatting 入门：原理、流程与应用](/writing/3d-gaussian-splatting-intro)》。
+
+相关工作案例：[LuxReal 3D 片场：三维创作框架与资产任务体系](/projects/luxreal-3d-studio)。本查看器是独立个人实验，提供高斯场景相关技术的公开体验。
 
 ## 技术栈
 

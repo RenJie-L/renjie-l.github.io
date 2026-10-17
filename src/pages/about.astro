@@ -5,7 +5,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
 <BaseLayout
   title="关于"
-  description="关于 Renjie：前端工程、AI Agent 与强化学习方向的开发者。"
+  description="关于 Renjie：专注 Web 3D、实时渲染与复杂工具平台，拥有 ROS 无人机研究与真机实验经历。"
   hasTranslation
 >
   <div class="page-intro">
@@ -58,14 +58,16 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         >
           <article class="detail-card">
             <span>AI 驱动的 3D 内容创作平台</span><h3>
-              通用 3D 创作框架与内部 SDK
+              LuxReal 3D 片场与内部 SDK
             </h3><p>
               负责 AI 驱动 3D
               内容创作平台的核心建设，将场景、角色、道具、动作、截图与 AI
               增强等能力沉淀为通用框架，接入 5+
               内部产品线；通过统一任务调度和资产状态域重构，让新增资产类型的开发成本降低约
               60%。
-            </p>
+            </p><a class="text-link" href="/projects/luxreal-3d-studio"
+              >阅读项目案例 →</a
+            >
           </article><article class="detail-card">
             <span>实时渲染编辑器</span><h3>大型三维场景的实时编辑体验</h3><p>
               参与“本地 WebGL 预览 + 云端 GPU
@@ -98,11 +100,13 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
         <p class="eyebrow">Research</p><h2>研究与实践</h2><article
           class="detail-card"
         >
-          <span>2020.09 — 2023.06</span><h3>
-            基于强化学习的无人机负载无摆动轨迹生成
-          </h3><p>
-            针对无人机悬挂负载易摆动的问题，使用深度强化学习生成无摆动飞行轨迹，并在实际无人机系统中完成验证。这段经历也塑造了我处理复杂系统问题时“建模、实验、验证”的工作方式。
-          </p>
+          <span>2020.09 — 2023.06</span><h3>无人机吊载抑摆与真机验证</h3><p>
+            基于 DQN 与 Gym 学习抑摆轨迹，接入 OptiTrack 位姿、ROS / MAVROS 与
+            PX4，在 Jetson Xavier NX 上完成约 250g 和 500g
+            负载的室内真机对照实验。这段经历塑造了我建模、集成系统与分析实验结果的工作方式。
+          </p><a class="text-link" href="/projects/uav-swing-free-trajectory"
+            >查看系统与实验结果 →</a
+          >
         </article>
       </section>
       <section>

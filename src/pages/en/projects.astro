@@ -1,4 +1,4 @@
-﻿---
+---
 import { ArrowRight, ExternalLink } from '@lucide/astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
@@ -21,6 +21,156 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     <article class="project-card has-cover">
       <a
         class="project-cover"
+        href="/projects/luxreal-3d-studio"
+        hreflang="zh-CN"
+        aria-label="Read the LuxReal 3D Studio case study in Chinese"
+      >
+        <img
+          src="/assets/projects/luxreal/architecture.svg"
+          alt="LuxReal capability overview: a shared 3D creation SDK for editing, asset tasks, and Gaussian / Mesh rendering"
+          loading="lazy"
+        />
+      </a>
+      <div class="project-head">
+        <div>
+          <span>2025.08 — Present · Technical Lead / Frontend Lead</span>
+          <h2>LuxReal 3D Studio</h2>
+          <p>
+            A reusable 3D creation framework combining Gaussian / Mesh editing,
+            asset generation tasks, and an internal SDK used by 5+ product
+            lines.
+          </p>
+        </div>
+        <div class="project-links">
+          <a
+            class="project-action"
+            href="/projects/luxreal-3d-studio"
+            hreflang="zh-CN">Case study (中文) <ArrowRight size={14} /></a
+          >
+          <a class="project-action" href="/en/experiments/gaussian-splat"
+            >Related personal experiment <ArrowRight size={14} /></a
+          >
+        </div>
+      </div>
+      <ul>
+        <li>
+          Unified scene, character, prop, and animation tasks, reducing the cost
+          of adding new asset types by about 60%.
+        </li>
+        <li>
+          Handled unit and matrix consistency for Gaussian / Mesh editing, with
+          atomic scene replacement and rollback during SPZ loading.
+        </li>
+        <li>
+          Led SDK architecture and frontend delivery, and extended Java API
+          parameters and task-processing flows.
+        </li>
+      </ul>
+      <div class="technologies">
+        <span>React</span><span>TypeScript</span><span>WebGL</span><span
+          >3DGS / SPZ</span
+        ><span>Protobuf</span><span>Java</span>
+      </div>
+    </article>
+    <article class="project-card has-cover">
+      <a
+        class="project-cover"
+        href="/projects/uav-swing-free-trajectory"
+        hreflang="zh-CN"
+        aria-label="Read the UAV research case study in Chinese"
+      >
+        <img
+          src="/assets/projects/uav/uav-platform.jpg"
+          alt="Physical quadrotor platform with a Jetson Xavier NX onboard computer"
+          loading="lazy"
+        />
+      </a>
+      <div class="project-head">
+        <div>
+          <span>2022.03 — 2023.06 · First Author / Researcher</span>
+          <h2>UAV Load Swing Suppression: From DQN to Physical Flight</h2>
+          <p>
+            Trained a DQN trajectory planner and integrated OptiTrack, ROS,
+            MAVROS, PX4, and Jetson Xavier NX for indoor flight experiments.
+          </p>
+        </div>
+        <div class="project-links">
+          <a
+            class="project-action"
+            href="/projects/uav-swing-free-trajectory"
+            hreflang="zh-CN"
+            >Research case study (中文) <ArrowRight size={14} /></a
+          >
+          <a
+            class="project-action secondary"
+            href="https://ieeexplore.ieee.org/abstract/document/10055333"
+            target="_blank"
+            rel="noreferrer">CAC 2022 paper <ExternalLink size={14} /></a
+          >
+        </div>
+      </div>
+      <ul>
+        <li>
+          Built a planar dynamics model and Gym environment with a region-based
+          DQN reward.
+        </li>
+        <li>
+          Connected motion-capture pose data, ROS nodes, and flight-controller
+          communication for physical validation.
+        </li>
+        <li>
+          Compared approximately 250g and 500g payloads indoors. At 500g, peak
+          absolute swing decreased from about 20° to 14°, with residual
+          oscillation.
+        </li>
+      </ul>
+      <div class="technologies">
+        <span>DQN</span><span>PyTorch</span><span>Gym</span><span>C++</span
+        ><span>ROS</span><span>MAVROS</span><span>PX4</span>
+      </div>
+    </article>
+    <article class="project-card has-cover">
+      <a
+        class="project-cover"
+        href="/en/experiments/gaussian-splat"
+        aria-label="Enter the 3D Gaussian Splat Scene Viewer"
+      >
+        <img
+          src="//qhstaticssl.kujiale.com/image/png/1784796407414/25DF08664B29B28B0D18033AE03F4FD1.png?imageMogr2/format/webp"
+          alt="An interior reconstructed from cyan and warm amber 3D Gaussian splats"
+          loading="lazy"
+        />
+      </a>
+      <div class="project-head">
+        <div>
+          <span>2026.03 · Creative Developer</span>
+          <h2>3D Gaussian Splat Scene Viewer</h2>
+          <p>
+            A focused browser experiment for loading and exploring a compressed
+            SPZ spatial capture with Spark and Three.js.
+          </p>
+        </div>
+        <div class="project-links">
+          <a class="project-action" href="/en/experiments/gaussian-splat">
+            Enter scene <ArrowRight size={14} />
+          </a>
+        </div>
+      </div>
+      <ul>
+        <li>Loads a remote 7.6 MB SPZ scene directly in the browser.</li>
+        <li>
+          Orbit, zoom, pan, auto-rotation, reset, and fullscreen controls.
+        </li>
+        <li>Viewer code and scene data are loaded only after user intent.</li>
+      </ul>
+      <div class="technologies">
+        <span>3DGS</span><span>SPZ</span><span>Spark</span><span>Three.js</span
+        ><span>Astro</span>
+      </div>
+    </article>
+    <article class="project-card has-cover">
+      <a
+        class="project-cover"
         href="/en/experiments/genshin"
         aria-label="Enter the Genshin Impact WebGL Experience"
       >
@@ -32,7 +182,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </a>
       <div class="project-head">
         <div>
-          <span>2026.07 — Present · Creative Developer</span>
+          <span>2025.09 · Creative Developer</span>
           <h2>Genshin Impact WebGL Experience</h2>
           <p>
             A browser recreation of the Genshin Impact opening sequence,
@@ -69,45 +219,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     <article class="project-card has-cover">
       <a
         class="project-cover"
-        href="/en/experiments/gaussian-splat"
-        aria-label="Enter the 3D Gaussian Splat Scene Viewer"
-      >
-        <img
-          src="//qhstaticssl.kujiale.com/image/png/1784796407414/25DF08664B29B28B0D18033AE03F4FD1.png?imageMogr2/format/webp"
-          alt="An interior reconstructed from cyan and warm amber 3D Gaussian splats"
-          loading="lazy"
-        />
-      </a>
-      <div class="project-head">
-        <div>
-          <span>2026.07 — Present · Creative Developer</span>
-          <h2>3D Gaussian Splat Scene Viewer</h2>
-          <p>
-            A focused browser experiment for loading and exploring a compressed
-            SPZ spatial capture with Spark and Three.js.
-          </p>
-        </div>
-        <div class="project-links">
-          <a class="project-action" href="/en/experiments/gaussian-splat">
-            Enter scene <ArrowRight size={14} />
-          </a>
-        </div>
-      </div>
-      <ul>
-        <li>Loads a remote 7.6 MB SPZ scene directly in the browser.</li>
-        <li>
-          Orbit, zoom, pan, auto-rotation, reset, and fullscreen controls.
-        </li>
-        <li>Viewer code and scene data are loaded only after user intent.</li>
-      </ul>
-      <div class="technologies">
-        <span>3DGS</span><span>SPZ</span><span>Spark</span><span>Three.js</span
-        ><span>Astro</span>
-      </div>
-    </article>
-    <article class="project-card has-cover">
-      <a
-        class="project-cover"
         href="/en/experiments/west-lake"
         aria-label="Enter West Lake WebGL Experience"
       >
@@ -119,7 +230,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </a>
       <div class="project-head">
         <div>
-          <span>2026.07 — Present · Creative Developer</span>
+          <span>2024.07 · Creative Developer</span>
           <h2>West Lake: A Digital Ink-Wash WebGL Experience</h2>
           <p>
             An original real-time landscape built with procedural mountains,
@@ -142,62 +253,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       <div class="technologies">
         <span>Three.js</span><span>WebGL</span><span>GLSL</span><span>GSAP</span
         ><span>Astro</span>
-      </div>
-    </article>
-    <article class="project-card has-cover">
-      <a
-        class="project-cover"
-        href="https://ieeexplore.ieee.org/abstract/document/10055333"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Read the UAV swing-free trajectory planning publication"
-      >
-        <img
-          src="//qhstaticssl.kujiale.com/image/png/1784635477373/1D4A17E9B264CA306E1E28A789EF5470.png?imageMogr2/format/webp"
-          alt="A quadrotor follows a planned trajectory toward a target region while its suspended payload swing settles"
-          loading="lazy"
-        />
-      </a>
-      <div class="project-head">
-        <div>
-          <span>2022.03 — 2023.06 · First Author / Researcher</span><h2>
-            Reinforcement Learning for Swing-Free UAV Trajectories
-          </h2><p>
-            A DQN-based trajectory planner that balances travel efficiency and
-            swing suppression for a quadrotor carrying a cable-suspended load.
-          </p>
-        </div>
-        <div class="project-links">
-          <a
-            class="project-action secondary"
-            href="https://ieeexplore.ieee.org/abstract/document/10055333"
-            target="_blank"
-            rel="noreferrer">Publication <ExternalLink size={14} /></a
-          >
-        </div>
-      </div>
-      <ul>
-        <li>
-          Reduced the coupled, nonlinear, underactuated system to planar motion
-          and built a six-state, Gym-compatible simulator.
-        </li>
-        <li>
-          Combined a discrete action space with DQN, experience replay, and
-          separate main and target networks.
-        </li>
-        <li>
-          Designed a region-approximation exploration reward that progressively
-          balances target distance against payload swing.
-        </li>
-        <li>
-          Converged at about 600 of 850 training episodes; across 20 simulation
-          tests, peak swing stayed within 16° and angular speed within 46°/s.
-        </li>
-      </ul>
-      <div class="technologies">
-        <span>DQN</span><span>Reinforcement Learning</span><span
-          >Trajectory Planning</span
-        ><span>PyTorch</span><span>OpenAI Gym</span>
       </div>
     </article>
   </section>

@@ -28,6 +28,10 @@ const projects = defineCollection({
     period: z.string(),
     sortDate: z.coerce.date(),
     role: z.string(),
+    kind: z
+      .enum(['engineering', 'research', 'experiment'])
+      .default('experiment'),
+    featuredOrder: z.number().int().positive().optional(),
     technologies: z.array(z.string()),
     highlights: z.array(z.string()),
     links: z.array(

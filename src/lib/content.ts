@@ -9,6 +9,10 @@ export const byNewest = (a: Writing, b: Writing) =>
 export const byProjectNewest = (a: Project, b: Project) =>
   b.data.sortDate.valueOf() - a.data.sortDate.valueOf();
 
+export const byFeaturedProject = (a: Project, b: Project) =>
+  (a.data.featuredOrder ?? Number.MAX_SAFE_INTEGER) -
+    (b.data.featuredOrder ?? Number.MAX_SAFE_INTEGER) || byProjectNewest(a, b);
+
 export const publishedOnly = (entry: Writing) => !entry.data.draft;
 
 export const formatDate = (date: Date) =>
