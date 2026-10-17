@@ -5,133 +5,147 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 
 <BaseLayout
   title="关于"
-  description="关于 Renjie：专注 Web 3D、实时渲染与复杂工具平台，拥有 ROS 无人机研究与真机实验经历。"
+  description="Hi，我是 Renjie，一名喜欢把想法做出来的软件工程师。这里记录我对软件、交互与智能应用的探索，以及项目背后的实践与思考。"
   hasTranslation
 >
   <div class="page-intro">
     <div class="container">
-      <p class="eyebrow">About</p><h1>用工程连接想法与现实。</h1>
+      <p class="eyebrow">About</p><h1>让想法成为可用的工具。</h1>
     </div>
   </div>
   <div class="about-layout container">
     <aside>
       <p class="about-lede">
-        Hi，我是 Renjie，一名专注 Web 3D 与实时渲染的软件开发工程师。过去 3
-        年多，我持续使用 React、TypeScript、WebGL 构建复杂的三维编辑器、渲染 SDK
-        与云端流式渲染产品，也负责从架构设计、跨团队协作到上线稳定性的完整交付。
+        Hi，我是
+        Renjie，一名喜欢把想法做出来的软件工程师。对我来说，写代码的乐趣，是让一个模糊的想法慢慢变成可以使用、能解决问题的东西。
       </p>
       <p class="about-note">
-        既关注渲染效果和交互体验，也在意系统是否易于扩展、复用和长期维护。目前也在探索
-        AI 编程与 Agent Engineering 如何提升大型项目的研发效率。
-      </p><div class="contact-links">
+        我关注软件、交互与智能应用。做过三维创作工具，也研究过无人机；这些经历让我习惯先理解问题，再动手验证，边做边改。
+      </p>
+      <p class="about-note">
+        这里放着我的项目、小实验和一些思考。有些来自工作中的实践，有些始于一个想弄明白的问题，希望也能给同样好奇的人一点参考。
+      </p>
+      <div class="contact-links">
         <a class="button" href="mailto:renjie-l@foxmail.com"
           ><Mail size={16} /> Email</a
         >
       </div>
     </aside>
     <div class="about-content">
-      <section>
-        <p class="eyebrow">Focus</p><h2>关注方向</h2><div class="focus-tags">
-          <span>Web 3D / 实时渲染</span><span>React / TypeScript</span><span
-            >Three.js / WebGL / GLSL</span
-          ><span>3D 编辑器与 SDK 架构</span><span>Gaussian Splatting</span><span
-            >云端流式渲染</span
-          ><span>AI-assisted Development</span><span>Agent Engineering</span>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Work</p><h2>工作经历</h2><div class="timeline">
-          <article>
-            <span>2024.10 — 至今</span><h3>大型三维设计与内容平台</h3><p>
-              高级软件开发工程师 · Web 3D 与实时渲染技术负责人
-            </p>
-          </article><article>
-            <span>2023.04 — 2024.10</span><h3>大型三维设计与内容平台</h3><p>
-              软件开发工程师 · 云渲染与实时渲染核心前端开发
-            </p>
-          </article>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Selected work</p><h2>代表性实践</h2><div
-          class="work-grid"
-        >
-          <article class="detail-card">
-            <span>AI 驱动的 3D 内容创作平台</span><h3>
-              三维创作平台与内部 SDK
-            </h3><p>
-              负责 AI 驱动 3D
-              内容创作平台的核心建设，将场景、角色、道具、动作、截图与 AI
-              增强等能力沉淀为可复用的内部 SDK，并统一任务调度与资产状态管理。
-            </p><a class="text-link" href="/projects/3d-creation-platform"
-              >阅读项目案例 →</a
-            >
-          </article><article class="detail-card">
-            <span>实时渲染编辑器</span><h3>大型三维场景的实时编辑体验</h3><p>
-              参与“本地 WebGL 预览 + 云端 GPU
-              流式渲染”双引擎编辑器建设。设计光源增量同步和选择性能优化方案，使数据传输量降低
-              90%+、框选性能提升约 4 倍，并推动实时渲染 WAU 增长 20%。
-            </p>
-          </article><article class="detail-card">
-            <span>多端云渲染平台</span><h3>复杂流程、商业化与稳定性建设</h3><p>
-              面向 5 个业务端，建设可中断渲染状态机、WebGL2
-              实时光照预览与多币种组合计费能力，并沉淀跨端支付
-              SDK；核心链路监控覆盖率从 0 提升至 55%，治理无效请求 80%+。
-            </p>
-          </article>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Education</p><h2>教育经历</h2><div class="timeline">
-          <article>
-            <span>2020.09 — 2023.06</span><h3>杭州电子科技大学</h3><p>
-              硕士研究生 · 电子信息
-            </p>
-          </article><article>
-            <span>2020.09 — 2022.06</span><h3>ITMO University</h3><p>
-              Master · Control Engineering
-            </p>
-          </article>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Research</p><h2>研究与实践</h2><article
-          class="detail-card"
-        >
-          <span>2020.09 — 2023.06</span><h3>无人机吊载抑摆与真机验证</h3><p>
-            基于 DQN 与 Gym 学习抑摆轨迹，接入 OptiTrack 位姿、ROS / MAVROS 与
-            PX4，在 Jetson Xavier NX 上完成约 250g 和 500g
-            负载的室内真机对照实验。这段经历塑造了我建模、集成系统与分析实验结果的工作方式。
-          </p><a class="text-link" href="/projects/uav-swing-free-trajectory"
-            >查看系统与实验结果 →</a
-          >
+      <section class="interests">
+        <p class="eyebrow">Interests</p><h2>我关心的事情</h2>
+        <article>
+          <h3>让复杂的东西用起来更简单</h3>
+          <p>
+            我对工具怎样被使用很感兴趣：一段交互能否让人少费一点力，一套能力能否让下一件事更容易完成。三维创作是我投入较多的方向，也让我不断在技术实现和使用体验之间做选择。
+          </p>
+        </article>
+        <article>
+          <h3>和新的工具一起工作</h3>
+          <p>
+            最近在探索 AI
+            怎样参与真实的软件开发：帮助理解项目、尝试想法、检查结果，也思考哪些判断需要自己完成。我更愿意从具体问题出发，看看它能在哪些地方帮上忙。
+          </p>
         </article>
       </section>
       <section>
-        <p class="eyebrow">Publication</p><h2>学术论文</h2><a
-          class="publication publication-link"
-          href="https://ieeexplore.ieee.org/abstract/document/10055333"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          第一作者 · Deep Reinforcement Learning-based Swing-Free Trajectories
-          Planning Algorithm for UAV with a Suspended Load. <em
-            >China Automation Congress 2022.</em
-          >
-        </a>
+        <p class="eyebrow">Things I've built</p><h2>做过的探索</h2>
+        <div class="work-grid">
+          <article class="detail-card">
+            <span>工作中的实践</span><h3>把三维创作做成工具</h3>
+            <p>
+              工作中，我把场景编辑、资产生成和图像输出组织到同一个创作流程里。这段经历让我更关心工具的不同能力如何配合，以及复杂系统怎样持续演进。
+            </p>
+            <a class="text-link" href="/projects/3d-creation-platform"
+              >阅读匿名技术案例 →</a
+            >
+          </article>
+          <article class="detail-card">
+            <span>从研究到真机</span><h3>让想法经得起真实飞行的检验</h3>
+            <p>
+              研究生阶段，我研究无人机吊载运输中的摆动抑制。把仿真中的方法搬到真实飞行平台，让我学会重视模型的局限，也通过实验检验想法。
+            </p>
+            <a class="text-link" href="/projects/uav-swing-free-trajectory"
+              >看看研究和实验 →</a
+            >
+          </article>
+          <article class="detail-card">
+            <span>个人实验</span><h3>在浏览器里探索三维场景</h3>
+            <p>
+              我也做了一个可以交互的三维高斯场景查看器，把相关技术拿出来单独尝试。小实验不一定要成为完整产品，但值得把过程和发现记录下来。
+            </p>
+            <a class="text-link" href="/projects/gaussian-splat-viewer"
+              >打开实验笔记 →</a
+            >
+          </article>
+        </div>
       </section>
       <section>
-        <p class="eyebrow">Awards</p><h2>竞赛与奖项</h2><ul class="awards">
-          <li><time>2022</time>第八届浙江省“互联网+”创新创业大赛 银奖</li><li>
-            <time>2021</time>第十六届中国研究生电子设计竞赛 华东赛区一等奖
-          </li><li><time>2021</time>国家留学基金委公派留学资格</li><li>
-            <time>2020</time>研究生学业奖学金
-          </li>
-        </ul>
+        <p class="eyebrow">Background</p><h2>经历与背景</h2>
+        <details class="background-details">
+          <summary>工作、学习与其他经历</summary>
+          <div class="background-sections">
+            <section>
+              <p class="eyebrow">Work</p><h3>工作经历</h3><div class="timeline">
+                <article>
+                  <span>2024.10 — 至今</span><h4>大型三维设计与内容平台</h4><p>
+                    高级软件开发工程师 · Web 3D 与实时渲染技术负责人
+                  </p>
+                </article><article>
+                  <span>2023.04 — 2024.10</span><h4>
+                    大型三维设计与内容平台
+                  </h4><p>软件开发工程师 · 云渲染与实时渲染核心前端开发</p>
+                </article>
+              </div>
+            </section>
+            <section>
+              <p class="eyebrow">Education</p><h3>教育经历</h3><div
+                class="timeline"
+              >
+                <article>
+                  <span>2020.09 — 2023.06</span><h4>杭州电子科技大学</h4><p>
+                    硕士研究生 · 电子信息
+                  </p>
+                </article><article>
+                  <span>2020.09 — 2022.06</span><h4>ITMO University</h4><p>
+                    Master · Control Engineering
+                  </p>
+                </article>
+              </div>
+            </section>
+            <section>
+              <p class="eyebrow">Publication</p><h3>学术论文</h3><a
+                class="publication publication-link"
+                href="https://ieeexplore.ieee.org/abstract/document/10055333"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                第一作者 · Deep Reinforcement Learning-based Swing-Free
+                Trajectories Planning Algorithm for UAV with a Suspended Load. <em
+                  >China Automation Congress 2022.</em
+                >
+              </a>
+            </section>
+            <section>
+              <p class="eyebrow">Awards</p><h3>竞赛与奖项</h3><ul
+                class="awards"
+              >
+                <li>
+                  <time>2022</time>第八届浙江省“互联网+”创新创业大赛 银奖
+                </li><li>
+                  <time>2021</time>第十六届中国研究生电子设计竞赛 华东赛区一等奖
+                </li><li><time>2021</time>国家留学基金委公派留学资格</li><li>
+                  <time>2020</time>研究生学业奖学金
+                </li>
+              </ul>
+            </section>
+          </div>
+        </details>
       </section>
     </div>
   </div>
 </BaseLayout>
+
 <style>
   .about-layout {
     display: grid;
@@ -167,17 +181,35 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     margin: 0 0 1.3rem;
     font-size: 1.45rem;
   }
-  .focus-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
+  .interests article + article {
+    margin-top: 1.8rem;
   }
-  .focus-tags span {
-    padding: 0.45rem 0.75rem;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    border-radius: 9px;
-    font-size: 0.83rem;
+  .interests h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+  }
+  .interests p:not(.eyebrow) {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .background-details {
+    border-block: 1px solid var(--line);
+  }
+  .background-details summary {
+    padding-block: 1rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .background-sections {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: 1rem 2rem;
+  }
+  .background-sections section > h3 {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
   }
   .timeline {
     border-left: 1px solid var(--line);
@@ -205,7 +237,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       600 0.75rem ui-monospace,
       monospace;
   }
-  .timeline h3,
+  .timeline h4,
   .detail-card h3 {
     margin: 0.3rem 0;
     font-size: 1rem;
@@ -228,6 +260,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   }
   .work-grid .detail-card p {
     line-height: 1.75;
+  }
+  .detail-card .text-link {
+    margin-top: 0.8rem;
+    white-space: normal;
   }
   .publication-link {
     display: block;

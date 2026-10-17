@@ -7,169 +7,181 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   locale="en"
   hasTranslation
   title="About"
-  description="About Renjie, a software engineer focused on Web 3D, real-time rendering, and complex frontend systems."
+  description="Hi, I'm Renjie, a software engineer who enjoys turning ideas into things people can use. Projects, small experiments, and notes on software, interaction, and intelligent applications."
 >
   <div class="page-intro">
     <div class="container">
-      <p class="eyebrow">About</p><h1>
-        Connecting ideas with reality through engineering.
-      </h1>
+      <p class="eyebrow">About</p><h1>Turning ideas into useful tools.</h1>
     </div>
   </div>
   <div class="about-layout container">
     <aside>
       <p class="about-lede">
-        I'm Renjie, a software engineer specializing in Web 3D and real-time
-        rendering. For more than three years, I have used React, TypeScript, and
-        WebGL to build complex 3D editors, rendering SDKs, and cloud-streamed
-        products—owning work from architecture and cross-team collaboration to
-        production reliability.
+        Hi, I'm Renjie, a software engineer who enjoys making things. For me,
+        the pleasure of writing code is watching a vague idea become something
+        people can use to solve a problem.
       </p>
       <p class="about-note">
-        I like approaching graphics, frontend engineering, and product problems
-        as one system. I care about visual and interaction quality, but equally
-        about extensibility, reuse, and long-term maintainability. I am also
-        exploring how AI-assisted development and agent engineering can improve
-        delivery in large codebases.
-      </p><div class="contact-links">
+        I explore software, interaction, and intelligent applications. I've
+        worked on 3D creation tools and researched UAVs. Those experiences
+        taught me to understand the problem first, test an idea, and keep
+        refining it.
+      </p>
+      <p class="about-note">
+        This site is home to my projects, small experiments, and thoughts along
+        the way. Some come from work; others start with a question I want to
+        understand. I hope they offer something useful to fellow curious people.
+      </p>
+      <div class="contact-links">
         <a class="button" href="mailto:renjie-l@foxmail.com"
           ><Mail size={16} /> Email</a
         >
       </div>
     </aside>
     <div class="about-content">
-      <section>
-        <p class="eyebrow">Focus</p><h2>Areas of focus</h2><div
-          class="focus-tags"
-        >
-          <span>Web 3D / Real-time Rendering</span><span
-            >React / TypeScript</span
-          ><span>Three.js / WebGL / GLSL</span><span
-            >3D Editors & SDK Architecture</span
-          ><span>Gaussian Splatting</span><span>Cloud Streaming</span><span
-            >AI-assisted Development</span
-          ><span>Agent Engineering</span>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Work</p><h2>Work experience</h2><div
-          class="timeline"
-        >
-          <article>
-            <span>2024.10 — Present</span><h3>
-              Large-scale 3D Design & Content Platform
-            </h3><p>
-              Senior Software Development Engineer · Technical Lead for Web 3D
-              and Real-time Rendering
-            </p>
-          </article><article>
-            <span>2023.04 — 2024.10</span><h3>
-              Large-scale 3D Design & Content Platform
-            </h3><p>
-              Software Development Engineer · Core Frontend Engineer for Cloud
-              and Real-time Rendering
-            </p>
-          </article>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Selected work</p><h2>Selected work</h2><div
-          class="work-grid"
-        >
-          <article class="detail-card">
-            <span>AI-powered 3D Content Creation Platform</span><h3>
-              3D creation platform and internal SDK
-            </h3><p>
-              Led core development of an AI-powered 3D content platform and
-              packaged scene, character, prop, animation, capture, and AI
-              enhancement capabilities into a reusable internal SDK, with
-              unified task orchestration and asset state management.
-            </p><a
-              class="text-link"
-              href="/projects/3d-creation-platform"
-              hreflang="zh-CN">Case study (中文) →</a
-            >
-          </article><article class="detail-card">
-            <span>Real-time Rendering Editor</span><h3>
-              Responsive editing for large 3D scenes
-            </h3><p>
-              Helped build a dual-engine editor combining local WebGL preview
-              with cloud GPU streaming. Incremental light synchronization cut
-              data transfer by 90%+, selection optimizations improved marquee
-              performance by about 4×, and the work contributed to 20% WAU
-              growth.
-            </p>
-          </article><article class="detail-card">
-            <span>Multi-platform Cloud Rendering</span><h3>
-              Complex workflows, monetization, and reliability
-            </h3><p>
-              Built interruptible rendering workflows, WebGL2 lighting preview,
-              and multi-currency billing for five host products, then extracted
-              a reusable payment SDK. Core-path monitoring grew from 0 to 55%,
-              while more than 80% of redundant requests were eliminated.
-            </p>
-          </article>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Education</p><h2>Education</h2><div class="timeline">
-          <article>
-            <span>2020.09 — 2023.06</span><h3>Hangzhou Dianzi University</h3><p>
-              M.Eng. · Electronic Information
-            </p>
-          </article><article>
-            <span>2020.09 — 2022.06</span><h3>ITMO University</h3><p>
-              Master · Control Engineering
-            </p>
-          </article>
-        </div>
-      </section>
-      <section>
-        <p class="eyebrow">Research</p><h2>Research & practice</h2><article
-          class="detail-card"
-        >
-          <span>2020.09 — 2023.06</span><h3>
-            UAV Load Swing Suppression and Physical Flight Experiments
-          </h3><p>
-            Built a DQN / Gym trajectory planner and integrated OptiTrack, ROS /
-            MAVROS, PX4, and Jetson Xavier NX for indoor flight comparisons at
-            approximately 250g and 500g payloads. The work shaped my approach to
-            modeling, system integration, and experimental analysis.
-          </p><a
-            class="text-link"
-            href="/projects/uav-swing-free-trajectory"
-            hreflang="zh-CN">System and experiments (中文) →</a
-          >
+      <section class="interests">
+        <p class="eyebrow">Interests</p><h2>What I care about</h2>
+        <article>
+          <h3>Making complex things easier to use</h3>
+          <p>
+            I'm interested in how people use tools: whether an interaction saves
+            someone effort, or a reusable capability makes the next task easier.
+            I've spent a lot of time on 3D creation, which keeps me thinking
+            about both how software works and how it feels to use.
+          </p>
+        </article>
+        <article>
+          <h3>Working with new tools</h3>
+          <p>
+            Lately, I've been exploring how AI can help with real software
+            projects: understanding a codebase, trying ideas, and checking
+            results, while considering which decisions I need to make myself. I
+            like starting with a concrete problem and seeing where a tool helps.
+          </p>
         </article>
       </section>
       <section>
-        <p class="eyebrow">Publication</p><h2>Publication</h2><a
-          class="publication publication-link"
-          href="https://ieeexplore.ieee.org/abstract/document/10055333"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          First author · Deep Reinforcement Learning-based Swing-Free
-          Trajectories Planning Algorithm for UAV with a Suspended Load. <em
-            >China Automation Congress 2022.</em
-          >
-        </a>
+        <p class="eyebrow">Things I've built</p><h2>A few explorations</h2>
+        <div class="work-grid">
+          <article class="detail-card">
+            <span>From work</span><h3>Building tools for 3D creation</h3>
+            <p>
+              At work, I've brought scene editing, asset generation, and image
+              output into a shared creative workflow. It made me think more
+              carefully about how a tool's capabilities fit together and how a
+              complex system can keep evolving.
+            </p>
+            <a
+              class="text-link"
+              href="/projects/3d-creation-platform"
+              hreflang="zh-CN">Anonymous case study (中文) →</a
+            >
+          </article>
+          <article class="detail-card">
+            <span>From research to flight</span><h3>
+              Testing ideas in the real world
+            </h3>
+            <p>
+              During graduate school, I studied how to reduce the swing of loads
+              carried by a UAV. Moving from simulation to a physical flight
+              platform taught me to respect the limits of a model and test ideas
+              through experiments.
+            </p>
+            <a
+              class="text-link"
+              href="/projects/uav-swing-free-trajectory"
+              hreflang="zh-CN">Research and experiments (中文) →</a
+            >
+          </article>
+          <article class="detail-card">
+            <span>Personal experiment</span><h3>
+              Exploring 3D scenes in the browser
+            </h3>
+            <p>
+              I also built an interactive Gaussian splat scene viewer to try the
+              technology on its own. A small experiment doesn't have to become a
+              full product to be worth documenting and sharing.
+            </p>
+            <a
+              class="text-link"
+              href="/projects/gaussian-splat-viewer"
+              hreflang="zh-CN">Experiment notes (中文) →</a
+            >
+          </article>
+        </div>
       </section>
       <section>
-        <p class="eyebrow">Awards</p><h2>Awards</h2><ul class="awards">
-          <li>
-            <time>2022</time>Silver Award, Zhejiang “Internet+” Innovation and
-            Entrepreneurship Competition
-          </li><li>
-            <time>2021</time>First Prize, East China Division, China Graduate
-            Electronics Design Contest
-          </li><li>
-            <time>2021</time>China Scholarship Council sponsored-study
-            qualification
-          </li><li>
-            <time>2020</time>Graduate Academic Scholarship
-          </li>
-        </ul>
+        <p class="eyebrow">Background</p><h2>Background</h2>
+        <details class="background-details">
+          <summary>Work, education, and other experiences</summary>
+          <div class="background-sections">
+            <section>
+              <p class="eyebrow">Work</p><h3>Work experience</h3><div
+                class="timeline"
+              >
+                <article>
+                  <span>2024.10 — Present</span><h4>
+                    Large-scale 3D Design & Content Platform
+                  </h4><p>
+                    Senior Software Development Engineer · Technical Lead for
+                    Web 3D and Real-time Rendering
+                  </p>
+                </article><article>
+                  <span>2023.04 — 2024.10</span><h4>
+                    Large-scale 3D Design & Content Platform
+                  </h4><p>
+                    Software Development Engineer · Core Frontend Engineer for
+                    Cloud and Real-time Rendering
+                  </p>
+                </article>
+              </div>
+            </section>
+            <section>
+              <p class="eyebrow">Education</p><h3>Education</h3><div
+                class="timeline"
+              >
+                <article>
+                  <span>2020.09 — 2023.06</span><h4>
+                    Hangzhou Dianzi University
+                  </h4><p>M.Eng. · Electronic Information</p>
+                </article><article>
+                  <span>2020.09 — 2022.06</span><h4>ITMO University</h4><p>
+                    Master · Control Engineering
+                  </p>
+                </article>
+              </div>
+            </section>
+            <section>
+              <p class="eyebrow">Publication</p><h3>Publication</h3><a
+                class="publication publication-link"
+                href="https://ieeexplore.ieee.org/abstract/document/10055333"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                First author · Deep Reinforcement Learning-based Swing-Free
+                Trajectories Planning Algorithm for UAV with a Suspended Load. <em
+                  >China Automation Congress 2022.</em
+                >
+              </a>
+            </section>
+            <section>
+              <p class="eyebrow">Awards</p><h3>Awards</h3><ul class="awards">
+                <li>
+                  <time>2022</time>Silver Award, Zhejiang “Internet+” Innovation
+                  and Entrepreneurship Competition
+                </li><li>
+                  <time>2021</time>First Prize, East China Division, China
+                  Graduate Electronics Design Contest
+                </li><li>
+                  <time>2021</time>China Scholarship Council sponsored-study
+                  qualification
+                </li><li>
+                  <time>2020</time>Graduate Academic Scholarship
+                </li>
+              </ul>
+            </section>
+          </div>
+        </details>
       </section>
     </div>
   </div>
@@ -210,17 +222,35 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     margin: 0 0 1.3rem;
     font-size: 1.45rem;
   }
-  .focus-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
+  .interests article + article {
+    margin-top: 1.8rem;
   }
-  .focus-tags span {
-    padding: 0.45rem 0.75rem;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    border-radius: 9px;
-    font-size: 0.83rem;
+  .interests h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+  }
+  .interests p:not(.eyebrow) {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .background-details {
+    border-block: 1px solid var(--line);
+  }
+  .background-details summary {
+    padding-block: 1rem;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .background-sections {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: 1rem 2rem;
+  }
+  .background-sections section > h3 {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
   }
   .timeline {
     border-left: 1px solid var(--line);
@@ -248,7 +278,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       600 0.75rem ui-monospace,
       monospace;
   }
-  .timeline h3,
+  .timeline h4,
   .detail-card h3 {
     margin: 0.3rem 0;
     font-size: 1rem;
@@ -271,6 +301,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   }
   .work-grid .detail-card p {
     line-height: 1.75;
+  }
+  .detail-card .text-link {
+    margin-top: 0.8rem;
+    white-space: normal;
   }
   .publication-link {
     display: block;
