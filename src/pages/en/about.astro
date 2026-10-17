@@ -112,76 +112,73 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </section>
       <section>
         <p class="eyebrow">Background</p><h2>Background</h2>
-        <details class="background-details">
-          <summary>Work, education, and other experiences</summary>
-          <div class="background-sections">
-            <section>
-              <p class="eyebrow">Work</p><h3>Work experience</h3><div
-                class="timeline"
+        <div class="background-sections">
+          <section>
+            <p class="eyebrow">Work</p><h3>Work experience</h3><div
+              class="timeline"
+            >
+              <article>
+                <span>2024.10 — Present</span><h4>
+                  Large-scale 3D Design & Content Platform
+                </h4><p>
+                  Senior Software Development Engineer · Technical Lead for Web
+                  3D and Real-time Rendering
+                </p>
+              </article><article>
+                <span>2023.04 — 2024.10</span><h4>
+                  Large-scale 3D Design & Content Platform
+                </h4><p>
+                  Software Development Engineer · Core Frontend Engineer for
+                  Cloud and Real-time Rendering
+                </p>
+              </article>
+            </div>
+          </section>
+          <section>
+            <p class="eyebrow">Education</p><h3>Education</h3><div
+              class="timeline"
+            >
+              <article>
+                <span>2020.09 — 2023.06</span><h4>
+                  Hangzhou Dianzi University
+                </h4><p>M.Eng. · Electronic Information</p>
+              </article><article>
+                <span>2020.09 — 2022.06</span><h4>ITMO University</h4><p>
+                  Master · Control Engineering
+                </p>
+              </article>
+            </div>
+          </section>
+          <section>
+            <p class="eyebrow">Publication</p><h3>Publication</h3><a
+              class="publication publication-link"
+              href="https://ieeexplore.ieee.org/abstract/document/10055333"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              First author · Deep Reinforcement Learning-based Swing-Free
+              Trajectories Planning Algorithm for UAV with a Suspended Load. <em
+                >China Automation Congress 2022.</em
               >
-                <article>
-                  <span>2024.10 — Present</span><h4>
-                    Large-scale 3D Design & Content Platform
-                  </h4><p>
-                    Senior Software Development Engineer · Technical Lead for
-                    Web 3D and Real-time Rendering
-                  </p>
-                </article><article>
-                  <span>2023.04 — 2024.10</span><h4>
-                    Large-scale 3D Design & Content Platform
-                  </h4><p>
-                    Software Development Engineer · Core Frontend Engineer for
-                    Cloud and Real-time Rendering
-                  </p>
-                </article>
-              </div>
-            </section>
-            <section>
-              <p class="eyebrow">Education</p><h3>Education</h3><div
-                class="timeline"
-              >
-                <article>
-                  <span>2020.09 — 2023.06</span><h4>
-                    Hangzhou Dianzi University
-                  </h4><p>M.Eng. · Electronic Information</p>
-                </article><article>
-                  <span>2020.09 — 2022.06</span><h4>ITMO University</h4><p>
-                    Master · Control Engineering
-                  </p>
-                </article>
-              </div>
-            </section>
-            <section>
-              <p class="eyebrow">Publication</p><h3>Publication</h3><a
-                class="publication publication-link"
-                href="https://ieeexplore.ieee.org/abstract/document/10055333"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                First author · Deep Reinforcement Learning-based Swing-Free
-                Trajectories Planning Algorithm for UAV with a Suspended Load. <em
-                  >China Automation Congress 2022.</em
-                >
-              </a>
-            </section>
-            <section>
-              <p class="eyebrow">Awards</p><h3>Awards</h3><ul class="awards">
-                <li>
-                  <time>2022</time>Silver Award, Zhejiang “Internet+” Innovation
-                  and Entrepreneurship Competition
-                </li><li>
-                  <time>2021</time>First Prize, East China Division, China
-                  Graduate Electronics Design Contest
-                </li><li>
-                  <time>2021</time>China Scholarship Council sponsored-study
-                  qualification
-                </li><li>
-                  <time>2020</time>Graduate Academic Scholarship
-                </li>
-              </ul>
-            </section>
-          </div>
-        </details>
+            </a>
+          </section>
+          <section>
+            <p class="eyebrow">Awards</p><h3>Awards</h3><ul class="awards">
+              <li>
+                <time>2022</time>Silver Award, Zhejiang “Internet+” Innovation
+                and Entrepreneurship Competition
+              </li><li>
+                <time>2021</time>First Prize, East China Division, China
+                Graduate Electronics Design Contest
+              </li><li>
+                <time>2021</time>China Scholarship Council sponsored-study
+                qualification
+              </li><li>
+                <time>2020</time>Graduate Academic Scholarship
+              </li>
+            </ul>
+          </section>
+        </div>
       </section>
     </div>
   </div>
@@ -234,19 +231,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     color: var(--muted);
     line-height: 1.8;
   }
-  .background-details {
-    border-block: 1px solid var(--line);
-  }
-  .background-details summary {
-    padding-block: 1rem;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
   .background-sections {
     display: grid;
     gap: 2.5rem;
-    padding-block: 1rem 2rem;
+    padding-bottom: 2rem;
   }
   .background-sections section > h3 {
     margin: 0 0 1rem;

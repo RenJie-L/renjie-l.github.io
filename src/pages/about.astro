@@ -82,65 +82,60 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
       </section>
       <section>
         <p class="eyebrow">Background</p><h2>经历与背景</h2>
-        <details class="background-details">
-          <summary>工作、学习与其他经历</summary>
-          <div class="background-sections">
-            <section>
-              <p class="eyebrow">Work</p><h3>工作经历</h3><div class="timeline">
-                <article>
-                  <span>2024.10 — 至今</span><h4>大型三维设计与内容平台</h4><p>
-                    高级软件开发工程师 · Web 3D 与实时渲染技术负责人
-                  </p>
-                </article><article>
-                  <span>2023.04 — 2024.10</span><h4>
-                    大型三维设计与内容平台
-                  </h4><p>软件开发工程师 · 云渲染与实时渲染核心前端开发</p>
-                </article>
-              </div>
-            </section>
-            <section>
-              <p class="eyebrow">Education</p><h3>教育经历</h3><div
-                class="timeline"
+        <div class="background-sections">
+          <section>
+            <p class="eyebrow">Work</p><h3>工作经历</h3><div class="timeline">
+              <article>
+                <span>2024.10 — 至今</span><h4>大型三维设计与内容平台</h4><p>
+                  高级软件开发工程师 · Web 3D 与实时渲染技术负责人
+                </p>
+              </article><article>
+                <span>2023.04 — 2024.10</span><h4>大型三维设计与内容平台</h4><p>
+                  软件开发工程师 · 云渲染与实时渲染核心前端开发
+                </p>
+              </article>
+            </div>
+          </section>
+          <section>
+            <p class="eyebrow">Education</p><h3>教育经历</h3><div
+              class="timeline"
+            >
+              <article>
+                <span>2020.09 — 2023.06</span><h4>杭州电子科技大学</h4><p>
+                  硕士研究生 · 电子信息
+                </p>
+              </article><article>
+                <span>2020.09 — 2022.06</span><h4>ITMO University</h4><p>
+                  Master · Control Engineering
+                </p>
+              </article>
+            </div>
+          </section>
+          <section>
+            <p class="eyebrow">Publication</p><h3>学术论文</h3><a
+              class="publication publication-link"
+              href="https://ieeexplore.ieee.org/abstract/document/10055333"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              第一作者 · Deep Reinforcement Learning-based Swing-Free
+              Trajectories Planning Algorithm for UAV with a Suspended Load. <em
+                >China Automation Congress 2022.</em
               >
-                <article>
-                  <span>2020.09 — 2023.06</span><h4>杭州电子科技大学</h4><p>
-                    硕士研究生 · 电子信息
-                  </p>
-                </article><article>
-                  <span>2020.09 — 2022.06</span><h4>ITMO University</h4><p>
-                    Master · Control Engineering
-                  </p>
-                </article>
-              </div>
-            </section>
-            <section>
-              <p class="eyebrow">Publication</p><h3>学术论文</h3><a
-                class="publication publication-link"
-                href="https://ieeexplore.ieee.org/abstract/document/10055333"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                第一作者 · Deep Reinforcement Learning-based Swing-Free
-                Trajectories Planning Algorithm for UAV with a Suspended Load. <em
-                  >China Automation Congress 2022.</em
-                >
-              </a>
-            </section>
-            <section>
-              <p class="eyebrow">Awards</p><h3>竞赛与奖项</h3><ul
-                class="awards"
-              >
-                <li>
-                  <time>2022</time>第八届浙江省“互联网+”创新创业大赛 银奖
-                </li><li>
-                  <time>2021</time>第十六届中国研究生电子设计竞赛 华东赛区一等奖
-                </li><li><time>2021</time>国家留学基金委公派留学资格</li><li>
-                  <time>2020</time>研究生学业奖学金
-                </li>
-              </ul>
-            </section>
-          </div>
-        </details>
+            </a>
+          </section>
+          <section>
+            <p class="eyebrow">Awards</p><h3>竞赛与奖项</h3><ul class="awards">
+              <li>
+                <time>2022</time>第八届浙江省“互联网+”创新创业大赛 银奖
+              </li><li>
+                <time>2021</time>第十六届中国研究生电子设计竞赛 华东赛区一等奖
+              </li><li><time>2021</time>国家留学基金委公派留学资格</li><li>
+                <time>2020</time>研究生学业奖学金
+              </li>
+            </ul>
+          </section>
+        </div>
       </section>
     </div>
   </div>
@@ -193,19 +188,10 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
     color: var(--muted);
     line-height: 1.8;
   }
-  .background-details {
-    border-block: 1px solid var(--line);
-  }
-  .background-details summary {
-    padding-block: 1rem;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
   .background-sections {
     display: grid;
     gap: 2.5rem;
-    padding-block: 1rem 2rem;
+    padding-bottom: 2rem;
   }
   .background-sections section > h3 {
     margin: 0 0 1rem;
