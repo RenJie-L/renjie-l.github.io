@@ -24,20 +24,19 @@ const directions = [
 <BaseLayout
   locale="en"
   hasTranslation
-  title="Renjie — Web 3D & Software Engineering"
-  description="Software engineer building Web 3D editors, rendering SDKs, and complex tool platforms, with ROS UAV research and physical flight experiments."
+  title="Renjie — Software & Creative Technology"
+  description="Turning ideas into useful tools. Renjie explores software, interaction, and intelligent applications, sharing projects, experiments, and engineering notes."
 >
   <section class="hero container">
     <div class="hero-copy">
       <p class="availability">
-        <span></span> Building tools for 3D creation
+        <span></span> Software · Ideas · Experiments
       </p>
       <h1>Hi, I'm Renjie.</h1>
+      <p class="hero-tagline">Turning ideas into useful tools.</p>
       <p class="hero-lede">
-        Software engineer focused on Web 3D, real-time rendering, and complex
-        tool platforms.<br />
-        I build 3D editors, rendering SDKs, and intelligent content tools, with a
-        background in ROS UAV research and physical flight experiments.
+        Exploring software, interaction, and intelligent applications. Sharing
+        what I build and learn.
       </p>
       <div class="hero-actions">
         <a class="button primary" href="/en/projects"
@@ -82,14 +81,14 @@ const directions = [
       <article class="project-feature">
         <div>
           <span class="project-period">2025.08 — Present · Technical Lead</span>
-          <h3>LuxReal 3D Studio</h3>
+          <h3>3D Content Creation Platform</h3>
           <p>
-            A reusable 3D creation SDK for 5+ product lines, with unified asset
-            tasks and Gaussian / Mesh editing.
+            An anonymized work case study on editor architecture, reusable SDKs,
+            asset tasks, and Gaussian / Mesh editing.
           </p>
           <a
             class="project-entry"
-            href="/projects/luxreal-3d-studio"
+            href="/projects/3d-creation-platform"
             hreflang="zh-CN">Case study (中文) <ArrowRight size={14} /></a
           >
         </div>
@@ -193,7 +192,16 @@ const directions = [
     line-height: 0.95;
     letter-spacing: -0.065em;
   }
+  .hero-tagline {
+    margin: 0 0 0.8rem;
+    font-size: clamp(1.45rem, 3vw, 2.15rem);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
   .hero-lede {
+    margin: 0;
     max-width: 750px;
     color: var(--muted);
     font-size: clamp(1.05rem, 2.1vw, 1.28rem);

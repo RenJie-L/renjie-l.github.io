@@ -40,13 +40,11 @@ const directions = [
   <section class="hero container">
     <div class="hero-copy">
       <p class="availability">
-        <span></span> Building tools for 3D creation
+        <span></span> Software · Ideas · Experiments
       </p>
       <h1>Hi, I'm Renjie.</h1>
-      <p class="hero-lede">
-        专注 Web 3D、实时渲染与复杂工具平台开发。<br />构建三维编辑器、渲染 SDK
-        与智能内容工具，拥有 ROS 无人机研究与真机实验经历。
-      </p>
+      <p class="hero-tagline">让想法成为可用的工具。</p>
+      <p class="hero-lede">探索软件、交互与智能应用，分享实践与思考。</p>
       <div class="hero-actions">
         <a class="button primary" href="/projects"
           >查看项目 <ArrowRight size={16} /></a
@@ -176,7 +174,16 @@ const directions = [
     line-height: 0.95;
     letter-spacing: -0.065em;
   }
+  .hero-tagline {
+    margin: 0 0 0.8rem;
+    font-size: clamp(1.45rem, 3vw, 2.15rem);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
   .hero-lede {
+    margin: 0;
     max-width: 710px;
     color: var(--muted);
     font-size: clamp(1.05rem, 2.1vw, 1.35rem);

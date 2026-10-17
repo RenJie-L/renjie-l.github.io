@@ -12,6 +12,9 @@ const hasStandaloneLocaleIndex = (url) =>
 
 export default defineConfig({
   site: 'https://renjie-l.github.io',
+  redirects: {
+    '/projects/luxreal-3d-studio': '/projects/3d-creation-platform/',
+  },
   i18n: {
     locales: ['zh-CN', 'en'],
     defaultLocale: 'zh-CN',

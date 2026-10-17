@@ -12,6 +12,7 @@ test('the production build contains the primary routes and search bundle', async
     'index.html',
     'writing/index.html',
     'projects/index.html',
+    'projects/3d-creation-platform/index.html',
     'en/index.html',
     'en/projects/index.html',
     'experiments/genshin/index.html',
@@ -21,6 +22,31 @@ test('the production build contains the primary routes and search bundle', async
   ];
 
   await Promise.all(expectedFiles.map((file) => access(resolve(dist, file))));
+});
+
+test('the legacy work-case URL redirects to the anonymous canonical case', async () => {
+  const [redirect, project, sitemap] = await Promise.all([
+    readFile(resolve(dist, 'projects/luxreal-3d-studio/index.html'), 'utf8'),
+    readFile(resolve(dist, 'projects/3d-creation-platform/index.html'), 'utf8'),
+    readFile(resolve(dist, 'sitemap-0.xml'), 'utf8'),
+  ]);
+
+  assert.match(
+    redirect,
+    /<meta http-equiv="refresh" content="0;url=\/projects\/3d-creation-platform\/">/,
+  );
+  assert.match(redirect, /<meta name="robots" content="noindex">/);
+  for (const html of [redirect, project]) {
+    assert.match(
+      html,
+      /<link rel="canonical" href="https:\/\/renjie-l\.github\.io\/projects\/3d-creation-platform\/">/,
+    );
+  }
+  assert.match(
+    sitemap,
+    /<loc>https:\/\/renjie-l\.github\.io\/projects\/3d-creation-platform\/<\/loc>/,
+  );
+  assert.doesNotMatch(sitemap, /luxreal-3d-studio/i);
 });
 
 test('Gaussian splat experiences expose camera, performance, and localized help controls', async () => {

@@ -28,7 +28,7 @@ cover:
 
 > 如果想先了解 3DGS 的表示方式、训练过程和渲染原理，可以阅读《[3D Gaussian Splatting 入门：原理、流程与应用](/writing/3d-gaussian-splatting-intro)》。
 
-相关工作案例：[LuxReal 3D 片场：三维创作框架与资产任务体系](/projects/luxreal-3d-studio)。本查看器是独立个人实验，提供高斯场景相关技术的公开体验。
+相关工作案例：[三维内容创作平台：编辑器架构与 SDK 实践](/projects/3d-creation-platform)。本查看器是独立个人实验，提供高斯场景相关技术的公开体验。
 
 ## 技术栈
 
